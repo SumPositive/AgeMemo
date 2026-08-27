@@ -8,6 +8,7 @@ struct ZodiacSheet: View {
     @State private var selectedBranches: Set<EarthlyBranch> = []
 
     let rows: [YearRow]
+    let ageDisplayMode: AgeDisplayMode
     let jump: (Int) -> Void
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 4)
@@ -57,7 +58,7 @@ struct ZodiacSheet: View {
                                 Text(row.eraDisplayText)
                                     .lineLimit(1)
                                 Spacer()
-                                if let age = AgeCalculator.age(in: row.gregorian, birthDate: settings.birthDate) {
+                                if let age = displayedAge(for: row.gregorian) {
                                     Text("\(age)歳")
                                         .monospacedDigit()
                                         .foregroundStyle(age < 0 ? .secondary : .primary)
@@ -90,5 +91,14 @@ struct ZodiacSheet: View {
         } else {
             selectedBranches.insert(branch)
         }
+    }
+
+    private func displayedAge(for year: Int) -> Int? {
+        AgeCalculator.displayedAge(
+            for: year,
+            mode: ageDisplayMode,
+            birthDate: settings.birthDate,
+            currentYear: Calendar.current.component(.year, from: .now)
+        )
     }
 }

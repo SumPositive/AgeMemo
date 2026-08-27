@@ -2,7 +2,27 @@
 
 import Foundation
 
+enum AgeDisplayMode {
+    case current
+    case personal
+}
+
 enum AgeCalculator {
+    static func displayedAge(
+        for rowYear: Int,
+        mode: AgeDisplayMode,
+        birthDate: Date?,
+        currentYear: Int
+    ) -> Int? {
+        switch mode {
+        case .current:
+            // その年に生まれた人の当年時点の年齢を求める
+            return currentYear - rowYear
+        case .personal:
+            return age(in: rowYear, birthDate: birthDate)
+        }
+    }
+
     static func age(
         in year: Int,
         birthDate: Date?,

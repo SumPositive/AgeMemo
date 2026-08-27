@@ -35,6 +35,7 @@ struct YearListView: View {
     @State private var presentedSheet: PresentedSheet?
     @State private var didSetInitialPosition = false
     @State private var selectedToolbarAction = MainToolbarAction.current
+    @State private var ageDisplayMode = AgeDisplayMode.current
 
     private let currentYear = Calendar.current.component(.year, from: .now)
 
@@ -60,7 +61,7 @@ struct YearListView: View {
                             VStack(spacing: 0) {
                                 YearRowView(
                                     row: row,
-                                    age: AgeCalculator.age(in: row.gregorian, birthDate: settings.birthDate),
+                                    age: displayedAge(for: row.gregorian),
                                     memo: memoStore.text(for: row.gregorian),
                                     isCurrentYear: row.gregorian == currentYear,
                                     isBirthYear: row.gregorian == birthYear,
@@ -121,12 +122,12 @@ struct YearListView: View {
         switch sheet {
         case .detail(let year):
             if let row = rows.first(where: { $0.gregorian == year }) {
-                YearDetailView(row: row)
+                YearDetailView(row: row, ageDisplayMode: ageDisplayMode)
             }
         case .age:
             AgeJumpSheet { scroll(to: $0) }
         case .zodiac:
-            ZodiacSheet(rows: rows) { scroll(to: $0) }
+            ZodiacSheet(rows: rows, ageDisplayMode: ageDisplayMode) { scroll(to: $0) }
         case .era:
             EraJumpSheet(rows: rows) { scroll(to: $0) }
         case .settings:
@@ -139,10 +140,12 @@ struct YearListView: View {
         selectedToolbarAction = action
         switch action {
         case .current:
+            ageDisplayMode = .current
             scroll(to: currentYear)
         case .personal:
-            if let birthYear {
-                scroll(to: birthYear)
+            ageDisplayMode = .personal
+            if birthYear != nil {
+                scroll(to: currentYear)
             } else {
                 presentedSheet = .settings
             }
@@ -162,5 +165,14 @@ struct YearListView: View {
         // 同じ年を再度選んだ場合もスクロールを実行する
         scrollRequest = YearScrollRequest(year: boundedYear)
         presentedSheet = nil
+    }
+
+    private func displayedAge(for year: Int) -> Int? {
+        AgeCalculator.displayedAge(
+            for: year,
+            mode: ageDisplayMode,
+            birthDate: settings.birthDate,
+            currentYear: currentYear
+        )
     }
 }

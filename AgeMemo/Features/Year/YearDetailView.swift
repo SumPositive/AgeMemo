@@ -10,9 +10,11 @@ struct YearDetailView: View {
 
     let row: YearRow
     @State private var memoText: String
+    let ageDisplayMode: AgeDisplayMode
 
-    init(row: YearRow) {
+    init(row: YearRow, ageDisplayMode: AgeDisplayMode) {
         self.row = row
+        self.ageDisplayMode = ageDisplayMode
         _memoText = State(initialValue: "")
     }
 
@@ -61,8 +63,8 @@ struct YearDetailView: View {
             Text("\(row.gregorian)年  \(row.eraDisplayText)")
                 .font(.title2.bold())
 
-            if let age = AgeCalculator.age(in: row.gregorian, birthDate: settings.birthDate) {
-                Text("誕生日以降の満年齢 \(age)歳")
+            if let age = displayedAge {
+                Text(ageDescription(age))
                     .foregroundStyle(age < 0 ? .secondary : .primary)
             }
 
@@ -71,6 +73,24 @@ struct YearDetailView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var displayedAge: Int? {
+        AgeCalculator.displayedAge(
+            for: row.gregorian,
+            mode: ageDisplayMode,
+            birthDate: settings.birthDate,
+            currentYear: Calendar.current.component(.year, from: .now)
+        )
+    }
+
+    private func ageDescription(_ age: Int) -> String {
+        switch ageDisplayMode {
+        case .current:
+            "\(row.gregorian)年生まれの当年時点 \(age)歳"
+        case .personal:
+            "誕生日以降の満年齢 \(age)歳"
+        }
     }
 
     private var memoEditor: some View {

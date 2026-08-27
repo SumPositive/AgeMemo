@@ -43,6 +43,27 @@ final class CoreLogicTests: XCTestCase {
         XCTAssertNil(AgeCalculator.age(in: 2026, birthDate: nil))
     }
 
+    func testCurrentModeUsesRowYearAsBirthYear() {
+        XCTAssertEqual(
+            AgeCalculator.displayedAge(
+                for: 2026,
+                mode: .current,
+                birthDate: nil,
+                currentYear: 2026
+            ),
+            0
+        )
+        XCTAssertEqual(
+            AgeCalculator.displayedAge(
+                for: 2027,
+                mode: .current,
+                birthDate: nil,
+                currentYear: 2026
+            ),
+            -1
+        )
+    }
+
     func testEraChoiceUsesActualFirstYear() throws {
         let choices = JapaneseEra.eraChoices(from: JapaneseEra.makeRows())
         let keicho = try XCTUnwrap(choices.first { $0.name == "慶長" })
