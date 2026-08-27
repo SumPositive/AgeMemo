@@ -27,7 +27,7 @@ AgeMemo
 　・初心者/達人モード設定
 　・文字サイズ設定
 　・ダークモード設定
-　・生年月日を設定すれば、初期に生年を中央に表示する
+　・生年月日を設定すれば、「自分」から生年を中央に表示できる
 
 下部ツールバー
 　・現在：生年月日の設定状態にかかわらず現在年を中央に表示
@@ -229,24 +229,28 @@ JSON 1ファイル。件数は多くても数百のため全読み・全書き�
 - 年齢は表示時に `gregorian - birthYear` で導出する軽量な計算
 - メモは `[Int: Memo]` の辞書引き O(1)
 
-`List` ではなく `ScrollView` + `LazyVStack` を採る。理由は、`List` の区切り線・インセット制御より、
-`scrollPosition(id:)` による任意年へのジャンプが素直に書けるため。
+`List` ではなく `ScrollViewReader` + `ScrollView` + `LazyVStack` を採る。理由は、`List` の区切り線・インセット制御より、
+`scrollTo(_:anchor:)` による任意年へのジャンプが素直に書けるため。
 
 ```swift
-ScrollView {
-    LazyVStack(spacing: 0) {
-        ForEach(rows) { row in YearRowView(row: row) }
+ScrollViewReader { proxy in
+    ScrollView {
+        LazyVStack(spacing: 0) {
+            ForEach(rows) { row in
+                YearRowView(row: row)
+                    .id(row.id)
+            }
+        }
     }
-    .scrollTargetLayout()
 }
-.scrollPosition(id: $scrolledYear, anchor: .center)
 .scrollIndicators(.hidden)
 ```
 
-初期表示・各ツールバー操作のジャンプは `scrolledYear` に西暦を代入するだけで済む。
+初期表示・各ツールバー操作のジャンプは `proxy.scrollTo(year, anchor: .center)` で行う。
+各年の行コンテナに西暦年の `id` を明示し、初回レイアウト後に移動する。
 `anchor: .center` により要件の「中央に表示」を満たす。
 
-起動時は生年月日が設定済みなら生年、未設定なら当年を中央に表示する。
+起動時は「現在」を既定の選択状態とし、生年月日の設定状態にかかわらず当年を中央に表示する。
 「現在」ボタンは生年月日の設定状態にかかわらず、常に当年を中央に表示する。
 
 ### 4.3 範囲
@@ -361,7 +365,7 @@ ScrollView {
 一覧は `rows.filter { selected.contains($0.stemBranch.branch) }` で作る。
 12分の1ずつなので1干支あたり41〜42件、全選択でも501件。`LazyVStack` で軽い。
 
-主画面の `rows` は触らないため、`scrollPosition` の着地は常に全件に対して行われる。
+主画面の `rows` は触らないため、`scrollTo` の着地は常に全件に対して行われる。
 
 ### 5.3 飛躍シート
 
