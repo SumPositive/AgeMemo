@@ -10,21 +10,28 @@ private struct SheetContentHeightKey: PreferenceKey {
     }
 }
 
+extension View {
+    /// シート本体の自然な高さを測ってdetentへ伝える。
+    /// ScrollViewの内側など、シート高に引き伸ばされない位置に付けること
+    func measuredSheetContent() -> some View {
+        background {
+            GeometryReader { proxy in
+                Color.clear
+                    .preference(key: SheetContentHeightKey.self, value: proxy.size.height)
+            }
+        }
+    }
+}
+
 private struct FittedSheetHeight: ViewModifier {
-    /// 実測した高さ。detentを与えると測定値がそれに追従してしまうため、
-    /// 一度確定したら更新せず、測定→detent変更→再測定のループを断ち切る
+    /// 中身の自然な高さ。ScrollView内側で測るためシート高に引きずられず、
+    /// 測定→detent変更→再測定のループも起きない
     @State private var contentHeight: CGFloat?
 
     func body(content: Content) -> some View {
         content
-            .background {
-                GeometryReader { proxy in
-                    Color.clear
-                        .preference(key: SheetContentHeightKey.self, value: proxy.size.height)
-                }
-            }
             .onPreferenceChange(SheetContentHeightKey.self) { height in
-                guard height > 0, contentHeight == nil else { return }
+                guard height > 0 else { return }
                 contentHeight = height
             }
             // 実測前は .medium で表示し、確定後に中身ぴったりの高さへ切り替える。

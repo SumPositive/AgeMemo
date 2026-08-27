@@ -5,6 +5,7 @@ import SwiftUI
 struct AgeJumpSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var digits = ""
+    @ScaledMetric(relativeTo: .largeTitle) private var displayFontSize: CGFloat = 52
 
     /// 前回入力した年齢。未入力ならこの値がそのまま使われる
     let placeholderAge: Int
@@ -29,33 +30,39 @@ struct AgeJumpSheet: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
-                display
+            // 文字サイズを大きくすると小型端末では収まらないためスクロール可能にする
+            ScrollView {
+                VStack(spacing: 16) {
+                    display
 
-                Text("生年 \(String(destinationYear))年")
-                    .font(.subheadline.monospacedDigit())
-                    .foregroundStyle(.secondary)
-
-                if destinationYear != boundedDestinationYear {
-                    Text("表示範囲外のため \(String(boundedDestinationYear))年へ移動します")
-                        .font(.footnote)
+                    Text("生年 \(String(destinationYear))年")
+                        .font(.subheadline.monospacedDigit())
                         .foregroundStyle(.secondary)
-                }
 
-                NumericKeypad { key in handle(key) }
+                    if destinationYear != boundedDestinationYear {
+                        Text("表示範囲外のため \(String(boundedDestinationYear))年へ移動します")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
 
-                Button {
-                    jump(age, boundedDestinationYear)
-                    dismiss()
-                } label: {
-                    Text("移動")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                    NumericKeypad { key in handle(key) }
+
+                    Button {
+                        jump(age, boundedDestinationYear)
+                        dismiss()
+                    } label: {
+                        Text("移動")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
-                .buttonStyle(.borderedProminent)
+                .padding()
+                .measuredSheetContent()
             }
-            .padding()
+            .scrollBounceBehavior(.basedOnSize)
+            .scrollIndicators(.hidden)
             .navigationTitle("年齢から移動")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -72,7 +79,7 @@ struct AgeJumpSheet: View {
         HStack(alignment: .lastTextBaseline, spacing: 6) {
             // 未入力のあいだは前回値をグレーで示し、数字を押すと上書きする
             Text(isEmpty ? "\(placeholderAge)" : digits)
-                .font(.system(size: 52, weight: .bold, design: .rounded).monospacedDigit())
+                .font(.system(size: displayFontSize, weight: .bold, design: .rounded).monospacedDigit())
                 .foregroundStyle(isEmpty ? Color(.tertiaryLabel) : Color(.label))
                 .contentTransition(.numericText())
                 .animation(.snappy, value: digits)

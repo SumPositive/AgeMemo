@@ -11,25 +11,35 @@ enum NumericKeypadKey: Hashable {
 
 /// 3×3 + 最終行のテンキー。最終行の中央キーは用途に応じて差し替える
 struct NumericKeypad: View {
-    let compact: Bool
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private let explicitCompact: Bool?
     /// 最終行の中央に置くキー（nilなら0の隣を空ける）
     let auxiliaryTitle: String?
     let auxiliaryDisabled: Bool
     let onKey: (NumericKeypadKey) -> Void
 
     init(
-        compact: Bool = false,
+        compact: Bool? = nil,
         auxiliaryTitle: String? = nil,
         auxiliaryDisabled: Bool = false,
         onKey: @escaping (NumericKeypadKey) -> Void
     ) {
-        self.compact = compact
+        self.explicitCompact = compact
         self.auxiliaryTitle = auxiliaryTitle
         self.auxiliaryDisabled = auxiliaryDisabled
         self.onKey = onKey
     }
 
     private let rows = [[7, 8, 9], [4, 5, 6], [1, 2, 3]]
+
+    /// 特大などのアクセシビリティサイズでは、キーが画面に収まるよう詰めて配置する
+    private var compact: Bool {
+        explicitCompact ?? dynamicTypeSize.isAccessibilitySize
+    }
+
+    @ScaledMetric(relativeTo: .title) private var scaledHeight: CGFloat = 56
+    @ScaledMetric(relativeTo: .title2) private var scaledCompactHeight: CGFloat = 52
 
     private var spacing: CGFloat { compact ? 8 : 10 }
 
@@ -53,7 +63,7 @@ struct NumericKeypad: View {
                     .disabled(auxiliaryDisabled)
                 } else {
                     Color.clear
-                        .frame(maxWidth: .infinity, minHeight: compact ? 52 : 56)
+                        .frame(maxWidth: .infinity, minHeight: compact ? scaledCompactHeight : scaledHeight)
                 }
 
                 KeypadDeleteButton(compact: compact) { onKey(.delete) }
@@ -67,7 +77,10 @@ private struct KeypadDigitButton: View {
     let compact: Bool
     let action: () -> Void
 
-    private var minHeight: CGFloat { compact ? 52 : 56 }
+    @ScaledMetric(relativeTo: .title) private var scaledHeight: CGFloat = 56
+    @ScaledMetric(relativeTo: .title2) private var scaledCompactHeight: CGFloat = 52
+
+    private var minHeight: CGFloat { compact ? scaledCompactHeight : scaledHeight }
     private var font: Font { compact ? .title2.weight(.medium) : .title.weight(.medium) }
 
     var body: some View {
@@ -90,7 +103,10 @@ private struct KeypadAuxiliaryButton: View {
 
     @Environment(\.isEnabled) private var isEnabled
 
-    private var minHeight: CGFloat { compact ? 52 : 56 }
+    @ScaledMetric(relativeTo: .title2) private var scaledHeight: CGFloat = 56
+    @ScaledMetric(relativeTo: .title3) private var scaledCompactHeight: CGFloat = 52
+
+    private var minHeight: CGFloat { compact ? scaledCompactHeight : scaledHeight }
     private var font: Font { compact ? .title3.weight(.medium) : .title2.weight(.medium) }
 
     var body: some View {
@@ -110,7 +126,10 @@ private struct KeypadDeleteButton: View {
     let compact: Bool
     let action: () -> Void
 
-    private var minHeight: CGFloat { compact ? 52 : 56 }
+    @ScaledMetric(relativeTo: .title2) private var scaledHeight: CGFloat = 56
+    @ScaledMetric(relativeTo: .title3) private var scaledCompactHeight: CGFloat = 52
+
+    private var minHeight: CGFloat { compact ? scaledCompactHeight : scaledHeight }
     private var font: Font { compact ? .title3 : .title2 }
 
     var body: some View {

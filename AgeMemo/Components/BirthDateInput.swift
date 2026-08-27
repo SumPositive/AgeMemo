@@ -227,6 +227,8 @@ struct BirthDateEntry: Equatable {
 struct BirthDatePad: View {
     @Binding var entry: BirthDateEntry
 
+    @ScaledMetric(relativeTo: .title2) private var scaledFieldHeight: CGFloat = 44
+
     var body: some View {
         VStack(spacing: 12) {
             fields
@@ -271,7 +273,7 @@ struct BirthDatePad: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
-        .frame(maxWidth: .infinity, minHeight: 44)
+        .frame(maxWidth: .infinity, minHeight: scaledFieldHeight)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
@@ -330,19 +332,25 @@ struct BirthDateInputSheet<Header: View>: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 14) {
-                header
+            // 文字サイズを大きくすると小型端末では収まらないためスクロール可能にする
+            ScrollView {
+                VStack(spacing: 14) {
+                    header
 
-                BirthDatePad(entry: $entry)
+                    BirthDatePad(entry: $entry)
 
-                // 警告の有無でシート高が変わらないよう、領域は常に確保しておく
-                Text("存在しない日付です")
-                    .font(.footnote)
-                    .foregroundStyle(.red)
-                    .opacity(showsInvalidDateWarning ? 1 : 0)
-                    .accessibilityHidden(!showsInvalidDateWarning)
+                    // 警告の有無でシート高が変わらないよう、領域は常に確保しておく
+                    Text("存在しない日付です")
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                        .opacity(showsInvalidDateWarning ? 1 : 0)
+                        .accessibilityHidden(!showsInvalidDateWarning)
+                }
+                .padding()
+                .measuredSheetContent()
             }
-            .padding()
+            .scrollBounceBehavior(.basedOnSize)
+            .scrollIndicators(.hidden)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

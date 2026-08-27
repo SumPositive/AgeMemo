@@ -21,6 +21,8 @@ private struct MonthCalendarView: View {
     let month: Int
     let eraSpans: [EraSpan]
 
+    @ScaledMetric(relativeTo: .caption2) private var scaledEraFontSize: CGFloat = 7
+
     private let weekdaySymbols = ["日", "月", "火", "水", "木", "金", "土"]
     private let dayColumns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
 
@@ -76,7 +78,7 @@ private struct MonthCalendarView: View {
         return VStack(spacing: 0) {
             if let era {
                 Text(era.eraName)
-                    .font(.system(size: 7, weight: .bold))
+                    .font(.system(size: scaledEraFontSize, weight: .bold))
                     .foregroundStyle(.tint)
                     .lineLimit(1)
             }

@@ -96,11 +96,10 @@ struct SettingsView: View {
                 }
             }
             .sheet(isPresented: $isEditingBirthDate) {
-                // シートは別ウインドウ層に出るため外観設定を明示的に引き継ぐ
                 BirthDateInputSheet(title: "生年月日", birthDate: settings.birthDate) { newValue in
                     settings.birthDate = newValue
                 }
-                .preferredColorScheme(settings.appearanceMode.colorScheme)
+                .appAppearance()
             }
         }
     }

@@ -82,9 +82,8 @@ struct PersonSheet: View {
                 }
             }
             .sheet(item: $editorTarget) { target in
-                // シートは別ウインドウ層に出るため外観設定を明示的に引き継ぐ
                 PersonEditorSheet(target: target)
-                    .preferredColorScheme(settings.appearanceMode.colorScheme)
+                    .appAppearance()
             }
             .alert("削除しますか？", isPresented: deletionBinding, presenting: pendingDeletion) { person in
                 Button("削除", role: .destructive) {
