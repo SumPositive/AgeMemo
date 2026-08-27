@@ -23,10 +23,10 @@ struct YearDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     summary
-                    YearCalendarView(row: row)
                     if showsMemo {
                         memoEditor
                     }
+                    YearCalendarView(row: row)
                 }
                 .padding()
             }
@@ -35,10 +35,18 @@ struct YearDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完了") { dismiss() }
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.down")
+                            .imageScale(.large)
+                            .symbolRenderingMode(.hierarchical)
+                    }
+                    .accessibilityLabel("閉じる")
                 }
             }
         }
+        .presentationDragIndicator(.visible)
         .onAppear {
             memoText = memoStore.text(for: row.gregorian) ?? ""
         }
@@ -76,6 +84,9 @@ struct YearDetailView: View {
             Text("十二支 \(row.stemBranch.branch.kanji)（\(row.stemBranch.branch.kana)）")
                 .foregroundStyle(.secondary)
         }
+        // 改元年は元号が2つ並んで長くなるため、折り返さず縮小して1行に収める
+        .lineLimit(1)
+        .minimumScaleFactor(0.5)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -91,9 +102,23 @@ struct YearDetailView: View {
     private func ageDescription(_ age: Int) -> String {
         switch ageDisplayMode {
         case .age:
-            "\(String(row.gregorian))年生まれの当年時点 \(age)歳"
+            // 年齢が負の年はまだ生まれていないため、経過年数で表す
+            if age > 0 {
+                "現在\(age)歳の方の誕生年"
+            } else if age == 0 {
+                "今年生まれた方の誕生年"
+            } else {
+                "\(-age)年後に生まれる方の誕生年"
+            }
         case .personal, .person:
-            "誕生日以降の満年齢 \(age)歳"
+            // 生年より前の年は、生まれるまでの残り年数で表す
+            if age > 0 {
+                "この年の誕生日で満\(age)歳"
+            } else if age == 0 {
+                "この年に生まれました"
+            } else {
+                "生まれるまであと\(-age)年"
+            }
         }
     }
 
