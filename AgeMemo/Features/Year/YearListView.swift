@@ -84,6 +84,7 @@ struct YearListView: View {
                                     isCurrentYear: row.gregorian == currentYear,
                                     isBirthYear: row.gregorian == highlightedBirthYear,
                                     isSelected: row.gregorian == selectedAgeYear,
+                                    showsAgeFirst: ageDisplayMode == .age,
                                     compact: settings.displayMode == .expert
                                 )
                                 .onTapGesture {

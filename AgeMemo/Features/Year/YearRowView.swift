@@ -10,6 +10,8 @@ struct YearRowView: View {
     let isBirthYear: Bool
     /// 年齢指定などで選ばれた行。当年より強い色で示す
     var isSelected: Bool = false
+    /// 年齢モードでは年齢を左端に置き、一覧の性格の違いを明確にする
+    var showsAgeFirst: Bool = false
     let compact: Bool
     @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
 
@@ -69,36 +71,66 @@ struct YearRowView: View {
     private func primaryLine(scale: CGFloat) -> some View {
         let fontSize = preferredFontSize * scale
         return HStack(spacing: 2) {
-            Text(String(row.gregorian))
-                .font(.system(size: fontSize, weight: .semibold, design: .monospaced))
-                .lineLimit(1)
-                .frame(width: fontSize * 2.55, alignment: .trailing)
+            if showsAgeFirst {
+                ageColumn(fontSize: fontSize, alignment: .leading)
 
-            Spacer(minLength: 0)
+                Spacer(minLength: 0)
 
-            eraColumn(fontSize: fontSize)
-                .frame(width: fontSize * 4.7, alignment: .leading)
+                gregorianColumn(fontSize: fontSize)
 
-            Spacer(minLength: 0)
+                Spacer(minLength: 0)
 
-            Text("\(row.stemBranch.branch.emoji) \(row.stemBranch.branch.kanji)")
-                .font(.system(size: fontSize))
-                .lineLimit(1)
-                .frame(width: fontSize * 2.55, alignment: .leading)
+                eraColumn(fontSize: fontSize)
+                    .frame(width: fontSize * 4.7, alignment: .leading)
 
-            Spacer(minLength: 0)
+                Spacer(minLength: 0)
 
-            if let age {
-                Text("\(age)歳")
-                    .font(.system(size: fontSize, design: .monospaced))
-                    .foregroundStyle(age < 0 ? .secondary : .primary)
-                    .lineLimit(1)
-                    .frame(width: fontSize * 3.1, alignment: .trailing)
+                zodiacColumn(fontSize: fontSize)
             } else {
-                // 年齢未設定時も列配置を保つ
-                Color.clear
-                    .frame(width: fontSize * 3.1)
+                gregorianColumn(fontSize: fontSize)
+
+                Spacer(minLength: 0)
+
+                eraColumn(fontSize: fontSize)
+                    .frame(width: fontSize * 4.7, alignment: .leading)
+
+                Spacer(minLength: 0)
+
+                zodiacColumn(fontSize: fontSize)
+
+                Spacer(minLength: 0)
+
+                ageColumn(fontSize: fontSize, alignment: .trailing)
             }
+        }
+    }
+
+    private func gregorianColumn(fontSize: CGFloat) -> some View {
+        Text(String(row.gregorian))
+            .font(.system(size: fontSize, weight: .semibold, design: .monospaced))
+            .lineLimit(1)
+            .frame(width: fontSize * 2.55, alignment: .trailing)
+    }
+
+    private func zodiacColumn(fontSize: CGFloat) -> some View {
+        Text("\(row.stemBranch.branch.emoji) \(row.stemBranch.branch.kanji)")
+            .font(.system(size: fontSize))
+            .lineLimit(1)
+            .frame(width: fontSize * 2.55, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private func ageColumn(fontSize: CGFloat, alignment: Alignment) -> some View {
+        if let age {
+            Text("\(age)歳")
+                .font(.system(size: fontSize, design: .monospaced))
+                .foregroundStyle(age < 0 ? .secondary : .primary)
+                .lineLimit(1)
+                .frame(width: fontSize * 3.1, alignment: alignment)
+        } else {
+            // 年齢未設定時も列配置を保つ
+            Color.clear
+                .frame(width: fontSize * 3.1)
         }
     }
 
