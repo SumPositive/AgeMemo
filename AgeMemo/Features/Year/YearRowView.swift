@@ -9,29 +9,19 @@ struct YearRowView: View {
     let isCurrentYear: Bool
     let isBirthYear: Bool
     let compact: Bool
+    @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 2 : 5) {
-            HStack(spacing: 8) {
-                Text(String(row.gregorian))
-                    .font(.body.monospacedDigit().weight(.semibold))
-                    .frame(width: 52, alignment: .trailing)
-
-                Text(row.eraDisplayText)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                if let age {
-                    Text("\(age)歳")
-                        .font(.body.monospacedDigit())
-                        .foregroundStyle(age < 0 ? .secondary : .primary)
-                        .frame(width: 58, alignment: .trailing)
-                }
-
-                Text("\(row.stemBranch.branch.emoji) \(row.stemBranch.branch.kanji)")
-                    .frame(width: 52, alignment: .leading)
+            ViewThatFits(in: .horizontal) {
+                primaryLine(scale: 1.0)
+                primaryLine(scale: 0.9)
+                primaryLine(scale: 0.8)
+                primaryLine(scale: 0.7)
+                primaryLine(scale: 0.6)
+                primaryLine(scale: 0.55)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             if isBirthYear || !(memo?.isEmpty ?? true) {
                 HStack(spacing: 6) {
@@ -54,11 +44,58 @@ struct YearRowView: View {
                 .padding(.leading, 60)
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 6)
         .padding(.vertical, compact ? 6 : 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(isCurrentYear ? Color.accentColor.opacity(0.14) : Color.clear)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
+    }
+
+    private func primaryLine(scale: CGFloat) -> some View {
+        let fontSize = preferredFontSize * scale
+        return HStack(spacing: 2) {
+            Text(String(row.gregorian))
+                .font(.system(size: fontSize, weight: .semibold, design: .monospaced))
+                .lineLimit(1)
+                .frame(width: fontSize * 2.55, alignment: .trailing)
+
+            Spacer(minLength: 0)
+
+            eraColumn(fontSize: fontSize)
+                .frame(width: fontSize * 4.7, alignment: .leading)
+
+            Spacer(minLength: 0)
+
+            Text("\(row.stemBranch.branch.emoji) \(row.stemBranch.branch.kanji)")
+                .font(.system(size: fontSize))
+                .lineLimit(1)
+                .frame(width: fontSize * 2.55, alignment: .leading)
+
+            Spacer(minLength: 0)
+
+            if let age {
+                Text("\(age)歳")
+                    .font(.system(size: fontSize, design: .monospaced))
+                    .foregroundStyle(age < 0 ? .secondary : .primary)
+                    .lineLimit(1)
+                    .frame(width: fontSize * 3.1, alignment: .trailing)
+            } else {
+                // 年齢未設定時も列配置を保つ
+                Color.clear
+                    .frame(width: fontSize * 3.1)
+            }
+        }
+    }
+
+    private func eraColumn(fontSize: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(row.eraSpans.enumerated()), id: \.offset) { _, span in
+                Text(span.displayText)
+                    .font(.system(size: fontSize))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+        }
     }
 }
