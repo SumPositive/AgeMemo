@@ -48,12 +48,22 @@ struct YearRowView: View {
                 .padding(.leading, 60)
             }
         }
+        .foregroundStyle(rowTextColor)
         .padding(.horizontal, 6)
         .padding(.vertical, compact ? 6 : 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(rowBackground)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
+    }
+
+    /// ダークモードの純白は一覧が明滅して見えるため、少し落ち着かせる
+    private var rowTextColor: Color {
+        Color(uiColor: UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(white: 0.86, alpha: 1)
+                : UIColor.label
+        })
     }
 
     private var rowBackground: Color {
@@ -124,13 +134,13 @@ struct YearRowView: View {
         if let age {
             Text("\(age)歳")
                 .font(.system(size: fontSize, design: .monospaced))
-                .foregroundStyle(age < 0 ? .secondary : .primary)
+                .foregroundStyle(age < 0 ? AnyShapeStyle(.secondary) : AnyShapeStyle(rowTextColor))
                 .lineLimit(1)
-                .frame(width: fontSize * 3.1, alignment: alignment)
+                .frame(width: fontSize * 3.6, alignment: alignment)
         } else {
             // 年齢未設定時も列配置を保つ
             Color.clear
-                .frame(width: fontSize * 3.1)
+                .frame(width: fontSize * 3.6)
         }
     }
 
