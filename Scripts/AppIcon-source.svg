@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AgeMemo / 和暦年齢メモ App Icon source -->
+<!-- 小豆色の地に金の年輪。中央に金の「歳」（魏碑体）が浮き上がる -->
+<!-- 1024x1024。iOSが角丸マスクを行うため背景は正方形いっぱいに塗る -->
+<svg viewBox="0 0 1024 1024" width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 背景: 小豆色。上部を明るくして立体感を出す -->
+    <radialGradient id="bg" cx="50%" cy="32%" r="86%">
+      <stop offset="0%"   stop-color="#9c5559"/>
+      <stop offset="52%"  stop-color="#7d3a42"/>
+      <stop offset="100%" stop-color="#5e2731"/>
+    </radialGradient>
+
+    <!-- 年輪: 落ち着いた金。文字より暗くして背面に置く -->
+    <linearGradient id="ring" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#e0c58a"/>
+      <stop offset="55%"  stop-color="#cfae68"/>
+      <stop offset="100%" stop-color="#b8934c"/>
+    </linearGradient>
+
+    <!-- 文字: 年輪より明るい金。左上から光が当たった艶を出す -->
+    <linearGradient id="charGold" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%"   stop-color="#fff6d8"/>
+      <stop offset="30%"  stop-color="#f6dfa2"/>
+      <stop offset="58%"  stop-color="#e8c87e"/>
+      <stop offset="100%" stop-color="#c9a04a"/>
+    </linearGradient>
+
+    <!-- 文字の浮き上がり -->
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#3d1720" flood-opacity="0.66"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <!-- 年輪: 外周寄りに配置し中央に文字の余白を確保する -->
+  <g fill="none" stroke="url(#ring)" stroke-linecap="round">
+    <circle cx="512" cy="512" r="352" stroke-width="14" opacity="0.42"/>
+    <circle cx="512" cy="512" r="404" stroke-width="13" opacity="0.62"/>
+    <circle cx="512" cy="512" r="452" stroke-width="12" opacity="0.85"/>
+  </g>
+
+  <!-- 「歳」魏碑体。払いが細く小サイズで痩せるため、輪郭に16pxの線を足して太らせる -->
+  <text x="512" y="528" font-family="Weibei TC, Weibei SC"
+        font-size="600" font-weight="600"
+        fill="url(#charGold)" stroke="url(#charGold)" stroke-width="16"
+        stroke-linejoin="round" paint-order="stroke fill"
+        text-anchor="middle" dominant-baseline="central" filter="url(#lift)">歳</text>
+</svg>
