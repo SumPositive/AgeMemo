@@ -69,6 +69,45 @@ struct NumericKeypad: View {
                 KeypadDeleteButton(compact: compact) { onKey(.delete) }
             }
         }
+        // 囲っているScrollViewのタッチ保留を解除して反応を即時にする
+        .disablesScrollTouchDelay()
+    }
+}
+
+/// 指が僅かに動いてもキャンセルされないよう、タップダウンで即発火する。
+/// SwiftUIのButtonは押下後のわずかなドラッグで取りこぼすため、
+/// ScrollView内でも確実に反応するよう自前のジェスチャーで処理する
+private struct KeypadPressBehavior: ViewModifier {
+    let action: () -> Void
+
+    @Environment(\.isEnabled) private var isEnabled
+    @State private var isPressed = false
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(isPressed ? 0.55 : 1)
+            // 背景を含む矩形全体をタップ判定にする
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        guard isEnabled, !isPressed else { return }
+                        isPressed = true
+                        action()
+                    }
+                    .onEnded { _ in
+                        isPressed = false
+                    },
+                // ScrollViewのスクロールより先にキー入力を受け取る
+                including: .gesture
+            )
+            .animation(.easeOut(duration: 0.08), value: isPressed)
+    }
+}
+
+private extension View {
+    func keypadPress(action: @escaping () -> Void) -> some View {
+        modifier(KeypadPressBehavior(action: action))
     }
 }
 
@@ -84,15 +123,15 @@ private struct KeypadDigitButton: View {
     private var font: Font { compact ? .title2.weight(.medium) : .title.weight(.medium) }
 
     var body: some View {
-        Button(action: action) {
-            Text(label)
-                .font(font)
-                .monospacedDigit()
-                .frame(maxWidth: .infinity, minHeight: minHeight)
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        }
-        .buttonStyle(.plain)
+        Text(label)
+            .font(font)
+            .monospacedDigit()
+            .frame(maxWidth: .infinity, minHeight: minHeight)
+            .background(Color(.tertiarySystemFill))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .keypadPress(action: action)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel(label)
     }
 }
 
@@ -110,15 +149,15 @@ private struct KeypadAuxiliaryButton: View {
     private var font: Font { compact ? .title3.weight(.medium) : .title2.weight(.medium) }
 
     var body: some View {
-        Button(action: action) {
-            Text(label)
-                .font(font)
-                .foregroundStyle(isEnabled ? Color.accentColor : Color(.tertiaryLabel))
-                .frame(maxWidth: .infinity, minHeight: minHeight)
-                .background(Color(.tertiarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        }
-        .buttonStyle(.plain)
+        Text(label)
+            .font(font)
+            .foregroundStyle(isEnabled ? Color.accentColor : Color(.tertiaryLabel))
+            .frame(maxWidth: .infinity, minHeight: minHeight)
+            .background(Color(.quaternarySystemFill))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .keypadPress(action: action)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel(label)
     }
 }
 
@@ -133,14 +172,46 @@ private struct KeypadDeleteButton: View {
     private var font: Font { compact ? .title3 : .title2 }
 
     var body: some View {
-        Button(action: action) {
-            Image(systemName: "delete.left")
-                .font(font)
-                .frame(maxWidth: .infinity, minHeight: minHeight)
-                .background(Color(.tertiarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        Image(systemName: "delete.left")
+            .font(font)
+            .frame(maxWidth: .infinity, minHeight: minHeight)
+            .background(Color(.quaternarySystemFill))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .keypadPress(action: action)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel("削除")
+    }
+}
+
+// MARK: - スクロールの遅延解除
+
+/// ScrollViewは指が触れてからスクロールか判定するまでタッチを保留するため、
+/// テンキーの反応が鈍り、僅かに指が動くと取りこぼしたように感じる。
+/// この保留を無効化して押下を即座に届ける
+private struct DisableScrollTouchDelay: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView(frame: .zero)
+        view.isUserInteractionEnabled = false
+        DispatchQueue.main.async {
+            var parent = view.superview
+            while let current = parent {
+                if let scrollView = current as? UIScrollView {
+                    scrollView.delaysContentTouches = false
+                    scrollView.canCancelContentTouches = true
+                    break
+                }
+                parent = current.superview
+            }
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("削除")
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
+extension View {
+    /// テンキーなど即応性が要る操作を含むスクロール領域で、タッチの保留を解除する
+    func disablesScrollTouchDelay() -> some View {
+        background(DisableScrollTouchDelay().frame(width: 0, height: 0))
     }
 }

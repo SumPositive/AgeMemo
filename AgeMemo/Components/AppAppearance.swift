@@ -14,6 +14,9 @@ private struct AppAppearance: ViewModifier {
         content
             .preferredColorScheme(settings.appearanceMode.colorScheme)
             .dynamicTypeSize(effectiveDynamicTypeSize)
+            // 背後の一覧は数字が密なため、既定のブラーだと透けて読みにくい。
+            // .background は環境によって半透明扱いになるため不透過色を明示する
+            .presentationBackground(Color(.systemBackground))
     }
 }
 

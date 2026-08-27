@@ -49,6 +49,20 @@ final class MemoStore {
         saveIfNeeded()
     }
 
+    /// 各メモの前後の空白と改行を取り除き、空になったものは削除する
+    private func trimAll() {
+        for (year, memo) in memos {
+            let trimmed = memo.text.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard trimmed != memo.text else { continue }
+            if trimmed.isEmpty {
+                memos.removeValue(forKey: year)
+            } else {
+                memos[year] = YearMemo(text: trimmed, updatedAt: memo.updatedAt)
+            }
+            hasUnsavedChanges = true
+        }
+    }
+
     private func scheduleSave() {
         pendingSaveTask?.cancel()
         pendingSaveTask = Task { @MainActor [weak self] in
@@ -82,6 +96,8 @@ final class MemoStore {
 
     private func saveIfNeeded() {
         guard hasUnsavedChanges else { return }
+        // 入力中のtrimは打鍵の邪魔になるため、書き出す直前に整形する
+        trimAll()
         do {
             try FileManager.default.createDirectory(
                 at: fileURL.deletingLastPathComponent(),

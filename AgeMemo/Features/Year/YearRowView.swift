@@ -8,6 +8,8 @@ struct YearRowView: View {
     let memo: String?
     let isCurrentYear: Bool
     let isBirthYear: Bool
+    /// 年齢指定などで選ばれた行。当年より強い色で示す
+    var isSelected: Bool = false
     let compact: Bool
     @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
 
@@ -47,9 +49,21 @@ struct YearRowView: View {
         .padding(.horizontal, 6)
         .padding(.vertical, compact ? 6 : 10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(isCurrentYear ? Color.accentColor.opacity(0.14) : Color.clear)
+        .background(rowBackground)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
+    }
+
+    private var rowBackground: Color {
+        // 年齢指定の選択行と、自分／名簿の生年行は同じ濃さで示す
+        if isSelected || isBirthYear {
+            Color.accentColor.opacity(0.30)
+        } else if isCurrentYear {
+            // 当年は現在位置の目印として薄く残す
+            Color.accentColor.opacity(0.14)
+        } else {
+            Color.clear
+        }
     }
 
     private func primaryLine(scale: CGFloat) -> some View {

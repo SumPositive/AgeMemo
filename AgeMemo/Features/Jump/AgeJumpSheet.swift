@@ -35,10 +35,6 @@ struct AgeJumpSheet: View {
                 VStack(spacing: 16) {
                     display
 
-                    Text("生年 \(String(destinationYear))年")
-                        .font(.subheadline.monospacedDigit())
-                        .foregroundStyle(.secondary)
-
                     if destinationYear != boundedDestinationYear {
                         Text("表示範囲外のため \(String(boundedDestinationYear))年へ移動します")
                             .font(.footnote)

@@ -38,6 +38,8 @@ struct YearListView: View {
     @State private var selectedToolbarAction = MainToolbarAction.age
     @State private var ageDisplayMode = AgeDisplayMode.age
     @State private var selectedPerson: Person?
+    /// 年齢シートで指定された年齢に対応する生年。その行を選択色で示す
+    @State private var selectedAgeYear: Int?
 
     private let currentYear = Calendar.current.component(.year, from: .now)
 
@@ -81,6 +83,7 @@ struct YearListView: View {
                                     memo: showsMemo ? memoStore.text(for: row.gregorian) : nil,
                                     isCurrentYear: row.gregorian == currentYear,
                                     isBirthYear: row.gregorian == highlightedBirthYear,
+                                    isSelected: row.gregorian == selectedAgeYear,
                                     compact: settings.displayMode == .expert
                                 )
                                 .onTapGesture {
@@ -170,6 +173,7 @@ struct YearListView: View {
             AgeJumpSheet(placeholderAge: settings.lastEnteredAge, currentYear: currentYear) { enteredAge, year in
                 // 次回のシート表示で前回の年齢を初期値にする
                 settings.lastEnteredAge = enteredAge
+                selectedAgeYear = year
                 scroll(to: year)
             }
         case .person:
@@ -194,12 +198,14 @@ struct YearListView: View {
             presentedSheet = .age
         case .personal:
             ageDisplayMode = .personal
+            selectedAgeYear = nil
             if birthYear != nil {
                 scroll(to: currentYear)
             } else {
                 presentedSheet = .settings
             }
         case .person:
+            selectedAgeYear = nil
             presentedSheet = .person
         }
     }

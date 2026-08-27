@@ -21,6 +21,74 @@ enum BirthDateField: Int, CaseIterable {
         case .day: "日"
         }
     }
+
+    /// 欄に表示する単位。末尾を「日生」にして生年月日であることを示す
+    var unitText: String {
+        switch self {
+        case .year: "年"
+        case .month: "月"
+        case .day: "日生"
+        }
+    }
+}
+
+/// 年の入力に使う暦。和暦を選ぶと元号年で入力できる
+enum BirthYearCalendar: String, CaseIterable, Identifiable {
+    case gregorian
+    case showa
+    case heisei
+    case reiwa
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .gregorian: "西暦"
+        case .showa: "昭和"
+        case .heisei: "平成"
+        case .reiwa: "令和"
+        }
+    }
+
+    /// 元号元年にあたる西暦。西暦入力では使わない
+    var firstGregorianYear: Int? {
+        switch self {
+        case .gregorian: nil
+        case .showa: 1926
+        case .heisei: 1989
+        case .reiwa: 2019
+        }
+    }
+
+    /// その元号に存在する年の範囲（改元年をまたぐ分も含む）
+    var yearRange: ClosedRange<Int>? {
+        switch self {
+        case .gregorian: nil
+        case .showa: 1...64      // 昭和64年(1989)まで
+        case .heisei: 1...31     // 平成31年(2019)まで
+        case .reiwa: 1...82      // 令和82年(2100) = 表示上限
+        }
+    }
+
+    var digitCount: Int {
+        self == .gregorian ? 4 : 2
+    }
+
+    /// 入力された年をこの暦で解釈して西暦へ変換する
+    func gregorianYear(fromEntered value: Int) -> Int? {
+        guard let first = firstGregorianYear, let range = yearRange else {
+            return value    // 西暦はそのまま
+        }
+        guard range.contains(value) else { return nil }
+        return first + value - 1
+    }
+
+    /// 西暦をこの暦の年へ戻す（プレースホルダー表示用）
+    func enteredYear(fromGregorian year: Int) -> Int? {
+        guard let first = firstGregorianYear, let range = yearRange else { return year }
+        let value = year - first + 1
+        return range.contains(value) ? value : nil
+    }
 }
 
 /// 年月日を桁単位で保持し、確定した日付へ変換する
@@ -29,6 +97,14 @@ struct BirthDateEntry: Equatable {
     var month = ""
     var day = ""
     var focus = BirthDateField.year
+    /// 年の入力に使う暦。切り替えると入力済みの年はクリアする
+    var calendar = BirthYearCalendar.gregorian {
+        didSet {
+            guard calendar != oldValue else { return }
+            year = ""
+            setPlaceholderText("", for: .year)
+        }
+    }
 
     init() {}
 
@@ -42,8 +118,9 @@ struct BirthDateEntry: Equatable {
 
     private(set) var placeholder: Placeholder?
 
-    init(placeholderDate: Date, calendar: Calendar = Calendar(identifier: .gregorian)) {
-        let components = calendar.dateComponents([.year, .month, .day], from: placeholderDate)
+    init(placeholderDate: Date, gregorianCalendar: Calendar = Calendar(identifier: .gregorian)) {
+        let components = gregorianCalendar.dateComponents([.year, .month, .day], from: placeholderDate)
+        // 既存の日付は西暦で示す。元号を選ぶと年欄はクリアされる
         placeholder = Placeholder(
             year: String(format: "%04d", components.year ?? 0),
             month: String(format: "%02d", components.month ?? 0),
@@ -74,7 +151,8 @@ struct BirthDateEntry: Equatable {
     func displayText(for field: BirthDateField) -> String {
         let typed = text(for: field)
         guard typed.isEmpty else { return typed }
-        return placeholderText(for: field) ?? String(repeating: "–", count: field.digitCount)
+        let width = field == .year ? calendar.digitCount : field.digitCount
+        return placeholderText(for: field) ?? String(repeating: "–", count: width)
     }
 
     func placeholderText(for field: BirthDateField) -> String? {
@@ -115,14 +193,15 @@ struct BirthDateEntry: Equatable {
     }
 
     var isComplete: Bool {
-        effectiveText(for: .year).count == 4
+        !effectiveText(for: .year).isEmpty
             && !effectiveText(for: .month).isEmpty
             && !effectiveText(for: .day).isEmpty
     }
 
     /// 実在する日付のときだけ値を返す（2月30日などは弾く）
     func resolvedDate(calendar: Calendar = Calendar(identifier: .gregorian)) -> Date? {
-        guard let y = Int(effectiveText(for: .year)),
+        guard let enteredYear = Int(effectiveText(for: .year)),
+              let y = self.calendar.gregorianYear(fromEntered: enteredYear),
               let m = Int(effectiveText(for: .month)),
               let d = Int(effectiveText(for: .day)) else { return nil }
         guard AppConfig.yearRange.contains(y), (1...12).contains(m), d >= 1 else { return nil }
@@ -138,12 +217,13 @@ struct BirthDateEntry: Equatable {
     }
 
     mutating func append(_ digit: Int) {
-        // 年は素直に4桁を埋める
+        // 年は素直に桁を埋める。和暦は2桁、西暦は4桁
         guard focus != .year else {
+            let limit = calendar.digitCount
             let updated = year + String(digit)
-            guard updated.count <= BirthDateField.year.digitCount else { return }
+            guard updated.count <= limit else { return }
             year = updated
-            if updated.count == BirthDateField.year.digitCount { advance() }
+            if updated.count == limit { advance() }
             return
         }
 
@@ -228,9 +308,10 @@ struct BirthDatePad: View {
     @Binding var entry: BirthDateEntry
 
     @ScaledMetric(relativeTo: .title2) private var scaledFieldHeight: CGFloat = 44
+    @ScaledMetric(relativeTo: .caption) private var scaledCalendarWidth: CGFloat = 38
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 6) {
             fields
 
             NumericKeypad(
@@ -239,11 +320,14 @@ struct BirthDatePad: View {
             ) { key in
                 handle(key)
             }
+            .padding(.top, 6)
         }
     }
 
     private var fields: some View {
         HStack(spacing: 8) {
+            calendarMenu
+
             ForEach(BirthDateField.allCases, id: \.rawValue) { field in
                 Button {
                     entry.moveFocus(to: field)
@@ -254,6 +338,34 @@ struct BirthDatePad: View {
                 .accessibilityLabel("\(field.title) \(entry.displayText(for: field))")
             }
         }
+    }
+
+    private var calendarMenu: some View {
+        Menu {
+            Picker("暦", selection: $entry.calendar) {
+                ForEach(BirthYearCalendar.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+        } label: {
+            // 漢字2文字を縦に積んで幅を詰める
+            VStack(spacing: -2) {
+                ForEach(Array(entry.calendar.title), id: \.self) { character in
+                    Text(String(character))
+                        .font(.caption.weight(.semibold))
+                }
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .foregroundStyle(Color.accentColor)
+            .padding(.horizontal, 6)
+            // 2文字が窮屈にならない最小幅を確保しつつ、日付欄より狭く保つ
+            .frame(minWidth: scaledCalendarWidth, minHeight: scaledFieldHeight)
+            .background(Color(.tertiarySystemFill))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .fixedSize(horizontal: true, vertical: false)
+        }
+        .accessibilityLabel("暦 \(entry.calendar.title)")
     }
 
     private func fieldLabel(_ field: BirthDateField) -> some View {
@@ -269,12 +381,16 @@ struct BirthDatePad: View {
                 .contentTransition(.numericText())
                 .animation(.snappy, value: entry.text(for: field))
 
-            Text(field.title)
+            Text(field.unitText)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
+        // 特大でも折り返さず1行に収める
+        .lineLimit(1)
+        .minimumScaleFactor(0.5)
+        .padding(.horizontal, 4)
         .frame(maxWidth: .infinity, minHeight: scaledFieldHeight)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(.tertiarySystemFill))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
