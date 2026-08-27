@@ -81,18 +81,12 @@ struct YearListView: View {
                 .task {
                     guard !didSetInitialPosition else { return }
                     didSetInitialPosition = true
-                    // LazyVStackが行を実体化する前にscrollToしても目的の年へ届かないため、
-                    // レイアウト確定を待ってから移動し、念のため次のフレームでも位置を合わせ直す
-                    for _ in 0..<2 {
-                        try? await Task.sleep(nanoseconds: 50_000_000)
-                        proxy.scrollTo(currentYear, anchor: .center)
-                    }
+                    // 初回レイアウト後に当年へ移動する
+                    await Task.yield()
+                    proxy.scrollTo(currentYear, anchor: .center)
                 }
                 .onChange(of: scrollRequest) { _, request in
                     guard let request else { return }
-                    // 遠い年へ跳ぶ場合、LazyVStack未実体化のままではアニメーション中に
-                    // 目的行が確定しないため、一度即座に寄せてから位置を整える
-                    proxy.scrollTo(request.year, anchor: .center)
                     withAnimation(.easeInOut) {
                         proxy.scrollTo(request.year, anchor: .center)
                     }

@@ -29,6 +29,9 @@ struct HeaderBannerView: View {
                 .frame(width: 320, height: 50)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
+        } else {
+            // ユニットID未設定時にEmptyViewを返すとsafeAreaInsetが破綻するため高さ0の実体を返す
+            Color.clear.frame(height: 0)
         }
     }
 }
@@ -58,6 +61,8 @@ private struct AdMobBannerRepresentable: UIViewControllerRepresentable {
 }
 #else
 struct HeaderBannerView: View {
-    var body: some View { EmptyView() }
+    // safeAreaInset に EmptyView を渡すとレイアウトが確定できず
+    // インセットが画面全体に膨張して一覧が隠れるため、高さ0の実体を返す
+    var body: some View { Color.clear.frame(height: 0) }
 }
 #endif
