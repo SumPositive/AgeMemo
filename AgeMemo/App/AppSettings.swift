@@ -86,6 +86,15 @@ final class AppSettings {
         didSet { defaults.set(appearanceMode.rawValue, forKey: Key.appearanceMode) }
     }
 
+    var lastEnteredAge: Int {
+        didSet { defaults.set(lastEnteredAge, forKey: Key.lastEnteredAge) }
+    }
+
+    /// メモを「自分」モードのときだけ一覧と詳細に表示する
+    var showsMemoOnlyForSelf: Bool {
+        didSet { defaults.set(showsMemoOnlyForSelf, forKey: Key.showsMemoOnlyForSelf) }
+    }
+
     var birthDate: Date? {
         didSet {
             if let birthDate {
@@ -103,6 +112,8 @@ final class AppSettings {
         static let fontScale = "fontScale"
         static let appearanceMode = "appearanceMode"
         static let birthDate = "birthDate"
+        static let lastEnteredAge = "lastEnteredAge"
+        static let showsMemoOnlyForSelf = "showsMemoOnlyForSelf"
     }
 
     private init(defaults: UserDefaults = .standard) {
@@ -111,5 +122,8 @@ final class AppSettings {
         fontScale = AppFontScale(rawValue: defaults.integer(forKey: Key.fontScale)) ?? .system
         appearanceMode = AppearanceMode(rawValue: defaults.integer(forKey: Key.appearanceMode)) ?? .system
         birthDate = defaults.object(forKey: Key.birthDate) as? Date
+        lastEnteredAge = defaults.object(forKey: Key.lastEnteredAge) as? Int ?? 0
+        // 未設定時はONを既定とするため、値の有無を見てから読み出す
+        showsMemoOnlyForSelf = defaults.object(forKey: Key.showsMemoOnlyForSelf) as? Bool ?? true
     }
 }

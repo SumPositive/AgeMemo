@@ -43,7 +43,7 @@ private struct MonthCalendarView: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            Text("\(month)月")
+            Text("\(String(month))月")
                 .font(.headline.monospacedDigit())
 
             LazyVGrid(columns: dayColumns, spacing: 4) {

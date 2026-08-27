@@ -1,44 +1,59 @@
-// 指定した年齢に該当する西暦年へ移動する
+// 指定した年齢の人の生年へ移動する
 
 import SwiftUI
 
 struct AgeJumpSheet: View {
-    @Environment(AppSettings.self) private var settings
     @Environment(\.dismiss) private var dismiss
-    @State private var age = 0
+    @State private var digits = ""
 
-    let jump: (Int) -> Void
+    /// 前回入力した年齢。未入力ならこの値がそのまま使われる
+    let placeholderAge: Int
+    let currentYear: Int
+    /// 入力した年齢と移動先の年を返す
+    let jump: (Int, Int) -> Void
 
-    private var destinationYear: Int? {
-        AgeCalculator.birthYear(from: settings.birthDate).map { $0 + age }
+    private var isEmpty: Bool { digits.isEmpty }
+
+    private var age: Int {
+        guard let value = Int(digits) else { return placeholderAge }
+        return min(value, AppConfig.maximumAgeInput)
     }
 
-    private var boundedDestinationYear: Int? {
-        destinationYear.map { min(max($0, AppConfig.yearRange.lowerBound), AppConfig.yearRange.upperBound) }
+    private var destinationYear: Int {
+        AgeCalculator.birthYear(forAge: age, currentYear: currentYear)
+    }
+
+    private var boundedDestinationYear: Int {
+        min(max(destinationYear, AppConfig.yearRange.lowerBound), AppConfig.yearRange.upperBound)
     }
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 18) {
-                if let destinationYear, let boundedDestinationYear {
-                    Text("該当年 \(destinationYear)年")
-                        .font(.headline)
-                    if destinationYear != boundedDestinationYear {
-                        Text("表示範囲外のため \(boundedDestinationYear)年へ移動します")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
+            VStack(spacing: 16) {
+                display
+
+                Text("生年 \(String(destinationYear))年")
+                    .font(.subheadline.monospacedDigit())
+                    .foregroundStyle(.secondary)
+
+                if destinationYear != boundedDestinationYear {
+                    Text("表示範囲外のため \(String(boundedDestinationYear))年へ移動します")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
 
-                SignedNumberPad(
-                    value: $age,
-                    maximumAbsoluteValue: AppConfig.maximumAgeInput,
-                    confirmTitle: "移動"
-                ) {
-                    guard let boundedDestinationYear else { return }
-                    jump(boundedDestinationYear)
+                NumericKeypad { key in handle(key) }
+
+                Button {
+                    jump(age, boundedDestinationYear)
                     dismiss()
+                } label: {
+                    Text("移動")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
                 }
+                .buttonStyle(.borderedProminent)
             }
             .padding()
             .navigationTitle("年齢から移動")
@@ -49,6 +64,41 @@ struct AgeJumpSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .fittedSheetHeight()
+        .presentationDragIndicator(.visible)
+    }
+
+    private var display: some View {
+        HStack(alignment: .lastTextBaseline, spacing: 6) {
+            // 未入力のあいだは前回値をグレーで示し、数字を押すと上書きする
+            Text(isEmpty ? "\(placeholderAge)" : digits)
+                .font(.system(size: 52, weight: .bold, design: .rounded).monospacedDigit())
+                .foregroundStyle(isEmpty ? Color(.tertiaryLabel) : Color(.label))
+                .contentTransition(.numericText())
+                .animation(.snappy, value: digits)
+
+            Text("歳")
+                .font(.title2.weight(.medium))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func handle(_ key: NumericKeypadKey) {
+        switch key {
+        case .digit(let digit):
+            append(digit)
+        case .delete:
+            if !digits.isEmpty { digits.removeLast() }
+        case .auxiliary:
+            break
+        }
+    }
+
+    private func append(_ digit: Int) {
+        // 空または "0" のときは置き換えて先頭ゼロを防ぐ
+        let next = (digits.isEmpty || digits == "0") ? String(digit) : digits + String(digit)
+        guard let value = Int(next), value <= AppConfig.maximumAgeInput else { return }
+        digits = String(value)
     }
 }

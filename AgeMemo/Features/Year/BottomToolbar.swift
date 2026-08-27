@@ -1,36 +1,27 @@
-// 主画面の6種類の操作を等幅で配置する
+// 一覧の年齢表示状態を選ぶ3種類のタブを等幅で配置する
 
 import SwiftUI
 
 enum MainToolbarAction: CaseIterable, Identifiable {
-    case current
-    case personal
     case age
-    case zodiac
-    case era
-    case settings
+    case personal
+    case person
 
     var id: Self { self }
 
     var title: String {
         switch self {
-        case .current: "現在"
-        case .personal: "自分"
         case .age: "年齢"
-        case .zodiac: "干支"
-        case .era: "飛躍"
-        case .settings: "設定"
+        case .personal: "自分"
+        case .person: "名簿"
         }
     }
 
     var symbol: String {
         switch self {
-        case .current: "calendar.badge.clock"
-        case .personal: "person"
         case .age: "number"
-        case .zodiac: "square.grid.3x3"
-        case .era: "arrow.up.forward"
-        case .settings: "gearshape"
+        case .personal: "person"
+        case .person: "person.2"
         }
     }
 }
@@ -60,6 +51,7 @@ struct BottomToolbar: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(item.title)
+                .accessibilityAddTraits(selection == item ? [.isSelected] : [])
             }
         }
         .padding(.horizontal, 4)

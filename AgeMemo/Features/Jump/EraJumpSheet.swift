@@ -35,9 +35,9 @@ struct EraJumpSheet: View {
     private var previewText: String {
         switch selection {
         case .gregorian:
-            "西暦\(inputYear)年 → \(convertedYear)年"
+            "西暦\(String(inputYear))年 → \(String(convertedYear))年"
         case .era(let choice):
-            "\(choice.name)\(inputYear)年 → \(convertedYear)年"
+            "\(choice.name)\(String(inputYear))年 → \(String(convertedYear))年"
         }
     }
 
@@ -57,7 +57,7 @@ struct EraJumpSheet: View {
                         .font(.headline.monospacedDigit())
 
                     if convertedYear != boundedYear {
-                        Text("表示範囲外のため \(boundedYear)年へ移動します")
+                        Text("表示範囲外のため \(String(boundedYear))年へ移動します")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }

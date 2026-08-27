@@ -43,11 +43,11 @@ final class CoreLogicTests: XCTestCase {
         XCTAssertNil(AgeCalculator.age(in: 2026, birthDate: nil))
     }
 
-    func testCurrentModeUsesRowYearAsBirthYear() {
+    func testAgeModeUsesRowYearAsBirthYear() {
         XCTAssertEqual(
             AgeCalculator.displayedAge(
                 for: 2026,
-                mode: .current,
+                mode: .age,
                 birthDate: nil,
                 currentYear: 2026
             ),
@@ -56,12 +56,31 @@ final class CoreLogicTests: XCTestCase {
         XCTAssertEqual(
             AgeCalculator.displayedAge(
                 for: 2027,
-                mode: .current,
+                mode: .age,
                 birthDate: nil,
                 currentYear: 2026
             ),
             -1
         )
+    }
+
+    func testPersonModeUsesPersonBirthDate() {
+        let birthDate = Calendar(identifier: .gregorian)
+            .date(from: DateComponents(year: 1950, month: 5, day: 3))!
+        XCTAssertEqual(
+            AgeCalculator.displayedAge(
+                for: 2026,
+                mode: .person(birthDate),
+                birthDate: nil,
+                currentYear: 2026
+            ),
+            76
+        )
+    }
+
+    func testBirthYearForAge() {
+        XCTAssertEqual(AgeCalculator.birthYear(forAge: 38, currentYear: 2026), 1988)
+        XCTAssertEqual(AgeCalculator.birthYear(forAge: 0, currentYear: 2026), 2026)
     }
 
     func testEraChoiceUsesActualFirstYear() throws {

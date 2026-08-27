@@ -6,6 +6,7 @@ import SwiftUI
 struct AgeMemoApp: App {
     @State private var settings = AppSettings.shared
     @State private var memoStore = MemoStore()
+    @State private var personStore = PersonStore()
     @Environment(\.dynamicTypeSize) private var systemDynamicTypeSize
 
     private var effectiveDynamicTypeSize: DynamicTypeSize {
@@ -17,6 +18,7 @@ struct AgeMemoApp: App {
             YearListView()
                 .environment(settings)
                 .environment(memoStore)
+                .environment(personStore)
                 .preferredColorScheme(settings.appearanceMode.colorScheme)
                 .dynamicTypeSize(effectiveDynamicTypeSize)
         }

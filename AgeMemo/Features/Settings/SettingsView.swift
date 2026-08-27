@@ -43,6 +43,8 @@ struct SettingsView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+
+                    Toggle("メモは自分だけに表示する", isOn: $settings.showsMemoOnlyForSelf)
                 }
 
                 Section("生年月日") {

@@ -1,11 +1,11 @@
-// 年一覧と下部ツールバーから各操作を提供する主画面
+// 年一覧と各操作を提供する主画面
 
 import SwiftUI
 
 private enum PresentedSheet: Identifiable {
     case detail(Int)
     case age
-    case zodiac
+    case person
     case era
     case settings
 
@@ -13,7 +13,7 @@ private enum PresentedSheet: Identifiable {
         switch self {
         case .detail(let year): "detail-\(year)"
         case .age: "age"
-        case .zodiac: "zodiac"
+        case .person: "person"
         case .era: "era"
         case .settings: "settings"
         }
@@ -28,19 +28,35 @@ private struct YearScrollRequest: Equatable {
 struct YearListView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(MemoStore.self) private var memoStore
+    @Environment(PersonStore.self) private var personStore
     @Environment(\.scenePhase) private var scenePhase
 
     @State private var rows = JapaneseEra.makeRows()
     @State private var scrollRequest: YearScrollRequest?
     @State private var presentedSheet: PresentedSheet?
     @State private var didSetInitialPosition = false
-    @State private var selectedToolbarAction = MainToolbarAction.current
-    @State private var ageDisplayMode = AgeDisplayMode.current
+    @State private var selectedToolbarAction = MainToolbarAction.age
+    @State private var ageDisplayMode = AgeDisplayMode.age
+    @State private var selectedPerson: Person?
 
     private let currentYear = Calendar.current.component(.year, from: .now)
 
     private var birthYear: Int? {
         AgeCalculator.birthYear(from: settings.birthDate)
+    }
+
+    /// 設定がONのあいだは「自分」のときだけメモを表示する
+    private var showsMemo: Bool {
+        settings.showsMemoOnlyForSelf ? ageDisplayMode == .personal : true
+    }
+
+    /// 一覧で強調する生年。自分／名簿の各モードで基準となる年を示す
+    private var highlightedBirthYear: Int? {
+        switch ageDisplayMode {
+        case .age: nil
+        case .personal: birthYear
+        case .person: selectedPerson?.birthYear
+        }
     }
 
     var body: some View {
@@ -62,9 +78,9 @@ struct YearListView: View {
                                 YearRowView(
                                     row: row,
                                     age: displayedAge(for: row.gregorian),
-                                    memo: memoStore.text(for: row.gregorian),
+                                    memo: showsMemo ? memoStore.text(for: row.gregorian) : nil,
                                     isCurrentYear: row.gregorian == currentYear,
-                                    isBirthYear: row.gregorian == birthYear,
+                                    isBirthYear: row.gregorian == highlightedBirthYear,
                                     compact: settings.displayMode == .expert
                                 )
                                 .onTapGesture {
@@ -93,8 +109,24 @@ struct YearListView: View {
                     }
                 }
             }
-            .navigationTitle("和暦年齢メモ")
+            .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        presentedSheet = .settings
+                    } label: {
+                        Label("設定", systemImage: "gearshape")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        presentedSheet = .era
+                    } label: {
+                        Label("飛躍", systemImage: "arrow.up.forward")
+                    }
+                }
+            }
             .safeAreaInset(edge: .top, spacing: 0) {
                 HeaderBannerView()
                     .background(.bar)
@@ -117,6 +149,15 @@ struct YearListView: View {
         }
     }
 
+    private var navigationTitle: String {
+        switch ageDisplayMode {
+        case .age, .personal:
+            "和暦年齢メモ"
+        case .person:
+            selectedPerson?.name ?? "和暦年齢メモ"
+        }
+    }
+
     @ViewBuilder
     private func sheetContent(_ sheet: PresentedSheet) -> some View {
         switch sheet {
@@ -125,9 +166,17 @@ struct YearListView: View {
                 YearDetailView(row: row, ageDisplayMode: ageDisplayMode)
             }
         case .age:
-            AgeJumpSheet { scroll(to: $0) }
-        case .zodiac:
-            ZodiacSheet(rows: rows, ageDisplayMode: ageDisplayMode) { scroll(to: $0) }
+            AgeJumpSheet(placeholderAge: settings.lastEnteredAge, currentYear: currentYear) { enteredAge, year in
+                // 次回のシート表示で前回の年齢を初期値にする
+                settings.lastEnteredAge = enteredAge
+                scroll(to: year)
+            }
+        case .person:
+            PersonSheet(currentYear: currentYear) { person in
+                selectedPerson = person
+                ageDisplayMode = .person(person.birthDate)
+                scroll(to: currentYear)
+            }
         case .era:
             EraJumpSheet(rows: rows) { scroll(to: $0) }
         case .settings:
@@ -136,12 +185,12 @@ struct YearListView: View {
     }
 
     private func handleToolbarAction(_ action: MainToolbarAction) {
-        // 最後に選択した操作を下部ツールバーへ反映する
+        // 最後に選択した操作を下部タブへ反映する
         selectedToolbarAction = action
         switch action {
-        case .current:
-            ageDisplayMode = .current
-            scroll(to: currentYear)
+        case .age:
+            ageDisplayMode = .age
+            presentedSheet = .age
         case .personal:
             ageDisplayMode = .personal
             if birthYear != nil {
@@ -149,14 +198,8 @@ struct YearListView: View {
             } else {
                 presentedSheet = .settings
             }
-        case .age:
-            presentedSheet = settings.birthDate == nil ? .settings : .age
-        case .zodiac:
-            presentedSheet = .zodiac
-        case .era:
-            presentedSheet = .era
-        case .settings:
-            presentedSheet = .settings
+        case .person:
+            presentedSheet = .person
         }
     }
 

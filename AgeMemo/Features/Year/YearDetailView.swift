@@ -24,12 +24,14 @@ struct YearDetailView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     summary
                     YearCalendarView(row: row)
-                    memoEditor
+                    if showsMemo {
+                        memoEditor
+                    }
                 }
                 .padding()
             }
             .scrollIndicators(.hidden)
-            .navigationTitle("\(row.gregorian)年")
+            .navigationTitle("\(String(row.gregorian))年")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -41,6 +43,8 @@ struct YearDetailView: View {
             memoText = memoStore.text(for: row.gregorian) ?? ""
         }
         .onChange(of: memoText) { _, newValue in
+            // メモ欄を出していないときは空文字で既存メモを消さないようにする
+            guard showsMemo else { return }
             let limitedText = String(newValue.prefix(AppConfig.maximumMemoLength))
             if limitedText != newValue {
                 memoText = limitedText
@@ -60,7 +64,7 @@ struct YearDetailView: View {
 
     private var summary: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("\(row.gregorian)年  \(row.eraDisplayText)")
+            Text("\(String(row.gregorian))年  \(row.eraDisplayText)")
                 .font(.title2.bold())
 
             if let age = displayedAge {
@@ -86,11 +90,16 @@ struct YearDetailView: View {
 
     private func ageDescription(_ age: Int) -> String {
         switch ageDisplayMode {
-        case .current:
-            "\(row.gregorian)年生まれの当年時点 \(age)歳"
-        case .personal:
+        case .age:
+            "\(String(row.gregorian))年生まれの当年時点 \(age)歳"
+        case .personal, .person:
             "誕生日以降の満年齢 \(age)歳"
         }
+    }
+
+    /// 設定がONのあいだは「自分」のときだけメモを表示する
+    private var showsMemo: Bool {
+        settings.showsMemoOnlyForSelf ? ageDisplayMode == .personal : true
     }
 
     private var memoEditor: some View {
