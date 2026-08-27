@@ -4,6 +4,7 @@ import SwiftUI
 
 struct PersonSheet: View {
     @Environment(PersonStore.self) private var personStore
+    @Environment(AppSettings.self) private var settings
     @Environment(\.dismiss) private var dismiss
 
     @State private var editorTarget: PersonEditorTarget?
@@ -81,7 +82,9 @@ struct PersonSheet: View {
                 }
             }
             .sheet(item: $editorTarget) { target in
+                // シートは別ウインドウ層に出るため外観設定を明示的に引き継ぐ
                 PersonEditorSheet(target: target)
+                    .preferredColorScheme(settings.appearanceMode.colorScheme)
             }
             .alert("削除しますか？", isPresented: deletionBinding, presenting: pendingDeletion) { person in
                 Button("削除", role: .destructive) {
@@ -138,10 +141,8 @@ enum PersonEditorTarget: Identifiable {
 
 private struct PersonEditorSheet: View {
     @Environment(PersonStore.self) private var personStore
-    @Environment(\.dismiss) private var dismiss
 
     @State private var name: String
-    @State private var entry: BirthDateEntry
 
     let target: PersonEditorTarget
 
@@ -150,20 +151,9 @@ private struct PersonEditorSheet: View {
         switch target {
         case .add:
             _name = State(initialValue: "")
-            _entry = State(initialValue: BirthDateEntry())
         case .edit(let person):
             _name = State(initialValue: person.name)
-            _entry = State(initialValue: BirthDateEntry(placeholderDate: person.birthDate))
         }
-    }
-
-    private var resolvedBirthDate: Date? {
-        entry.resolvedDate()
-    }
-
-    /// 入力途中は警告を出さず、8桁揃ってから不正な日付だけを知らせる
-    private var showsInvalidDateWarning: Bool {
-        entry.isComplete && resolvedBirthDate == nil
     }
 
     private var trimmedName: String {
@@ -177,48 +167,33 @@ private struct PersonEditorSheet: View {
         }
     }
 
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 14) {
-                TextField("名前", text: $name)
-                    .textFieldStyle(.roundedBorder)
-                    .onChange(of: name) { _, newValue in
-                        if newValue.count > AppConfig.maximumPersonNameLength {
-                            name = String(newValue.prefix(AppConfig.maximumPersonNameLength))
-                        }
-                    }
-
-                BirthDatePad(entry: $entry)
-
-                if showsInvalidDateWarning {
-                    Text("存在しない日付です")
-                        .font(.footnote)
-                        .foregroundStyle(.red)
-                }
-            }
-            .padding()
-            .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("キャンセル") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
-                        guard let resolvedBirthDate else { return }
-                        switch target {
-                        case .add:
-                            personStore.add(name: trimmedName, birthDate: resolvedBirthDate)
-                        case .edit(let person):
-                            personStore.update(id: person.id, name: trimmedName, birthDate: resolvedBirthDate)
-                        }
-                        dismiss()
-                    }
-                    .disabled(trimmedName.isEmpty || resolvedBirthDate == nil)
-                }
-            }
+    private var existingBirthDate: Date? {
+        switch target {
+        case .add: nil
+        case .edit(let person): person.birthDate
         }
-        .fittedSheetHeight()
-        .presentationDragIndicator(.visible)
+    }
+
+    var body: some View {
+        BirthDateInputSheet(
+            title: title,
+            birthDate: existingBirthDate,
+            canSave: !trimmedName.isEmpty
+        ) { birthDate in
+            switch target {
+            case .add:
+                personStore.add(name: trimmedName, birthDate: birthDate)
+            case .edit(let person):
+                personStore.update(id: person.id, name: trimmedName, birthDate: birthDate)
+            }
+        } header: {
+            TextField("名前", text: $name)
+                .textFieldStyle(.roundedBorder)
+                .onChange(of: name) { _, newValue in
+                    if newValue.count > AppConfig.maximumPersonNameLength {
+                        name = String(newValue.prefix(AppConfig.maximumPersonNameLength))
+                    }
+                }
+        }
     }
 }

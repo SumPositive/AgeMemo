@@ -9,14 +9,18 @@ struct SettingsView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.requestReview) private var requestReview
 
+    @State private var isEditingBirthDate = false
+
     private var versionText: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"
         return "\(version) (\(build))"
     }
 
-    private var minimumBirthDate: Date {
-        Calendar(identifier: .gregorian).date(from: DateComponents(year: AppConfig.yearRange.lowerBound, month: 1, day: 1)) ?? .distantPast
+    private var birthDateText: String {
+        guard let birthDate = settings.birthDate else { return "未設定" }
+        let components = Calendar(identifier: .gregorian).dateComponents([.year, .month, .day], from: birthDate)
+        return String(format: "%04d/%02d/%02d", components.year ?? 0, components.month ?? 0, components.day ?? 0)
     }
 
     var body: some View {
@@ -48,23 +52,16 @@ struct SettingsView: View {
                 }
 
                 Section("生年月日") {
-                    if settings.birthDate == nil {
-                        Button("生年月日を設定") {
-                            settings.birthDate = .now
-                        }
-                    } else {
-                        DatePicker(
-                            "生年月日",
-                            selection: Binding(
-                                get: { settings.birthDate ?? .now },
-                                set: { settings.birthDate = $0 }
-                            ),
-                            in: minimumBirthDate...Date.now,
-                            displayedComponents: .date
-                        )
-
-                        Button("生年月日をクリア", role: .destructive) {
-                            settings.birthDate = nil
+                    Button {
+                        isEditingBirthDate = true
+                    } label: {
+                        HStack {
+                            Text("生年月日")
+                                .foregroundStyle(Color(.label))
+                            Spacer()
+                            Text(birthDateText)
+                                .font(.body.monospacedDigit())
+                                .foregroundStyle(settings.birthDate == nil ? Color(.tertiaryLabel) : .secondary)
                         }
                     }
                 }
@@ -97,6 +94,13 @@ struct SettingsView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("完了") { dismiss() }
                 }
+            }
+            .sheet(isPresented: $isEditingBirthDate) {
+                // シートは別ウインドウ層に出るため外観設定を明示的に引き継ぐ
+                BirthDateInputSheet(title: "生年月日", birthDate: settings.birthDate) { newValue in
+                    settings.birthDate = newValue
+                }
+                .preferredColorScheme(settings.appearanceMode.colorScheme)
             }
         }
     }

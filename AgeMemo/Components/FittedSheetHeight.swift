@@ -11,6 +11,8 @@ private struct SheetContentHeightKey: PreferenceKey {
 }
 
 private struct FittedSheetHeight: ViewModifier {
+    /// 実測した高さ。detentを与えると測定値がそれに追従してしまうため、
+    /// 一度確定したら更新せず、測定→detent変更→再測定のループを断ち切る
     @State private var contentHeight: CGFloat?
 
     func body(content: Content) -> some View {
@@ -22,7 +24,7 @@ private struct FittedSheetHeight: ViewModifier {
                 }
             }
             .onPreferenceChange(SheetContentHeightKey.self) { height in
-                guard height > 0 else { return }
+                guard height > 0, contentHeight == nil else { return }
                 contentHeight = height
             }
             // 実測前は .medium で表示し、確定後に中身ぴったりの高さへ切り替える。

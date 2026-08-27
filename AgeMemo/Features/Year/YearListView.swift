@@ -145,7 +145,9 @@ struct YearListView: View {
             }
         }
         .sheet(item: $presentedSheet) { sheet in
+            // シートは別ウインドウ層に出るため外観設定を明示的に引き継ぐ
             sheetContent(sheet)
+                .preferredColorScheme(settings.appearanceMode.colorScheme)
         }
     }
 
