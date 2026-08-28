@@ -315,8 +315,7 @@ struct BirthDatePad: View {
             fields
 
             NumericKeypad(
-                auxiliaryTitle: "次",
-                auxiliaryDisabled: entry.focus == .day
+                trailingKey: .auxiliary(title: "次", disabled: entry.focus == .day)
             ) { key in
                 handle(key)
             }
@@ -406,6 +405,9 @@ struct BirthDatePad: View {
             entry.deleteLast()
         case .auxiliary:
             entry.advance()
+        case .toggleSign:
+            // 生年月日に符号はないため、このキーは置いていない
+            break
         }
     }
 }

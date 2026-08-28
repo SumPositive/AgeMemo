@@ -74,7 +74,7 @@ struct EraJumpSheet: View {
                 .padding()
             }
             .scrollIndicators(.hidden)
-            .navigationTitle("飛躍")
+            .navigationTitle("移動")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

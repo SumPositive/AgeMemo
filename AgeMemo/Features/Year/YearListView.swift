@@ -137,7 +137,7 @@ struct YearListView: View {
                     Button {
                         presentedSheet = .era
                     } label: {
-                        Label("飛躍", systemImage: "arrow.up.forward")
+                        Label("移動", systemImage: "arrow.up.forward")
                     }
                 }
             }
@@ -217,7 +217,7 @@ struct YearListView: View {
                 .minimumScaleFactor(0.4)
                 .frame(width: sideCaptionWidth)
             Spacer(minLength: 0)
-            Text("飛躍")
+            Text("移動")
                 .minimumScaleFactor(0.4)
                 .frame(width: sideCaptionWidth)
         }

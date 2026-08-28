@@ -24,6 +24,9 @@ extension View {
 }
 
 private struct FittedSheetHeight: ViewModifier {
+    /// ナビゲーションバーとドラッグハンドルのぶん
+    private static let chromeHeight: CGFloat = 64
+
     /// 中身の自然な高さ。ScrollView内側で測るためシート高に引きずられず、
     /// 測定→detent変更→再測定のループも起きない
     @State private var contentHeight: CGFloat?
@@ -35,8 +38,11 @@ private struct FittedSheetHeight: ViewModifier {
                 contentHeight = height
             }
             // 実測前は .medium で表示し、確定後に中身ぴったりの高さへ切り替える。
-            // .large も併せて許可し、ハンドルで引き上げられるようにする
-            .presentationDetents(contentHeight.map { [.height($0), .large] } ?? [.medium, .large])
+            // 測るのは ScrollView の中身だけなので、ナビゲーションバーとハンドルの
+            // 分を足さないと最後の要素が下端で切れる
+            .presentationDetents(
+                contentHeight.map { [.height($0 + Self.chromeHeight), .large] } ?? [.medium, .large]
+            )
     }
 }
 

@@ -7,6 +7,16 @@ enum NumericKeypadKey: Hashable {
     case delete
     /// 桁移動などの補助キー
     case auxiliary(String)
+    /// 符号の反転
+    case toggleSign
+}
+
+/// 最終行の右端に置くキー
+enum NumericKeypadTrailingKey {
+    /// 桁移動などの補助キー
+    case auxiliary(title: String, disabled: Bool)
+    /// 符号の反転
+    case sign
 }
 
 /// 3×3 + 最終行のテンキー。最終行の中央キーは用途に応じて差し替える
@@ -14,20 +24,17 @@ struct NumericKeypad: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private let explicitCompact: Bool?
-    /// 最終行の中央に置くキー（nilなら0の隣を空ける）
-    let auxiliaryTitle: String?
-    let auxiliaryDisabled: Bool
+    /// 最終行の右端に置くキー（nilなら空ける）
+    let trailingKey: NumericKeypadTrailingKey?
     let onKey: (NumericKeypadKey) -> Void
 
     init(
         compact: Bool? = nil,
-        auxiliaryTitle: String? = nil,
-        auxiliaryDisabled: Bool = false,
+        trailingKey: NumericKeypadTrailingKey? = nil,
         onKey: @escaping (NumericKeypadKey) -> Void
     ) {
         self.explicitCompact = compact
-        self.auxiliaryTitle = auxiliaryTitle
-        self.auxiliaryDisabled = auxiliaryDisabled
+        self.trailingKey = trailingKey
         self.onKey = onKey
     }
 
@@ -53,20 +60,27 @@ struct NumericKeypad: View {
                 }
             }
 
+            // 最下段は左からBS・0・右キー
             HStack(spacing: spacing) {
+                KeypadDeleteButton(compact: compact) { onKey(.delete) }
+
                 KeypadDigitButton(label: "0", compact: compact) { onKey(.digit(0)) }
 
-                if let auxiliaryTitle {
-                    KeypadAuxiliaryButton(label: auxiliaryTitle, compact: compact) {
-                        onKey(.auxiliary(auxiliaryTitle))
+                switch trailingKey {
+                case .auxiliary(let title, let disabled):
+                    KeypadAuxiliaryButton(label: title, compact: compact) {
+                        onKey(.auxiliary(title))
                     }
-                    .disabled(auxiliaryDisabled)
-                } else {
+                    .disabled(disabled)
+                case .sign:
+                    KeypadAuxiliarySymbolButton(systemImage: "plus.forwardslash.minus", compact: compact) {
+                        onKey(.toggleSign)
+                    }
+                    .accessibilityLabel("符号を反転")
+                case nil:
                     Color.clear
                         .frame(maxWidth: .infinity, minHeight: compact ? scaledCompactHeight : scaledHeight)
                 }
-
-                KeypadDeleteButton(compact: compact) { onKey(.delete) }
             }
         }
         // 囲っているScrollViewのタッチ保留を解除して反応を即時にする
@@ -161,6 +175,32 @@ private struct KeypadAuxiliaryButton: View {
     }
 }
 
+/// 補助キーのSF Symbol版。文字版と見た目を揃える
+private struct KeypadAuxiliarySymbolButton: View {
+    let systemImage: String
+    let compact: Bool
+    let action: () -> Void
+
+    @Environment(\.isEnabled) private var isEnabled
+
+    @ScaledMetric(relativeTo: .title2) private var scaledHeight: CGFloat = 56
+    @ScaledMetric(relativeTo: .title3) private var scaledCompactHeight: CGFloat = 52
+
+    private var minHeight: CGFloat { compact ? scaledCompactHeight : scaledHeight }
+    private var font: Font { compact ? .title3.weight(.medium) : .title2.weight(.medium) }
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(font)
+            .foregroundStyle(isEnabled ? Color.accentColor : Color(.tertiaryLabel))
+            .frame(maxWidth: .infinity, minHeight: minHeight)
+            .background(Color(.quaternarySystemFill))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .keypadPress(action: action)
+            .accessibilityAddTraits(.isButton)
+    }
+}
+
 private struct KeypadDeleteButton: View {
     let compact: Bool
     let action: () -> Void
@@ -174,6 +214,8 @@ private struct KeypadDeleteButton: View {
     var body: some View {
         Image(systemName: "delete.left")
             .font(font)
+            // 数字と役割が違うことを示すため、補助キーと同じアクセント色にする
+            .foregroundStyle(Color.accentColor)
             .frame(maxWidth: .infinity, minHeight: minHeight)
             .background(Color(.quaternarySystemFill))
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
