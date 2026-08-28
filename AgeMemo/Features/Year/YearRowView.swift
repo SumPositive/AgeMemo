@@ -82,7 +82,7 @@ struct YearRowView: View {
         let fontSize = preferredFontSize * scale
         return HStack(spacing: 2) {
             if showsAgeFirst {
-                ageColumn(fontSize: fontSize, alignment: .leading)
+                ageColumn(fontSize: fontSize)
 
                 Spacer(minLength: 0)
 
@@ -110,7 +110,7 @@ struct YearRowView: View {
 
                 Spacer(minLength: 0)
 
-                ageColumn(fontSize: fontSize, alignment: .trailing)
+                ageColumn(fontSize: fontSize)
             }
         }
     }
@@ -130,13 +130,13 @@ struct YearRowView: View {
     }
 
     @ViewBuilder
-    private func ageColumn(fontSize: CGFloat, alignment: Alignment) -> some View {
+    private func ageColumn(fontSize: CGFloat) -> some View {
         if let age {
             Text("\(age)歳")
                 .font(.system(size: fontSize, design: .monospaced))
                 .foregroundStyle(age < 0 ? AnyShapeStyle(.secondary) : AnyShapeStyle(rowTextColor))
                 .lineLimit(1)
-                .frame(width: fontSize * 3.6, alignment: alignment)
+                .frame(width: fontSize * 3.6, alignment: .trailing)
         } else {
             // 年齢未設定時も列配置を保つ
             Color.clear
