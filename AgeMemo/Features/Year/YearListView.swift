@@ -91,6 +91,10 @@ struct YearListView: View {
                                     isBirthYear: row.gregorian == highlightedBirthYear,
                                     isSelected: row.gregorian == selectedAgeYear,
                                     showsAgeFirst: ageDisplayMode == .age,
+                                    longevity: longevity(for: row.gregorian),
+                                    unluckyYear: unluckyYear(for: row.gregorian),
+                                    schoolMilestone: schoolMilestone(for: row.gregorian),
+                                    nineStar: nineStar(for: row.gregorian),
                                     compact: settings.displayMode == .expert
                                 )
                                 .onTapGesture {
@@ -305,12 +309,63 @@ struct YearListView: View {
         presentedSheet = nil
     }
 
+    /// その年に迎える賀寿。生まれる前の年には出さない
+    private func longevity(for year: Int) -> Longevity? {
+        guard let age = displayedAge(for: year), 0 <= age else { return nil }
+        return Longevity.forDisplayedAge(age, reckoning: settings.ageReckoning)
+    }
+
+    /// 九星は年そのものの性質なので、どの年の行でも出す。
+    /// 本人の生まれ年だけは、立春の区切りを見て正確な星に差し替える
+    private func nineStar(for year: Int) -> NineStar? {
+        guard settings.showsNineStar else { return nil }
+        if let birthDate = effectiveBirthDate,
+           let birthYear = AgeCalculator.birthYear(from: birthDate),
+           birthYear == year {
+            return NineStar.forBirthDate(birthDate)
+        }
+        return NineStar.forStarYear(year)
+    }
+
+    /// 厄年の判定に使う性別。自分は設定、名簿は選んだ人のものを使う
+    private var effectiveGender: Gender {
+        switch ageDisplayMode {
+        // 年齢一覧は不特定の人を並べたものなので性別が決まらない
+        case .age: .unspecified
+        case .personal: settings.gender
+        case .person: selectedPerson?.gender ?? .unspecified
+        }
+    }
+
+    /// 学齢の判定に使う生年月日。年齢一覧は特定の人ではないので対象外
+    private var effectiveBirthDate: Date? {
+        switch ageDisplayMode {
+        case .age: nil
+        case .personal: settings.birthDate
+        case .person(let birthDate): birthDate
+        }
+    }
+
+    /// その年に迎える入学・卒業の節目
+    private func schoolMilestone(for year: Int) -> SchoolMilestone? {
+        guard settings.showsSchoolAge, let birthDate = effectiveBirthDate else { return nil }
+        return SchoolAge.milestone(inYear: year, birthDate: birthDate)
+    }
+
+    /// その年の厄年。生まれる前の年には出さない
+    private func unluckyYear(for year: Int) -> UnluckyYear? {
+        guard effectiveGender != .unspecified,
+              let age = displayedAge(for: year), 0 <= age else { return nil }
+        return UnluckyYear.forDisplayedAge(age, gender: effectiveGender, reckoning: settings.ageReckoning)
+    }
+
     private func displayedAge(for year: Int) -> Int? {
         AgeCalculator.displayedAge(
             for: year,
             mode: ageDisplayMode,
             birthDate: settings.birthDate,
-            currentYear: currentYear
+            currentYear: currentYear,
+            reckoning: settings.ageReckoning
         )
     }
 }

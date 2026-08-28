@@ -8,11 +8,27 @@ struct Person: Identifiable, Codable, Equatable, Sendable {
     let id: UUID
     var name: String
     var birthDate: Date
+    /// 厄年の判定に使う。既存データには無いので既定は不要
+    var gender: Gender
 
-    init(id: UUID = UUID(), name: String, birthDate: Date) {
+    init(id: UUID = UUID(), name: String, birthDate: Date, gender: Gender = .unspecified) {
         self.id = id
         self.name = name
         self.birthDate = birthDate
+        self.gender = gender
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, birthDate, gender
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        birthDate = try container.decode(Date.self, forKey: .birthDate)
+        // 性別を持たない既存の名簿も読めるようにする
+        gender = try container.decodeIfPresent(Gender.self, forKey: .gender) ?? .unspecified
     }
 
     var birthYear: Int {
@@ -38,20 +54,27 @@ final class PersonStore {
         load()
     }
 
-    func add(name: String, birthDate: Date) {
+    func add(name: String, birthDate: Date, gender: Gender = .unspecified) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         // 並び順は利用者が決めるため、追加は末尾へ置くだけにする
-        people.append(Person(name: String(trimmed.prefix(AppConfig.maximumPersonNameLength)), birthDate: birthDate))
+        people.append(
+            Person(
+                name: String(trimmed.prefix(AppConfig.maximumPersonNameLength)),
+                birthDate: birthDate,
+                gender: gender
+            )
+        )
         save()
     }
 
-    func update(id: UUID, name: String, birthDate: Date) {
+    func update(id: UUID, name: String, birthDate: Date, gender: Gender = .unspecified) {
         guard let index = people.firstIndex(where: { $0.id == id }) else { return }
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         people[index].name = String(trimmed.prefix(AppConfig.maximumPersonNameLength))
         people[index].birthDate = birthDate
+        people[index].gender = gender
         // 生年を変えても手で決めた並びは保つ
         save()
     }

@@ -16,22 +16,30 @@ enum AgeCalculator {
         for rowYear: Int,
         mode: AgeDisplayMode,
         birthDate: Date?,
-        currentYear: Int
+        currentYear: Int,
+        reckoning: AgeReckoning = .actual
     ) -> Int? {
+        let actualAge: Int?
         switch mode {
         case .age:
             // その年に生まれた人の当年時点の年齢を求める
-            return currentYear - rowYear
+            actualAge = currentYear - rowYear
         case .personal:
-            return age(in: rowYear, birthDate: birthDate)
+            actualAge = age(in: rowYear, birthDate: birthDate)
         case .person(let personBirthDate):
-            return age(in: rowYear, birthDate: personBirthDate)
+            actualAge = age(in: rowYear, birthDate: personBirthDate)
         }
+        guard let actualAge else { return nil }
+        // 生まれる前は数え年の考え方が当てはまらないので、そのまま負の値を返す
+        guard 0 <= actualAge else { return actualAge }
+        return reckoning.age(fromActual: actualAge)
     }
 
-    /// 指定した年齢の人が生まれた年を求める
-    static func birthYear(forAge age: Int, currentYear: Int) -> Int {
-        currentYear - age
+    /// 指定した年齢の人が生まれた年を求める。displayedAge の逆算にあたる
+    static func birthYear(forAge age: Int, currentYear: Int, reckoning: AgeReckoning = .actual) -> Int {
+        // 生まれる前は数え年の変換をしないため、逆算でも戻さない
+        let actualAge = 0 <= age ? reckoning.actualAge(from: age) : age
+        return currentYear - actualAge
     }
 
     static func age(

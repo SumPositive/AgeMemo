@@ -84,6 +84,14 @@ struct SettingsView: View {
                     ) { mode in
                         Text(mode.title)
                     }
+
+                    radioRow(
+                        "年齢の数え方",
+                        help: "満年齢は誕生日ごとに1つ増える、現在ふつうに使われている数え方です。数え年は生まれた時点で1歳とし、以後は元日ごとに1つ増える昔ながらの数え方で、年内では満年齢より1つ多くなります。還暦や喜寿などの長寿祝いは、もともと数え年で祝うものでした。",
+                        selection: $settings.ageReckoning
+                    ) { reckoning in
+                        Text(reckoning.title)
+                    }
                 }
 
                 Section {
@@ -104,12 +112,51 @@ struct SettingsView: View {
                         }
                     }
 
+                    radioRow(
+                        "自分の性別",
+                        help: """
+                        「自分」の一覧で厄年を表示するために使います。「不要」を選ぶと厄年は表示されません。
+
+                        年齢の一覧は特定の方を示すものではないため、厄年は表示されません。名簿の方の厄年は、名簿でその方に性別を設定すると表示されます。
+
+                        厄年は、人生の中で災いに遭いやすいとされる年齢です。数え年で見るのが基本で、本厄の前後1年をそれぞれ前厄・後厄と呼びます。
+
+                        男性は25歳・42歳・61歳、女性は19歳・33歳・37歳・61歳が本厄にあたります（いずれも数え年）。男性の42歳と女性の33歳はとくに「大厄」と呼ばれます。
+
+                        年齢や数え方は神社や地域によって異なる場合があります。目安としてご覧ください。
+                        """,
+                        selection: $settings.gender
+                    ) { gender in
+                        Text(gender.title)
+                    }
+
                     Toggle(isOn: $settings.showsMemoOnlyForSelf) {
                         HStack(alignment: .center, spacing: 4) {
-                            Text("メモは自分だけに表示する")
+                            Text("メモは自分だけに表示")
                             BeginnerHelpBanner("オンにすると、年に書いたメモは「自分」の一覧でだけ表示されます。年齢や名簿の一覧ではメモが隠れるため、他の人に画面を見せるときに便利です。オフにするとどの一覧でもメモが表示されます。")
                         }
                     }
+
+                    Toggle(isOn: $settings.showsSchoolAge) {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("入学・卒業の年を表示")
+                            BeginnerHelpBanner("生年月日をもとに、小学校から大学までの入学・卒業の年を表示します。4月1日以前に生まれた方（早生まれ）は1年早く入学するため、その分を考慮して計算します。大学は4年制として扱います。")
+                        }
+                    }
+
+                    Toggle(isOn: $settings.showsNineStar) {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("九星を表示")
+                            BeginnerHelpBanner("""
+                            九星気学の本命星（一白水星から九紫火星までの9つ）を表示します。生まれた年によって決まり、9年で一巡します。
+
+                            九星の1年は立春（2月4日ごろ）から始まります。そのため1月1日から立春の前日までに生まれた方は、前の年の星になります。
+
+                            生年月日が分かる「自分」と「名簿」ではこの区切りを考慮して表示します。年齢の一覧では、その年（立春以降）の星を表示します。
+                            """)
+                        }
+                    }
+
                 }
 
                 Section {

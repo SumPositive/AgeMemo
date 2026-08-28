@@ -149,7 +149,7 @@ struct PersonSheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(person.name)
                     .font(.body)
-                Text("\(String(person.birthYear))年生まれ・\(currentYear - person.birthYear)歳")
+                Text("\(String(person.birthYear))年生まれ・\(String(settings.ageReckoning.age(fromActual: currentYear - person.birthYear)))歳")
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
             }
@@ -191,6 +191,7 @@ private struct PersonEditorSheet: View {
     @Environment(PersonStore.self) private var personStore
 
     @State private var name: String
+    @State private var gender: Gender
 
     let target: PersonEditorTarget
 
@@ -199,9 +200,23 @@ private struct PersonEditorSheet: View {
         switch target {
         case .add:
             _name = State(initialValue: "")
+            _gender = State(initialValue: .unspecified)
         case .edit(let person):
             _name = State(initialValue: person.name)
+            _gender = State(initialValue: person.gender)
         }
+    }
+
+    private var personGenderHelp: String {
+        """
+        厄年を表示するために使います。「不要」を選ぶと、この方の厄年は表示されません。
+
+        厄年は、人生の中で災いに遭いやすいとされる年齢です。数え年で見るのが基本で、本厄の前後1年をそれぞれ前厄・後厄と呼びます。
+
+        男性は25歳・42歳・61歳、女性は19歳・33歳・37歳・61歳が本厄にあたります（いずれも数え年）。男性の42歳と女性の33歳はとくに「大厄」と呼ばれます。
+
+        年齢や数え方は神社や地域によって異なる場合があります。目安としてご覧ください。
+        """
     }
 
     private var trimmedName: String {
@@ -230,18 +245,38 @@ private struct PersonEditorSheet: View {
         ) { birthDate in
             switch target {
             case .add:
-                personStore.add(name: trimmedName, birthDate: birthDate)
+                personStore.add(name: trimmedName, birthDate: birthDate, gender: gender)
             case .edit(let person):
-                personStore.update(id: person.id, name: trimmedName, birthDate: birthDate)
+                personStore.update(id: person.id, name: trimmedName, birthDate: birthDate, gender: gender)
             }
         } header: {
-            TextField("名前", text: $name)
-                .textFieldStyle(.roundedBorder)
-                .onChange(of: name) { _, newValue in
-                    if newValue.count > AppConfig.maximumPersonNameLength {
-                        name = String(newValue.prefix(AppConfig.maximumPersonNameLength))
+            VStack(alignment: .leading, spacing: 8) {
+                TextField("名前", text: $name)
+                    .textFieldStyle(.roundedBorder)
+                    .onChange(of: name) { _, newValue in
+                        if newValue.count > AppConfig.maximumPersonNameLength {
+                            name = String(newValue.prefix(AppConfig.maximumPersonNameLength))
+                        }
                     }
+
+                // 厄年の判定に使う。生年月日の前に置く
+                AZAdaptiveRadioRow(
+                    options: Gender.allCases,
+                    selection: $gender,
+                    minOptionWidth: 0,
+                    maxOptionWidth: 120,
+                    horizontalPadding: 6,
+                    optionSpacing: 4,
+                    groupPadding: 5
+                ) {
+                    HStack(alignment: .center, spacing: 4) {
+                        Text("性別")
+                        BeginnerHelpBanner(personGenderHelp)
+                    }
+                } label: { option in
+                    Text(option.title)
                 }
+            }
         }
     }
 }

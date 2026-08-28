@@ -3,6 +3,7 @@
 import SwiftUI
 
 struct AgeJumpSheet: View {
+    @Environment(AppSettings.self) private var settings
     @Environment(\.dismiss) private var dismiss
     @State private var digits = ""
     @ScaledMetric(relativeTo: .largeTitle) private var displayFontSize: CGFloat = 52
@@ -16,12 +17,17 @@ struct AgeJumpSheet: View {
     private var isEmpty: Bool { digits.isEmpty }
 
     private var age: Int {
-        guard let value = Int(digits) else { return placeholderAge }
-        return min(value, AppConfig.maximumAgeInput)
+        guard let value = Int(digits) else { return clamped(placeholderAge) }
+        return clamped(min(value, AppConfig.maximumAgeInput))
+    }
+
+    /// 数え年には0歳がなく1歳から始まるため、下限を数え方に合わせる
+    private func clamped(_ age: Int) -> Int {
+        max(age, settings.ageReckoning.age(fromActual: 0))
     }
 
     private var destinationYear: Int {
-        AgeCalculator.birthYear(forAge: age, currentYear: currentYear)
+        AgeCalculator.birthYear(forAge: age, currentYear: currentYear, reckoning: settings.ageReckoning)
     }
 
     private var boundedDestinationYear: Int {
