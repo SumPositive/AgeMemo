@@ -67,12 +67,17 @@ struct YearListView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        if settings.displayMode == .beginner {
-                            Text("年をタップすると、カレンダーとメモを表示します")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(12)
+                        if isBeginner {
+                            HStack(alignment: .center, spacing: 4) {
+                                Text(listHint)
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                                    // 文字が大きく折り返す時も中央に揃える
+                                    .multilineTextAlignment(.center)
+                                BeginnerHelpBanner(listHelp)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(12)
                         }
 
                         ForEach(rows) { row in
@@ -162,6 +167,26 @@ struct YearListView: View {
 
     private var isBeginner: Bool {
         settings.displayMode == .beginner
+    }
+
+    /// 一覧上のヒント。メモを表示しない設定のときはメモに触れない
+    private var listHint: String {
+        showsMemo ? "行をタップするとメモとカレンダーが現れます" : "行をタップするとカレンダーが現れます"
+    }
+
+    /// 一覧の使い方。モードごとに引く向きが違うので、それぞれに合わせて説明する
+    private var listHelp: String {
+        let tapGuide = showsMemo
+            ? "行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+            : "行をタップすると、その年のカレンダーが開きます。"
+        switch ageDisplayMode {
+        case .age:
+            return "年齢を指定すると、その年齢の方が生まれた年へ移動します。" + tapGuide
+        case .personal:
+            return "自分の生年月日をもとに、各年に何歳になるかを表示します。" + tapGuide
+        case .person:
+            return "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。" + tapGuide
+        }
     }
 
     /// 初心者モードで一覧の読み方を示す。年齢一覧と自分／名簿では引く向きが逆になる
