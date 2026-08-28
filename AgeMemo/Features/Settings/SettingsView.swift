@@ -32,6 +32,7 @@ struct SettingsView: View {
     @ViewBuilder
     private func radioRow<Option: CaseIterable & Hashable & Identifiable, Label: View>(
         _ title: String,
+        help: String,
         selection: Binding<Option>,
         @ViewBuilder label: @escaping (Option) -> Label
     ) -> some View where Option.AllCases == [Option] {
@@ -44,7 +45,11 @@ struct SettingsView: View {
             optionSpacing: 4,
             groupPadding: 5
         ) {
-            Text(title)
+            // 設定項目の説明は見出しの右に集約する
+            HStack(alignment: .center, spacing: 4) {
+                Text(title)
+                BeginnerHelpBanner(help)
+            }
         } label: { option in
             label(option)
         }
@@ -56,15 +61,27 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    radioRow("表示モード", selection: $settings.displayMode) { mode in
+                    radioRow(
+                        "表示モード",
+                        help: "初心者を選ぶと、ボタンの名前や一覧の見方といった説明が画面に表示されます。操作に慣れたら達人に切り替えると、説明が消えて一覧を広く使えます。",
+                        selection: $settings.displayMode
+                    ) { mode in
                         Text(mode.title)
                     }
 
-                    radioRow("文字サイズ", selection: $settings.fontScale) { scale in
+                    radioRow(
+                        "文字サイズ",
+                        help: "アプリ内の文字の大きさを決めます。自動を選ぶと、iPhoneの「設定」→「画面表示と明るさ」→「テキストサイズ」に合わせて変わります。標準・大・特大を選ぶと、端末の設定に関わらずその大きさになります。",
+                        selection: $settings.fontScale
+                    ) { scale in
                         Text(scale.title)
                     }
 
-                    radioRow("外観モード", selection: $settings.appearanceMode) { mode in
+                    radioRow(
+                        "外観モード",
+                        help: "画面の明るさの見た目を決めます。自動を選ぶと、iPhone本体のライトモード・ダークモードの設定に合わせて変わります。ライトまたはダークを選ぶと、端末の設定に関わらずその見た目に固定されます。",
+                        selection: $settings.appearanceMode
+                    ) { mode in
                         Text(mode.title)
                     }
                 }
@@ -74,8 +91,11 @@ struct SettingsView: View {
                         isEditingBirthDate = true
                     } label: {
                         AZAdaptiveControlRow {
-                            Text("自分の生年月日")
-                                .foregroundStyle(Color(.label))
+                            HStack(alignment: .center, spacing: 4) {
+                                Text("自分の生年月日")
+                                    .foregroundStyle(Color(.label))
+                                BeginnerHelpBanner("ここに自分の生年月日を登録すると、「自分」の一覧で各年に自分が何歳になるかが表示されます。生まれた年には目印が付きます。")
+                            }
                         } control: {
                             Text(birthDateText)
                                 .font(.body.monospacedDigit())
@@ -84,7 +104,12 @@ struct SettingsView: View {
                         }
                     }
 
-                    Toggle("メモは自分だけに表示する", isOn: $settings.showsMemoOnlyForSelf)
+                    Toggle(isOn: $settings.showsMemoOnlyForSelf) {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("メモは自分だけに表示する")
+                            BeginnerHelpBanner("オンにすると、年に書いたメモは「自分」の一覧でだけ表示されます。年齢や名簿の一覧ではメモが隠れるため、他の人に画面を見せるときに便利です。オフにするとどの一覧でもメモが表示されます。")
+                        }
+                    }
                 }
 
                 Section {

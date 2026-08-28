@@ -133,8 +133,13 @@ struct YearListView: View {
                 }
             }
             .safeAreaInset(edge: .top, spacing: 0) {
-                HeaderBannerView()
-                    .background(.bar)
+                VStack(spacing: 0) {
+                    if isBeginner {
+                        beginnerCaptions
+                    }
+                    HeaderBannerView()
+                }
+                .background(.bar)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 BottomToolbar(
@@ -153,6 +158,56 @@ struct YearListView: View {
             sheetContent(sheet)
                 .appAppearance(colorScheme: sheetColorScheme)
         }
+    }
+
+    private var isBeginner: Bool {
+        settings.displayMode == .beginner
+    }
+
+    /// 初心者モードで一覧の読み方を示す。年齢一覧と自分／名簿では引く向きが逆になる
+    private var listSummary: String {
+        switch ageDisplayMode {
+        case .age: "年齢→生まれた年の早見表"
+        case .personal, .person: "年→年齢の早見表"
+        }
+    }
+
+    /// ツールバーのボタン1つ分の幅。説明をその真下で中央寄せにする。
+    /// ボタン自体は文字サイズで広がらないため、ここも固定幅にして中央の説明の幅を確保する
+    private let sideCaptionWidth: CGFloat = 44
+    /// ツールバーボタンの画面端からの余白。キャプションの枠をボタンと同じ位置に置く
+    private let toolbarHorizontalInset: CGFloat = 16
+
+    /// 初心者モードの説明行。ボタンのカプセルに収めると文字が欠けるため、
+    /// ナビゲーションバーの下に別の行として置く
+    private var beginnerCaptions: some View {
+        // 左右はボタンの真下に固定し、中央の説明は残りの幅の中だけで縮める。
+        // HStack に並べると中央が左右を押し出すため、重ねて配置する
+        HStack(alignment: .top, spacing: 0) {
+            Text("設定")
+                .minimumScaleFactor(0.4)
+                .frame(width: sideCaptionWidth)
+            Spacer(minLength: 0)
+            Text("飛躍")
+                .minimumScaleFactor(0.4)
+                .frame(width: sideCaptionWidth)
+        }
+        .overlay {
+            Text(listSummary)
+                // 縮むのは中央だけにして、左右はボタンの真下から動かさない
+                .lineLimit(1)
+                .minimumScaleFactor(0.4)
+                .padding(.horizontal, sideCaptionWidth + 4)
+        }
+        .font(.caption2)
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+        .padding(.horizontal, toolbarHorizontalInset)
+        // タイトルとの間は詰め、一覧との間は空けて区切りを分かりやすくする
+        .padding(.top, -6)
+        .padding(.bottom, 8)
+        .frame(maxWidth: .infinity)
+        .background(.bar)
     }
 
     // シートでは「自動」も現在の外観へ解決して渡す。
