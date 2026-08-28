@@ -2,6 +2,10 @@
 
 import SwiftUI
 
+#if canImport(GoogleMobileAds)
+import GoogleMobileAds
+#endif
+
 @main
 struct AgeMemoApp: App {
     @State private var settings = AppSettings.shared
@@ -11,6 +15,17 @@ struct AgeMemoApp: App {
 
     private var effectiveDynamicTypeSize: DynamicTypeSize {
         settings.fontScale.followsSystem ? systemDynamicTypeSize : settings.fontScale.dynamicTypeSize
+    }
+
+    init() {
+        startAdMobIfAvailable()
+    }
+
+    /// SDKを入れていないビルドでも通るようにしておく
+    private func startAdMobIfAvailable() {
+        #if canImport(GoogleMobileAds)
+        MobileAds.shared.start()
+        #endif
     }
 
     var body: some Scene {
