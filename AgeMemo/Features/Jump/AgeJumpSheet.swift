@@ -62,8 +62,8 @@ struct AgeJumpSheet: View {
             .navigationTitle("年齢から移動")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("キャンセル") { dismiss() }
+                ToolbarItem(placement: .confirmationAction) {
+                    SheetCloseButton { dismiss() }
                 }
             }
         }

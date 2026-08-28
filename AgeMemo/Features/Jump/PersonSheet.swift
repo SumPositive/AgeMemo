@@ -5,6 +5,7 @@ import SwiftUI
 struct PersonSheet: View {
     @Environment(PersonStore.self) private var personStore
     @Environment(AppSettings.self) private var settings
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
 
     @State private var editorTarget: PersonEditorTarget?
@@ -20,6 +21,10 @@ struct PersonSheet: View {
     private var fittedHeight: CGFloat {
         let rowCount = max(personStore.people.count, 1)
         return estimatedChromeHeight + estimatedRowHeight * CGFloat(rowCount)
+    }
+
+    private var sheetColorScheme: ColorScheme? {
+        settings.appearanceMode.colorScheme ?? colorScheme
     }
 
     var body: some View {
@@ -70,9 +75,6 @@ struct PersonSheet: View {
             .navigationTitle("名簿")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("キャンセル") { dismiss() }
-                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         editorTarget = .add
@@ -80,10 +82,13 @@ struct PersonSheet: View {
                         Label("追加", systemImage: "plus")
                     }
                 }
+                ToolbarItem(placement: .cancellationAction) {
+                    SheetCloseButton { dismiss() }
+                }
             }
             .sheet(item: $editorTarget) { target in
                 PersonEditorSheet(target: target)
-                    .appAppearance()
+                    .appAppearance(colorScheme: sheetColorScheme)
             }
             .alert("削除しますか？", isPresented: deletionBinding, presenting: pendingDeletion) { person in
                 Button("削除", role: .destructive) {

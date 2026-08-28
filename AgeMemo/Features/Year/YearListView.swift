@@ -27,6 +27,7 @@ private struct YearScrollRequest: Equatable {
 
 struct YearListView: View {
     @Environment(AppSettings.self) private var settings
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(MemoStore.self) private var memoStore
     @Environment(PersonStore.self) private var personStore
     @Environment(\.scenePhase) private var scenePhase
@@ -150,8 +151,14 @@ struct YearListView: View {
         }
         .sheet(item: $presentedSheet) { sheet in
             sheetContent(sheet)
-                .appAppearance()
+                .appAppearance(colorScheme: sheetColorScheme)
         }
+    }
+
+    // シートでは「自動」も現在の外観へ解決して渡す。
+    // nil のままだと直前の明示値が残り、自動へ戻した時に追随しない
+    private var sheetColorScheme: ColorScheme? {
+        settings.appearanceMode.colorScheme ?? colorScheme
     }
 
     private var navigationTitle: String {

@@ -77,10 +77,11 @@ struct EraJumpSheet: View {
             .navigationTitle("飛躍")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("キャンセル") { dismiss() }
+                ToolbarItem(placement: .confirmationAction) {
+                    SheetCloseButton { dismiss() }
                 }
             }
         }
+        .presentationDragIndicator(.visible)
     }
 }

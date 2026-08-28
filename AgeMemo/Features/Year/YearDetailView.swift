@@ -35,14 +35,7 @@ struct YearDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.down")
-                            .imageScale(.large)
-                            .symbolRenderingMode(.hierarchical)
-                    }
-                    .accessibilityLabel("閉じる")
+                    SheetCloseButton { dismiss() }
                 }
             }
         }
