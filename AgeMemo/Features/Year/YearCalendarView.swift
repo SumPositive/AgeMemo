@@ -83,8 +83,10 @@ private struct MonthCalendarView: View {
     let eraSpans: [EraSpan]
 
     @ScaledMetric(relativeTo: .caption2) private var scaledEraFontSize: CGFloat = 9
-    // 1か月表示になり余裕ができたので日付を大きくする
-    @ScaledMetric(relativeTo: .body) private var scaledDayHeight: CGFloat = 40
+    @ScaledMetric(relativeTo: .caption2) private var scaledRokuyoFontSize: CGFloat = 9
+    @ScaledMetric(relativeTo: .caption2) private var scaledMoonFontSize: CGFloat = 8
+    // 1か月表示になり余裕ができたので日付を大きくする。六曜と月齢の行の分だけ高くする
+    @ScaledMetric(relativeTo: .body) private var scaledDayHeight: CGFloat = 64
 
     private let weekdaySymbols = ["日", "月", "火", "水", "木", "金", "土"]
     private let dayColumns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
@@ -107,9 +109,9 @@ private struct MonthCalendarView: View {
     }
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 3) {
             // 月名は上部の切り替えUIに集約したのでここでは出さない
-            LazyVGrid(columns: dayColumns, spacing: 4) {
+            LazyVGrid(columns: dayColumns, spacing: 1) {
                 ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
                     Text(symbol)
                         .font(.caption.bold())
@@ -126,7 +128,8 @@ private struct MonthCalendarView: View {
                 }
             }
         }
-        .padding(10)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
         .background(.background, in: RoundedRectangle(cornerRadius: 12))
         .overlay {
             RoundedRectangle(cornerRadius: 12)
@@ -136,6 +139,8 @@ private struct MonthCalendarView: View {
 
     private func dayCell(_ day: Int) -> some View {
         let era = eraSpans.first { $0.startMonth == month && $0.startDay == day && !(month == 1 && day == 1) }
+        let rokuyo = rokuyo(for: day)
+        let moon = moonPhase(for: day)
         return VStack(spacing: 0) {
             if let era {
                 Text(era.eraName)
@@ -145,6 +150,23 @@ private struct MonthCalendarView: View {
             }
             Text(String(day))
                 .font(.caption.monospacedDigit())
+            if let rokuyo {
+                Text(rokuyo.name)
+                    .font(.system(size: scaledRokuyoFontSize))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+            if let moon {
+                Image(systemName: moon.symbolName)
+                    .font(.system(size: scaledMoonFontSize))
+                    .foregroundStyle(.secondary)
+                Text("\(String(moon.illuminationPercent))%")
+                    .font(.system(size: scaledMoonFontSize).monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
         }
         .frame(maxWidth: .infinity, minHeight: scaledDayHeight)
         .overlay(alignment: .top) {
@@ -154,6 +176,35 @@ private struct MonthCalendarView: View {
                     .frame(height: 2)
             }
         }
-        .accessibilityLabel(era.map { "\(month)月\(day)日 \($0.eraName)改元" } ?? "\(month)月\(day)日")
+        .accessibilityLabel(accessibilityLabel(day: day, era: era, rokuyo: rokuyo, moon: moon))
+    }
+
+    private func moonPhase(for day: Int) -> MoonPhase? {
+        guard let date = calendar.date(from: DateComponents(year: year, month: month, day: day, hour: 12)) else {
+            return nil
+        }
+        return MoonPhase(date: date)
+    }
+
+    private func rokuyo(for day: Int) -> Rokuyo? {
+        // 旧暦の日付から求めるため、時差で日がずれないよう正午で判定する
+        guard let date = calendar.date(from: DateComponents(year: year, month: month, day: day, hour: 12)) else {
+            return nil
+        }
+        return Rokuyo.forDate(date)
+    }
+
+    private func accessibilityLabel(day: Int, era: EraSpan?, rokuyo: Rokuyo?, moon: MoonPhase?) -> String {
+        var label = "\(month)月\(day)日"
+        if let rokuyo {
+            label += " \(rokuyo.name)"
+        }
+        if let moon {
+            label += " \(moon.name) \(moon.illuminationPercent)パーセント"
+        }
+        if let era {
+            label += " \(era.eraName)改元"
+        }
+        return label
     }
 }
