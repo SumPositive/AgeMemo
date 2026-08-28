@@ -192,8 +192,8 @@ struct YearListView: View {
     /// 初心者モードで一覧の読み方を示す。年齢一覧と自分／名簿では引く向きが逆になる
     private var listSummary: String {
         switch ageDisplayMode {
-        case .age: "年齢→生まれた年の早見表"
-        case .personal, .person: "年→年齢の早見表"
+        case .age: "年齢と生まれた年の早見表"
+        case .personal, .person: "年と年齢の早見表"
         }
     }
 

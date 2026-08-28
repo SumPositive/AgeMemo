@@ -2,6 +2,7 @@
 
 import Foundation
 import Observation
+import SwiftUI
 
 struct Person: Identifiable, Codable, Equatable, Sendable {
     let id: UUID
@@ -40,8 +41,9 @@ final class PersonStore {
     func add(name: String, birthDate: Date) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
+        // 並び順は利用者が決めるため、追加は末尾へ置くだけにする
         people.append(Person(name: String(trimmed.prefix(AppConfig.maximumPersonNameLength)), birthDate: birthDate))
-        sortAndSave()
+        save()
     }
 
     func update(id: UUID, name: String, birthDate: Date) {
@@ -50,7 +52,8 @@ final class PersonStore {
         guard !trimmed.isEmpty else { return }
         people[index].name = String(trimmed.prefix(AppConfig.maximumPersonNameLength))
         people[index].birthDate = birthDate
-        sortAndSave()
+        // 生年を変えても手で決めた並びは保つ
+        save()
     }
 
     func delete(id: UUID) {
@@ -58,9 +61,9 @@ final class PersonStore {
         save()
     }
 
-    private func sortAndSave() {
-        // 生年の早い順に並べて一覧の並びを安定させる
-        people.sort { $0.birthDate < $1.birthDate }
+    /// ドラッグで並べ替える
+    func move(from source: IndexSet, to destination: Int) {
+        people.move(fromOffsets: source, toOffset: destination)
         save()
     }
 

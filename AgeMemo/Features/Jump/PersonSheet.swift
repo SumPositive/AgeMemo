@@ -23,6 +23,27 @@ struct PersonSheet: View {
         return estimatedChromeHeight + estimatedRowHeight * CGFloat(rowCount)
     }
 
+    private var personSheetHelp: String {
+        """
+        家族・親戚・友人など、年齢を調べたい方を登録しておく名簿です。登録すると一覧がその方の生年月日を基準になり、各年に何歳になるかを確認できます。
+
+        【選ぶ】
+        名前の行をタップすると、その方を基準にした一覧へ切り替わります。
+
+        【追加】
+        右上の＋を押し、名前と生年月日を入力して保存します。
+
+        【変更】
+        行の右端にある変更ボタンを押すと、名前と生年月日を編集できます。行を左へスワイプして「変更」を選ぶこともできます。
+
+        【削除】
+        行を左へスワイプして「削除」を選びます。確認の後に削除され、取り消しはできません。
+
+        【並べ替え】
+        行を長押ししたまま上下へドラッグすると、好きな順序に並べ替えられます。並び順は保存され、追加や変更をしても崩れません。
+        """
+    }
+
     private var sheetColorScheme: ColorScheme? {
         settings.appearanceMode.colorScheme ?? colorScheme
     }
@@ -37,7 +58,7 @@ struct PersonSheet: View {
                             .foregroundStyle(.secondary)
                     }
                 } else {
-                    Section("名簿") {
+                    Section {
                         ForEach(personStore.people) { person in
                             Button {
                                 select(person)
@@ -46,7 +67,8 @@ struct PersonSheet: View {
                                 row(for: person)
                             }
                             .buttonStyle(.plain)
-                            .swipeActions(edge: .trailing) {
+                            // 端までスワイプしただけで消えないよう、必ずボタンを押させる
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
                                     pendingDeletion = person
                                 } label: {
@@ -60,6 +82,9 @@ struct PersonSheet: View {
                                 }
                                 .tint(.accentColor)
                             }
+                        }
+                        .onMove { source, destination in
+                            personStore.move(from: source, to: destination)
                         }
                     }
                 }
@@ -75,6 +100,14 @@ struct PersonSheet: View {
             .navigationTitle("名簿")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    // 説明はタイトルの右に添える
+                    HStack(alignment: .center, spacing: 4) {
+                        Text("名簿")
+                            .font(.headline)
+                        BeginnerHelpBanner(personSheetHelp)
+                    }
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         editorTarget = .add
@@ -112,7 +145,7 @@ struct PersonSheet: View {
     }
 
     private func row(for person: Person) -> some View {
-        HStack {
+        HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(person.name)
                     .font(.body)
@@ -121,11 +154,22 @@ struct PersonSheet: View {
                     .foregroundStyle(.secondary)
             }
 
-            Spacer()
+            Spacer(minLength: 8)
 
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
+            // 行のタップは一覧の切り替えに使うため、変更は独立したボタンにする。
+            // スワイプでも変更・削除できるが気づきにくいので、常に見える導線を置く
+            Button {
+                editorTarget = .edit(person)
+            } label: {
+                Image(systemName: "square.and.pencil")
+                    .font(.body)
+                    .foregroundStyle(Color.accentColor)
+                    .padding(.vertical, 6)
+                    .padding(.leading, 12)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(person.name)を変更")
         }
         .contentShape(Rectangle())
     }
