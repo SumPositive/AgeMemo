@@ -419,6 +419,8 @@ struct BirthDatePad: View {
 struct BirthDateInputSheet<Header: View>: View {
     @Environment(\.dismiss) private var dismiss
     @State private var entry: BirthDateEntry
+    /// 保存を押したか。押すまでは入力途中とみなして警告を出さない
+    @State private var didAttemptSave = false
 
     private let title: String
     private let canSave: Bool
@@ -443,9 +445,9 @@ struct BirthDateInputSheet<Header: View>: View {
         entry.resolvedDate()
     }
 
-    /// 入力途中は警告を出さず、揃ってから不正な日付だけを知らせる
+    /// 入力中は警告を出さず、保存を押した時だけ知らせる
     private var showsInvalidDateWarning: Bool {
-        entry.isComplete && resolvedBirthDate == nil
+        didAttemptSave && resolvedBirthDate == nil
     }
 
     var body: some View {
@@ -456,6 +458,8 @@ struct BirthDateInputSheet<Header: View>: View {
                     header
 
                     BirthDatePad(entry: $entry)
+                        // 直し始めたら警告は引っ込める
+                        .onChange(of: entry) { _, _ in didAttemptSave = false }
 
                     // 警告の有無でシート高が変わらないよう、領域は常に確保しておく
                     Text("存在しない日付です")
@@ -477,11 +481,13 @@ struct BirthDateInputSheet<Header: View>: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") {
+                        // 押せるようにしておき、不正な日付はここで知らせる
+                        didAttemptSave = true
                         guard let resolvedBirthDate else { return }
                         commit(resolvedBirthDate)
                         dismiss()
                     }
-                    .disabled(resolvedBirthDate == nil || !canSave)
+                    .disabled(!canSave)
                 }
             }
         }

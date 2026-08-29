@@ -1,4 +1,4 @@
-// 和暦・干支・年齢・飛躍換算の基礎ロジックを検証する
+// 和暦・干支・年齢・移動換算の基礎ロジックを検証する
 
 import XCTest
 @testable import AgeMemo
@@ -7,7 +7,7 @@ final class CoreLogicTests: XCTestCase {
     func testJapaneseEraExamples() {
         let expected = [
             1600: "慶長5年",
-            1700: "元禍13年",
+            1700: "元禄13年",
             1800: "寛政12年",
             2026: "令和8年",
             2100: "令和82年",
@@ -81,6 +81,19 @@ final class CoreLogicTests: XCTestCase {
     func testBirthYearForAge() {
         XCTAssertEqual(AgeCalculator.birthYear(forAge: 38, currentYear: 2026), 1988)
         XCTAssertEqual(AgeCalculator.birthYear(forAge: 0, currentYear: 2026), 2026)
+    }
+
+    func testYearForPersonalAge() throws {
+        let birthDate = try XCTUnwrap(
+            Calendar(identifier: .gregorian)
+                .date(from: DateComponents(year: 1988, month: 6, day: 1))
+        )
+        XCTAssertEqual(AgeCalculator.year(forAge: 10, birthDate: birthDate), 1998)
+        XCTAssertEqual(
+            AgeCalculator.year(forAge: 11, birthDate: birthDate, reckoning: .traditional),
+            1998
+        )
+        XCTAssertEqual(AgeCalculator.year(forAge: -2, birthDate: birthDate), 1986)
     }
 
     func testEraChoiceUsesActualFirstYear() throws {

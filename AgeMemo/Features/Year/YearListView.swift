@@ -39,8 +39,8 @@ struct YearListView: View {
     @State private var selectedToolbarAction = MainToolbarAction.age
     @State private var ageDisplayMode = AgeDisplayMode.age
     @State private var selectedPerson: Person?
-    /// 年齢シートで指定された年齢に対応する生年。その行を選択色で示す
-    @State private var selectedAgeYear: Int?
+    /// シートから移動した年。その行を移動先として明示する
+    @State private var selectedDestinationYear: Int?
 
     private let currentYear = Calendar.current.component(.year, from: .now)
 
@@ -89,7 +89,7 @@ struct YearListView: View {
                                     memo: showsMemo ? memoStore.text(for: row.gregorian) : nil,
                                     isCurrentYear: row.gregorian == currentYear,
                                     isBirthYear: row.gregorian == highlightedBirthYear,
-                                    isSelected: row.gregorian == selectedAgeYear,
+                                    isSelected: row.gregorian == selectedDestinationYear,
                                     showsAgeFirst: ageDisplayMode == .age,
                                     longevity: longevity(for: row.gregorian),
                                     unluckyYear: unluckyYear(for: row.gregorian),
@@ -265,7 +265,7 @@ struct YearListView: View {
             AgeJumpSheet(placeholderAge: settings.lastEnteredAge, currentYear: currentYear) { enteredAge, year in
                 // 次回のシート表示で前回の年齢を初期値にする
                 settings.lastEnteredAge = enteredAge
-                selectedAgeYear = year
+                selectedDestinationYear = year
                 scroll(to: year)
             }
         case .person:
@@ -275,7 +275,16 @@ struct YearListView: View {
                 scroll(to: currentYear)
             }
         case .era:
-            EraJumpSheet(rows: rows) { scroll(to: $0) }
+            EraJumpSheet(
+                rows: rows,
+                ageDisplayMode: ageDisplayMode,
+                initialSelectionID: settings.lastJumpSelectionID,
+                initialInput: settings.lastJumpInput
+            ) { year in
+                // 年号指定でも移動先の行を明示する
+                selectedDestinationYear = year
+                scroll(to: year)
+            }
         case .settings:
             SettingsView()
         }
@@ -290,14 +299,14 @@ struct YearListView: View {
             presentedSheet = .age
         case .personal:
             ageDisplayMode = .personal
-            selectedAgeYear = nil
+            selectedDestinationYear = nil
             if birthYear != nil {
                 scroll(to: currentYear)
             } else {
                 presentedSheet = .settings
             }
         case .person:
-            selectedAgeYear = nil
+            selectedDestinationYear = nil
             presentedSheet = .person
         }
     }

@@ -141,6 +141,28 @@ final class AppSettings {
         didSet { defaults.set(lastEnteredAge, forKey: Key.lastEnteredAge) }
     }
 
+    /// 移動シートで最後に選んだ入力種別
+    var lastJumpSelectionID: String? {
+        didSet {
+            if let lastJumpSelectionID {
+                defaults.set(lastJumpSelectionID, forKey: Key.lastJumpSelectionID)
+            } else {
+                defaults.removeObject(forKey: Key.lastJumpSelectionID)
+            }
+        }
+    }
+
+    /// 移動シートで最後に入力した符号付きの値
+    var lastJumpInput: Int? {
+        didSet {
+            if let lastJumpInput {
+                defaults.set(lastJumpInput, forKey: Key.lastJumpInput)
+            } else {
+                defaults.removeObject(forKey: Key.lastJumpInput)
+            }
+        }
+    }
+
     /// メモを「自分」モードのときだけ一覧と詳細に表示する
     var showsMemoOnlyForSelf: Bool {
         didSet { defaults.set(showsMemoOnlyForSelf, forKey: Key.showsMemoOnlyForSelf) }
@@ -164,6 +186,8 @@ final class AppSettings {
         static let appearanceMode = "appearanceMode"
         static let birthDate = "birthDate"
         static let lastEnteredAge = "lastEnteredAge"
+        static let lastJumpSelectionID = "lastJumpSelectionID"
+        static let lastJumpInput = "lastJumpInput"
         static let showsMemoOnlyForSelf = "showsMemoOnlyForSelf"
         static let ageReckoning = "ageReckoning"
         static let gender = "gender"
@@ -183,6 +207,8 @@ final class AppSettings {
         showsNineStar = defaults.bool(forKey: Key.showsNineStar)
         birthDate = defaults.object(forKey: Key.birthDate) as? Date
         lastEnteredAge = defaults.object(forKey: Key.lastEnteredAge) as? Int ?? 0
+        lastJumpSelectionID = defaults.string(forKey: Key.lastJumpSelectionID)
+        lastJumpInput = defaults.object(forKey: Key.lastJumpInput) as? Int
         // 未設定時はONを既定とするため、値の有無を見てから読み出す
         showsMemoOnlyForSelf = defaults.object(forKey: Key.showsMemoOnlyForSelf) as? Bool ?? true
     }

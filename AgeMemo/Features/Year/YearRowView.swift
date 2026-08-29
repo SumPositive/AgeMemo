@@ -8,7 +8,7 @@ struct YearRowView: View {
     let memo: String?
     let isCurrentYear: Bool
     let isBirthYear: Bool
-    /// 年齢指定などで選ばれた行。当年より強い色で示す
+    /// シートから移動した行。背景色で移動先を示す
     var isSelected: Bool = false
     /// 年齢モードでは年齢を左端に置き、一覧の性格の違いを明確にする
     var showsAgeFirst: Bool = false
@@ -33,7 +33,7 @@ struct YearRowView: View {
     }
 
     private var hasSecondaryLine: Bool {
-        isBirthYear || !(memo?.isEmpty ?? true)
+        !(memo?.isEmpty ?? true)
             || longevity != nil || unluckyYear != nil || schoolMilestone != nil
     }
 
@@ -51,15 +51,6 @@ struct YearRowView: View {
 
             if hasSecondaryLine {
                 HStack(spacing: 6) {
-                    if isBirthYear {
-                        Text("生年")
-                            .font(.caption2.bold())
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .foregroundStyle(.white)
-                            .background(.tint, in: Capsule())
-                    }
-
                     if let memo, !memo.isEmpty {
                         Text(memo)
                             .font(.caption)
@@ -113,12 +104,14 @@ struct YearRowView: View {
     }
 
     private var rowBackground: Color {
-        // 年齢指定の選択行と、自分／名簿の生年行は同じ濃さで示す
-        if isSelected || isBirthYear {
+        // 移動先は緑系にして、自分／名簿の生年行と区別する
+        if isSelected {
+            Color(uiColor: .systemGreen).opacity(0.30)
+        } else if isBirthYear {
             Color.accentColor.opacity(0.30)
         } else if isCurrentYear {
-            // 当年は現在位置の目印として薄く残す
-            Color.accentColor.opacity(0.14)
+            // 当年も生年と同じ濃さにしてダークモードでの視認性を保つ
+            Color.accentColor.opacity(0.30)
         } else {
             Color.clear
         }

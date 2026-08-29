@@ -18,9 +18,13 @@ struct PersonSheet: View {
     @ScaledMetric(relativeTo: .body) private var estimatedRowHeight: CGFloat = 58
     @ScaledMetric(relativeTo: .body) private var estimatedChromeHeight: CGFloat = 140
 
+    /// 登録が増えても伸ばし続けず、この高さで止めてスクロールさせる
+    @ScaledMetric(relativeTo: .body) private var maximumFittedHeight: CGFloat = 480
+
     private var fittedHeight: CGFloat {
         let rowCount = max(personStore.people.count, 1)
-        return estimatedChromeHeight + estimatedRowHeight * CGFloat(rowCount)
+        let natural = estimatedChromeHeight + estimatedRowHeight * CGFloat(rowCount)
+        return min(natural, maximumFittedHeight)
     }
 
     private var personSheetHelp: String {
@@ -132,8 +136,8 @@ struct PersonSheet: View {
                 Text("「\(person.name)」を削除します。この操作は取り消せません。")
             }
         }
-        // 行数に応じた高さにする。増えすぎたときは .large へ逃がす
-        .presentationDetents(fittedHeight > 520 ? [.large] : [.height(fittedHeight), .large])
+        // 行数に応じた高さから始め、ハンドルで最大化もできるようにする
+        .presentationDetents([.height(fittedHeight), .large])
         .presentationDragIndicator(.visible)
     }
 

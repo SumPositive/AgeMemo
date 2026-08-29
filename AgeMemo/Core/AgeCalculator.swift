@@ -42,6 +42,19 @@ enum AgeCalculator {
         return currentYear - actualAge
     }
 
+    /// 指定した人がその年齢になる西暦年を求める
+    static func year(
+        forAge age: Int,
+        birthDate: Date,
+        reckoning: AgeReckoning = .actual,
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> Int {
+        let birthYear = calendar.component(.year, from: birthDate)
+        // 生まれる前の負数はそのまま生年から逆方向へ足す
+        let actualAge = 0 <= age ? reckoning.actualAge(from: age) : age
+        return birthYear + actualAge
+    }
+
     static func age(
         in year: Int,
         birthDate: Date?,

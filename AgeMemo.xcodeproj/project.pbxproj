@@ -101,10 +101,10 @@
 				A10000000000000000000041 /* AgeMemo */,
 			);
 			name = AgeMemo;
-			productName = AgeMemo;
 			packageProductDependencies = (
 				A1000000000000000000A002 /* GoogleMobileAds */,
 			);
+			productName = AgeMemo;
 			productReference = A10000000000000000000031 /* AgeMemo.app */;
 			productType = "com.apple.product-type.application";
 		};

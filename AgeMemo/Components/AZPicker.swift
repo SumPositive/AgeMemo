@@ -222,7 +222,7 @@ struct AZDropdownPicker<Option: Hashable & Identifiable, Label: View>: View {
 
     private var selectedLabel: some View {
         label(selection)
-            .font(.subheadline)
+            .font(style.optionFont)
             .foregroundStyle(Color.primary)
             .azPickerTextFit(style.dropdownTextFitMode, alignment: .center)
     }
