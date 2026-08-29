@@ -142,7 +142,7 @@ struct YearDetailView: View {
 
     /// その年に迎える入学・卒業の節目
     private var schoolMilestone: SchoolMilestone? {
-        guard settings.showsSchoolAge, let birthDate = effectiveBirthDate else { return nil }
+        guard let birthDate = effectiveBirthDate else { return nil }
         return SchoolAge.milestone(inYear: row.gregorian, birthDate: birthDate)
     }
 
@@ -150,7 +150,6 @@ struct YearDetailView: View {
     /// 九星は年そのものの性質なので、どの年の行でも表示する。
     /// 本人の生まれ年だけは、立春の区切りを見て正確な星に差し替える
     private var nineStar: NineStar? {
-        guard settings.showsNineStar else { return nil }
         if let birthDate = effectiveBirthDate,
            let birthYear = AgeCalculator.birthYear(from: birthDate),
            birthYear == row.gregorian {

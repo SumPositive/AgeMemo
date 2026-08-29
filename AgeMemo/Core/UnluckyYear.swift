@@ -11,7 +11,7 @@ enum Gender: Int, CaseIterable, Identifiable, Codable, Sendable {
 
     var title: String {
         switch self {
-        case .unspecified: "不要"
+        case .unspecified: "未指定"
         case .male: "男性"
         case .female: "女性"
         }

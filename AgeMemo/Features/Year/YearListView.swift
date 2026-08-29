@@ -91,6 +91,7 @@ struct YearListView: View {
                                     isBirthYear: row.gregorian == highlightedBirthYear,
                                     isSelected: row.gregorian == selectedDestinationYear,
                                     showsAgeFirst: ageDisplayMode == .age,
+                                    showsZodiac: settings.showsZodiac,
                                     longevity: longevity(for: row.gregorian),
                                     unluckyYear: unluckyYear(for: row.gregorian),
                                     schoolMilestone: schoolMilestone(for: row.gregorian),
@@ -320,7 +321,8 @@ struct YearListView: View {
 
     /// その年に迎える賀寿。生まれる前の年には出さない
     private func longevity(for year: Int) -> Longevity? {
-        guard let age = displayedAge(for: year), 0 <= age else { return nil }
+        guard settings.showsLongevity,
+              let age = displayedAge(for: year), 0 <= age else { return nil }
         return Longevity.forDisplayedAge(age, reckoning: settings.ageReckoning)
     }
 
@@ -363,7 +365,8 @@ struct YearListView: View {
 
     /// その年の厄年。生まれる前の年には出さない
     private func unluckyYear(for year: Int) -> UnluckyYear? {
-        guard effectiveGender != .unspecified,
+        guard settings.showsUnluckyYear,
+              effectiveGender != .unspecified,
               let age = displayedAge(for: year), 0 <= age else { return nil }
         return UnluckyYear.forDisplayedAge(age, gender: effectiveGender, reckoning: settings.ageReckoning)
     }

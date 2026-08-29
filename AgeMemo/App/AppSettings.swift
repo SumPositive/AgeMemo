@@ -122,9 +122,24 @@ final class AppSettings {
         didSet { defaults.set(ageReckoning.rawValue, forKey: Key.ageReckoning) }
     }
 
-    /// 厄年の判定に使う性別。不要なら厄年を表示しない
+    /// 厄年の判定に使う性別。未指定なら厄年を表示しない
     var gender: Gender {
         didSet { defaults.set(gender.rawValue, forKey: Key.gender) }
+    }
+
+    /// 干支を一覧に表示する
+    var showsZodiac: Bool {
+        didSet { defaults.set(showsZodiac, forKey: Key.showsZodiac) }
+    }
+
+    /// 還暦などの長寿祝いを一覧に表示する
+    var showsLongevity: Bool {
+        didSet { defaults.set(showsLongevity, forKey: Key.showsLongevity) }
+    }
+
+    /// 厄年を一覧に表示する
+    var showsUnluckyYear: Bool {
+        didSet { defaults.set(showsUnluckyYear, forKey: Key.showsUnluckyYear) }
     }
 
     /// 入学・卒業の年を表示する
@@ -191,6 +206,9 @@ final class AppSettings {
         static let showsMemoOnlyForSelf = "showsMemoOnlyForSelf"
         static let ageReckoning = "ageReckoning"
         static let gender = "gender"
+        static let showsZodiac = "showsZodiac"
+        static let showsLongevity = "showsLongevity"
+        static let showsUnluckyYear = "showsUnluckyYear"
         static let showsSchoolAge = "showsSchoolAge"
         static let showsNineStar = "showsNineStar"
     }
@@ -202,7 +220,10 @@ final class AppSettings {
         appearanceMode = AppearanceMode(rawValue: defaults.integer(forKey: Key.appearanceMode)) ?? .system
         ageReckoning = AgeReckoning(rawValue: defaults.integer(forKey: Key.ageReckoning)) ?? .actual
         gender = Gender(rawValue: defaults.integer(forKey: Key.gender)) ?? .unspecified
-        // どちらも既定はOFF。bool(forKey:) は未設定で false を返すのでそのまま使える
+        // 補助表示はすべて既定OFF。未設定なら false を返す読み出しを使う
+        showsZodiac = defaults.bool(forKey: Key.showsZodiac)
+        showsLongevity = defaults.bool(forKey: Key.showsLongevity)
+        showsUnluckyYear = defaults.bool(forKey: Key.showsUnluckyYear)
         showsSchoolAge = defaults.bool(forKey: Key.showsSchoolAge)
         showsNineStar = defaults.bool(forKey: Key.showsNineStar)
         birthDate = defaults.object(forKey: Key.birthDate) as? Date

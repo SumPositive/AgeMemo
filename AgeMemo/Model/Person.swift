@@ -8,7 +8,7 @@ struct Person: Identifiable, Codable, Equatable, Sendable {
     let id: UUID
     var name: String
     var birthDate: Date
-    /// 厄年の判定に使う。既存データには無いので既定は不要
+    /// 厄年の判定に使う。既存データには無いので既定は未指定
     var gender: Gender
 
     init(id: UUID = UUID(), name: String, birthDate: Date, gender: Gender = .unspecified) {

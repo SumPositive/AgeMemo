@@ -115,7 +115,7 @@ struct SettingsView: View {
                     radioRow(
                         "自分の性別",
                         help: """
-                        「自分」の一覧で厄年を表示するために使います。「不要」を選ぶと厄年は表示されません。
+                        「自分」の一覧で厄年を表示するために使います。「未指定」を選ぶと厄年は表示されません。
 
                         年齢の一覧は特定の方を示すものではないため、厄年は表示されません。名簿の方の厄年は、名簿でその方に性別を設定すると表示されます。
 
@@ -137,23 +137,41 @@ struct SettingsView: View {
                         }
                     }
 
-                    Toggle(isOn: $settings.showsSchoolAge) {
+                }
+
+                Section("一覧に表示する") {
+                    Toggle(isOn: $settings.showsZodiac) {
                         HStack(alignment: .center, spacing: 4) {
-                            Text("入学・卒業の年を表示")
-                            BeginnerHelpBanner("生年月日をもとに、小学校から大学までの入学・卒業の年を表示します。4月1日以前に生まれた方（早生まれ）は1年早く入学するため、その分を考慮して計算します。大学は4年制として扱います。")
+                            Text("干支")
+                            BeginnerHelpBanner("一覧の各年に干支を絵文字と漢字で表示します。")
                         }
                     }
 
                     Toggle(isOn: $settings.showsNineStar) {
                         HStack(alignment: .center, spacing: 4) {
-                            Text("九星を表示")
-                            BeginnerHelpBanner("""
-                            九星気学の本命星（一白水星から九紫火星までの9つ）を表示します。生まれた年によって決まり、9年で一巡します。
+                            Text("九星")
+                            BeginnerHelpBanner("一覧に九星気学の本命星を表示します。")
+                        }
+                    }
 
-                            九星の1年は立春（2月4日ごろ）から始まります。そのため1月1日から立春の前日までに生まれた方は、前の年の星になります。
+                    Toggle(isOn: $settings.showsSchoolAge) {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("入学・卒業")
+                            BeginnerHelpBanner("生年月日をもとに一覧へ入学・卒業を表示します。")
+                        }
+                    }
 
-                            生年月日が分かる「自分」と「名簿」ではこの区切りを考慮して表示します。年齢の一覧では、その年（立春以降）の星を表示します。
-                            """)
+                    Toggle(isOn: $settings.showsLongevity) {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("長寿祝い")
+                            BeginnerHelpBanner("一覧に還暦、古希、喜寿などの長寿祝いを表示します。")
+                        }
+                    }
+
+                    Toggle(isOn: $settings.showsUnluckyYear) {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("厄年")
+                            BeginnerHelpBanner("一覧に前厄・本厄・後厄を表示します。性別が未指定の場合は表示されません。")
                         }
                     }
 

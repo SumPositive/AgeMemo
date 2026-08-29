@@ -12,6 +12,8 @@ struct YearRowView: View {
     var isSelected: Bool = false
     /// 年齢モードでは年齢を左端に置き、一覧の性格の違いを明確にする
     var showsAgeFirst: Bool = false
+    /// 干支列を表示する。九星だけONの場合は九星のみを同じ列に出す
+    var showsZodiac: Bool = false
     /// 還暦・喜寿などの節目。該当しない年は nil
     var longevity: Longevity?
     /// 前厄・本厄・後厄。性別が未指定なら nil
@@ -24,7 +26,7 @@ struct YearRowView: View {
     @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-    /// 列と列のあいだ。詰めすぎると読みにくいので最小限だけ空ける
+    /// 列間の最小幅。余った幅は各列間へ均等に配分する
     private let columnSpacing: CGFloat = 8
 
     /// 特大以上では横に並べきれないので2段へ落とす
@@ -82,11 +84,11 @@ struct YearRowView: View {
                             .lineLimit(1)
                     }
                 }
+                .padding(.horizontal, 6)
                 .padding(.leading, 60)
             }
         }
         .foregroundStyle(rowTextColor)
-        .padding(.horizontal, 6)
         .padding(.vertical, compact ? 6 : 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(rowBackground)
@@ -119,24 +121,40 @@ struct YearRowView: View {
 
     private func primaryLine(scale: CGFloat) -> some View {
         let fontSize = preferredFontSize * scale
-        // 幅いっぱいに散らすと間延びするので、列は自然な幅のまま寄せ、
-        // 固まりごと中央に置く
-        return HStack(spacing: columnSpacing) {
+        // 収まる文字倍率を決めた後、余った幅をSpacerで左右端と各列間へ均等に配る
+        return HStack(spacing: 0) {
+            columnGap
             if showsAgeFirst {
                 ageColumn(fontSize: fontSize)
+                columnGap
                 gregorianColumn(fontSize: fontSize)
+                columnGap
                 eraColumn(fontSize: fontSize)
                     .frame(width: fontSize * 4.1, alignment: .leading)
-                zodiacColumn(fontSize: fontSize)
+                if showsZodiac || nineStar != nil {
+                    columnGap
+                    zodiacColumn(fontSize: fontSize)
+                }
             } else {
                 gregorianColumn(fontSize: fontSize)
+                columnGap
                 eraColumn(fontSize: fontSize)
                     .frame(width: fontSize * 4.1, alignment: .leading)
-                zodiacColumn(fontSize: fontSize)
+                if showsZodiac || nineStar != nil {
+                    columnGap
+                    zodiacColumn(fontSize: fontSize)
+                }
+                columnGap
                 ageColumn(fontSize: fontSize)
             }
+            columnGap
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity)
+    }
+
+    /// 複数のSpacerは余白を同じ幅で分け合う
+    private var columnGap: some View {
+        Spacer(minLength: columnSpacing)
     }
 
     private func gregorianColumn(fontSize: CGFloat) -> some View {
@@ -148,7 +166,7 @@ struct YearRowView: View {
 
     @ViewBuilder
     private func zodiacColumn(fontSize: CGFloat) -> some View {
-        if let nineStar {
+        if showsZodiac, let nineStar {
             // 文字が大きいときだけ2段にする。ViewThatFits に任せると
             // 列幅の取り合いで行全体が縮み、文字サイズの差が消えてしまう
             Group {
@@ -172,9 +190,12 @@ struct YearRowView: View {
                 height: fontSize * 1.25,
                 alignment: .leading
             )
-        } else {
+        } else if showsZodiac {
             zodiacText(size: fontSize)
                 .frame(width: fontSize * 2.55, alignment: .leading)
+        } else if let nineStar {
+            nineStarText(nineStar, size: fontSize * 0.72)
+                .frame(width: fontSize * 3.2, alignment: .leading)
         }
     }
 
