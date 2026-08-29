@@ -141,7 +141,7 @@ struct YearDetailView: View {
         }
     }
 
-    /// その年に迎える入学・卒業の節目
+    /// その年に在籍する学年
     private var schoolMilestone: SchoolMilestone? {
         guard let birthDate = effectiveBirthDate else { return nil }
         return SchoolAge.milestone(inYear: row.gregorian, birthDate: birthDate)

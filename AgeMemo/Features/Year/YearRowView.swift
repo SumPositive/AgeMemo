@@ -20,7 +20,7 @@ struct YearRowView: View {
     var longevity: Longevity?
     /// 前厄・本厄・後厄。性別が未指定なら nil
     var unluckyYear: UnluckyYear?
-    /// 入学・卒業の節目。設定がOFFなら nil
+    /// 小学校1年から大学4年までの学年。設定がOFFなら nil
     var schoolMilestone: SchoolMilestone?
     /// 九星の本命星。設定がOFFなら nil
     var nineStar: NineStar?

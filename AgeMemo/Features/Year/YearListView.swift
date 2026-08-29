@@ -376,7 +376,7 @@ struct YearListView: View {
         }
     }
 
-    /// その年に迎える入学・卒業の節目
+    /// その年に在籍する学年
     private func schoolMilestone(for year: Int) -> SchoolMilestone? {
         guard settings.showsSchoolAge, let birthDate = effectiveBirthDate else { return nil }
         return SchoolAge.milestone(inYear: year, birthDate: birthDate)

@@ -792,13 +792,13 @@
         }
       }
     },
-    "生年月日をもとに一覧へ入学・卒業を表示します。" : {
+    "生年月日をもとに、小学1年から大学4年までの学年を一覧に表示します。" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uses the date of birth to mark school entry and graduation years. The Japanese school year begins in April."
+            "value" : "Uses the date of birth to show each grade from elementary school year 1 through university year 4."
           }
         }
       }

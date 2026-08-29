@@ -164,7 +164,7 @@ struct SettingsView: View {
                     Toggle(isOn: $settings.showsSchoolAge) {
                         HStack(alignment: .center, spacing: 4) {
                             Text("入学・卒業")
-                            BeginnerHelpBanner("生年月日をもとに一覧へ入学・卒業を表示します。")
+                            BeginnerHelpBanner("生年月日をもとに、小学1年から大学4年までの学年を一覧に表示します。")
                         }
                     }
 

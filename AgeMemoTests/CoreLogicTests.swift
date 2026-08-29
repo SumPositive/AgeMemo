@@ -101,4 +101,19 @@ final class CoreLogicTests: XCTestCase {
         let keicho = try XCTUnwrap(choices.first { $0.name == "慶長" })
         XCTAssertEqual(keicho.firstGregorianYear, 1596)
     }
+
+    func testSchoolGradeFromElementaryToUniversity() throws {
+        // 小学校入学年から大学4年までを各年の学年表記へ変換する
+        let birthDate = try XCTUnwrap(
+            Calendar(identifier: .gregorian)
+                .date(from: DateComponents(year: 2018, month: 4, day: 2))
+        )
+        XCTAssertEqual(SchoolAge.milestone(inYear: 2025, birthDate: birthDate)?.shortName, "小1")
+        XCTAssertEqual(SchoolAge.milestone(inYear: 2030, birthDate: birthDate)?.shortName, "小6")
+        XCTAssertEqual(SchoolAge.milestone(inYear: 2031, birthDate: birthDate)?.shortName, "中1")
+        XCTAssertEqual(SchoolAge.milestone(inYear: 2034, birthDate: birthDate)?.shortName, "高1")
+        XCTAssertEqual(SchoolAge.milestone(inYear: 2037, birthDate: birthDate)?.shortName, "大1")
+        XCTAssertEqual(SchoolAge.milestone(inYear: 2040, birthDate: birthDate)?.shortName, "大4")
+        XCTAssertNil(SchoolAge.milestone(inYear: 2041, birthDate: birthDate))
+    }
 }
