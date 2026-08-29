@@ -2,6 +2,15 @@
 
 import SwiftUI
 
+extension Color {
+    /// ダークモードでは発光して見えないよう、移動操作の緑を落ち着かせる
+    static let moveAction = Color(uiColor: UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.12, green: 0.42, blue: 0.20, alpha: 1)
+            : UIColor.systemGreen
+    })
+}
+
 private struct AppAppearance: ViewModifier {
     @Environment(AppSettings.self) private var settings
     @Environment(\.dynamicTypeSize) private var systemDynamicTypeSize

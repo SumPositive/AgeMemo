@@ -10,6 +10,8 @@ struct YearRowView: View {
     let isBirthYear: Bool
     /// シートから移動した行。背景色で移動先を示す
     var isSelected: Bool = false
+    /// 一覧でタップした行。青系・緑系と区別できる色で示す
+    var isTapped: Bool = false
     /// 年齢モードでは年齢を左端に置き、一覧の性格の違いを明確にする
     var showsAgeFirst: Bool = false
     /// 干支列を表示する。九星だけONの場合は九星のみを同じ列に出す
@@ -106,8 +108,11 @@ struct YearRowView: View {
     }
 
     private var rowBackground: Color {
-        // 移動先は緑系にして、自分／名簿の生年行と区別する
-        if isSelected {
+        // タップ行はオレンジ系にして、当年・生年・移動先と区別する
+        if isTapped {
+            Color(uiColor: .systemOrange).opacity(0.30)
+        } else if isSelected {
+            // 移動先は緑系にして、自分／名簿の生年行と区別する
             Color(uiColor: .systemGreen).opacity(0.30)
         } else if isBirthYear {
             Color.accentColor.opacity(0.30)
@@ -216,15 +221,25 @@ struct YearRowView: View {
     @ViewBuilder
     private func ageColumn(fontSize: CGFloat) -> some View {
         if let age {
-            Text("\(age)歳")
+            let ageText = Text("\(age)歳")
                 .font(.system(size: fontSize, design: .monospaced))
                 .foregroundStyle(age < 0 ? AnyShapeStyle(.secondary) : AnyShapeStyle(rowTextColor))
                 .lineLimit(1)
-                .frame(width: fontSize * 3.6, alignment: .trailing)
+
+            if showsAgeFirst {
+                // 年齢一覧は年齢列の従来幅を維持する
+                ageText
+                    .frame(width: fontSize * 3.6, alignment: .trailing)
+            } else {
+                // 自分／名簿は「99歳」の幅を原則とし、必要な行だけ広げる
+                ageText
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(minWidth: fontSize * 2.3, alignment: .trailing)
+            }
         } else {
             // 年齢未設定時も列配置を保つ
             Color.clear
-                .frame(width: fontSize * 3.6)
+                .frame(width: fontSize * (showsAgeFirst ? 3.6 : 2.3))
         }
     }
 

@@ -67,6 +67,8 @@ struct AgeJumpSheet: View {
                             .padding(.vertical, 12)
                     }
                     .buttonStyle(.borderedProminent)
+                    // 移動先行と同じ緑系にして操作と結果を対応させる
+                    .tint(Color.moveAction)
                 }
                 .padding()
                 .measuredSheetContent()

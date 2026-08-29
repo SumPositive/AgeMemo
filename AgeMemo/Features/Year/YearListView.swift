@@ -41,6 +41,8 @@ struct YearListView: View {
     @State private var selectedPerson: Person?
     /// シートから移動した年。その行を移動先として明示する
     @State private var selectedDestinationYear: Int?
+    /// 一覧でタップした年。次の一覧切り替えまたは移動まで明示する
+    @State private var tappedYear: Int?
 
     private let currentYear = Calendar.current.component(.year, from: .now)
 
@@ -90,6 +92,7 @@ struct YearListView: View {
                                     isCurrentYear: row.gregorian == currentYear,
                                     isBirthYear: row.gregorian == highlightedBirthYear,
                                     isSelected: row.gregorian == selectedDestinationYear,
+                                    isTapped: row.gregorian == tappedYear,
                                     showsAgeFirst: ageDisplayMode == .age,
                                     showsZodiac: settings.showsZodiac,
                                     longevity: longevity(for: row.gregorian),
@@ -99,6 +102,8 @@ struct YearListView: View {
                                     compact: settings.displayMode == .expert
                                 )
                                 .onTapGesture {
+                                    // 詳細を閉じた後も、どの行を開いたか分かるようにする
+                                    tappedYear = row.gregorian
                                     presentedSheet = .detail(row.gregorian)
                                 }
 
@@ -302,6 +307,8 @@ struct YearListView: View {
     private func handleToolbarAction(_ action: MainToolbarAction) {
         // 最後に選択した操作を下部タブへ反映する
         selectedToolbarAction = action
+        // 一覧を切り替えた時点でタップ行の明示を解除する
+        tappedYear = nil
         switch action {
         case .age:
             ageDisplayMode = .age
@@ -322,6 +329,8 @@ struct YearListView: View {
 
     private func scroll(to year: Int) {
         let boundedYear = min(max(year, AppConfig.yearRange.lowerBound), AppConfig.yearRange.upperBound)
+        // 移動操作では以前にタップした行の明示を解除する
+        tappedYear = nil
         // 同じ年を再度選んだ場合もスクロールを実行する
         scrollRequest = YearScrollRequest(year: boundedYear)
         presentedSheet = nil
