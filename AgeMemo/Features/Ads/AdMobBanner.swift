@@ -9,7 +9,7 @@ enum AdMobConfig {
     #if DEBUG
     static let bannerUnitID = "ca-app-pub-3940256099942544/2435281174"
     #else
-    static let bannerUnitID = Bundle.main.object(forInfoDictionaryKey: "AgeMemoBannerUnitID") as? String ?? ""
+    static let bannerUnitID = Bundle.main.object(forInfoDictionaryKey: "NenrinBannerUnitID") as? String ?? ""
     #endif
 }
 
