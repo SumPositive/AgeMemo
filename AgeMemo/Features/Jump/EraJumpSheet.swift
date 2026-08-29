@@ -96,6 +96,10 @@ struct EraJumpSheet: View {
     }
 
     private var placeholderInputYear: Int {
+        placeholderInputYear(for: selection)
+    }
+
+    private func placeholderInputYear(for selection: EraJumpSelection) -> Int {
         switch selection {
         case .age:
             AgeCalculator.displayedAge(
@@ -136,14 +140,41 @@ struct EraJumpSheet: View {
     }
 
     private var convertedYear: Int {
+        convertedYear(for: selection, input: inputYear)
+    }
+
+    private func convertedYear(for selection: EraJumpSelection, input: Int) -> Int {
         switch selection {
         case .age:
-            destinationYear(forAge: inputYear)
+            destinationYear(forAge: input)
         case .gregorian:
-            inputYear
+            input
         case .era(let choice):
-            choice.firstGregorianYear + inputYear - 1
+            choice.firstGregorianYear + input - 1
         }
+    }
+
+    /// 同じ西暦年を新しい入力種別の値へ換算する
+    private func input(for selection: EraJumpSelection, destinationYear: Int) -> Int {
+        switch selection {
+        case .age:
+            return AgeCalculator.displayedAge(
+                for: destinationYear,
+                mode: ageDisplayMode,
+                birthDate: settings.birthDate,
+                currentYear: currentYear,
+                reckoning: settings.ageReckoning
+            ) ?? settings.ageReckoning.age(fromActual: 0)
+        case .gregorian:
+            return destinationYear
+        case .era(let choice):
+            return destinationYear - choice.firstGregorianYear + 1
+        }
+    }
+
+    private func boundedInput(_ input: Int, for selection: EraJumpSelection) -> Int {
+        let magnitude = min(abs(input), Self.maximumInput(for: selection))
+        return input < 0 ? -magnitude : magnitude
     }
 
     private var boundedYear: Int {
@@ -254,16 +285,19 @@ struct EraJumpSheet: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
                     .frame(maxWidth: .infinity, alignment: .trailing)
-                    .accessibilityLabel("移動先 西暦\(convertedYear)年")
+                    .accessibilityLabel(Text("移動先 西暦\(convertedYear)年"))
             }
         }
-        .onChange(of: selection) { _, _ in
-            // 年号の桁制限に合わせて未入力状態へ戻す
+        .onChange(of: selection) { previousSelection, newSelection in
+            // 移動先の西暦年を保ったまま、新しい年号の値へ換算する
+            let sourceInput = signedInput ?? retainedInput ?? placeholderInputYear(for: previousSelection)
+            let destinationYear = convertedYear(for: previousSelection, input: sourceInput)
+            let convertedInput = input(for: newSelection, destinationYear: destinationYear)
             digits = ""
             isNegative = false
-            retainedInput = nil
-            settings.lastJumpSelectionID = selection.id
-            settings.lastJumpInput = nil
+            retainedInput = boundedInput(convertedInput, for: newSelection)
+            settings.lastJumpSelectionID = newSelection.id
+            settings.lastJumpInput = retainedInput
         }
     }
 

@@ -31,8 +31,8 @@ struct SettingsView: View {
     /// 見出し＋ラジオボタンの1行。幅が足りなければ2段組みへ自動で切り替わる
     @ViewBuilder
     private func radioRow<Option: CaseIterable & Hashable & Identifiable, Label: View>(
-        _ title: String,
-        help: String,
+        _ title: LocalizedStringKey,
+        help: LocalizedStringKey,
         selection: Binding<Option>,
         @ViewBuilder label: @escaping (Option) -> Label
     ) -> some View where Option.AllCases == [Option] {
@@ -179,7 +179,9 @@ struct SettingsView: View {
 
                 Section {
                     Button("取扱説明") {
-                        if let url = URL(string: "https://docs.azukid.com/jp/sumpo/AgeMemo/") {
+                        // 端末の言語に合わせて取扱説明の言語を切り替える
+                        let locale = Locale.current.language.languageCode?.identifier == "ja" ? "jp" : "en"
+                        if let url = URL(string: "https://docs.azukid.com/\(locale)/sumpo/Nenrin/nenrin.html") {
                             openURL(url)
                         }
                     }

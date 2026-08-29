@@ -9,7 +9,7 @@ enum DisplayMode: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
         case .beginner: "初心者"
         case .expert: "達人"
@@ -25,7 +25,7 @@ enum AppFontScale: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
         case .system: "自動"
         case .standard: "標準"
@@ -52,7 +52,7 @@ enum AppearanceMode: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
         case .system: "自動"
         case .light: "ライト"
@@ -75,7 +75,7 @@ enum AgeReckoning: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
         case .actual: "満年齢"
         case .traditional: "数え年"

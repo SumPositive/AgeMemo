@@ -10,7 +10,20 @@ struct NineStar: Sendable, Hashable {
         "六白金星", "七赤金星", "八白土星", "九紫火星"
     ]
 
+    private static let kanaValues = [
+        "いっぱくすいせい", "じこくどせい", "さんぺきもくせい", "しろくもくせい", "ごおうどせい",
+        "ろっぱくきんせい", "しちせききんせい", "はっぱくどせい", "きゅうしかせい"
+    ]
+
+    private static let romajiValues = [
+        "ippaku suisei", "jikoku dosei", "sanpeki mokusei", "shiroku mokusei", "goou dosei",
+        "roppaku kinsei", "shichiseki kinsei", "happaku dosei", "kyushi kasei"
+    ]
+
     var name: String { Self.names[index - 1] }
+    var kana: String { Self.kanaValues[index - 1] }
+    /// 日本語を読めない利用者向けの読み。ja では出さない
+    var romaji: String { Self.romajiValues[index - 1] }
 
     /// 立春を跨いだ「その年」の本命星。各桁を1桁になるまで足し、11から引く
     static func forStarYear(_ year: Int) -> NineStar {

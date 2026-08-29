@@ -7,11 +7,11 @@ struct BeginnerHelpBanner: View {
     @Environment(AppSettings.self) private var settings
     @Environment(\.dynamicTypeSize) private var systemDynamicTypeSize
 
-    let message: String
+    let message: LocalizedStringKey
     @State private var showsHelpSheet = false
     @State private var sheetContentHeight: CGFloat = 220
 
-    init(_ message: String) {
+    init(_ message: LocalizedStringKey) {
         self.message = message
     }
 
@@ -45,7 +45,7 @@ struct BeginnerHelpBanner: View {
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("ヘルプ")
+        .accessibilityLabel(Text("ヘルプ"))
     }
 
     private var helpButtonFont: Font {

@@ -17,7 +17,7 @@ private struct MemoDocument: Codable {
 @Observable
 final class MemoStore {
     private(set) var memos: [Int: YearMemo] = [:]
-    private(set) var lastErrorMessage: String?
+    private(set) var lastError: MemoStoreError?
 
     private let fileURL: URL
     private var pendingSaveTask: Task<Void, Never>?
@@ -85,12 +85,12 @@ final class MemoStore {
             decoder.dateDecodingStrategy = .iso8601
             let document = try decoder.decode(MemoDocument.self, from: data)
             guard document.version == 1 else {
-                lastErrorMessage = "未対応のメモ形式です"
+                lastError = .unsupportedFormat
                 return
             }
             memos = document.memos
         } catch {
-            lastErrorMessage = "メモを読み込めませんでした"
+            lastError = .loadFailed
         }
     }
 
@@ -109,9 +109,9 @@ final class MemoStore {
             let data = try encoder.encode(MemoDocument(version: 1, memos: memos))
             try data.write(to: fileURL, options: .atomic)
             hasUnsavedChanges = false
-            lastErrorMessage = nil
+            lastError = nil
         } catch {
-            lastErrorMessage = "メモを保存できませんでした"
+            lastError = .saveFailed
         }
     }
 

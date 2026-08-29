@@ -27,7 +27,7 @@ struct PersonSheet: View {
         return min(natural, maximumFittedHeight)
     }
 
-    private var personSheetHelp: String {
+    private var personSheetHelp: LocalizedStringKey {
         """
         家族・親戚・友人など、年齢を調べたい方を登録しておく名簿です。登録すると一覧がその方の生年月日を基準になり、各年に何歳になるかを確認できます。
 
@@ -93,9 +93,9 @@ struct PersonSheet: View {
                     }
                 }
 
-                if let message = personStore.lastErrorMessage {
+                if let error = personStore.lastError {
                     Section {
-                        Text(message)
+                        Text(error.message)
                             .font(.footnote)
                             .foregroundStyle(.red)
                     }
@@ -173,7 +173,7 @@ struct PersonSheet: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("\(person.name)を変更")
+            .accessibilityLabel(Text("\(person.name)を変更"))
         }
         .contentShape(Rectangle())
     }
@@ -211,7 +211,7 @@ private struct PersonEditorSheet: View {
         }
     }
 
-    private var personGenderHelp: String {
+    private var personGenderHelp: LocalizedStringKey {
         """
         厄年を表示するために使います。「未指定」を選ぶと、この方の厄年は表示されません。
 

@@ -2,22 +2,6 @@
 
 import Foundation
 
-enum Gender: Int, CaseIterable, Identifiable, Codable, Sendable {
-    case unspecified
-    case male
-    case female
-
-    var id: Int { rawValue }
-
-    var title: String {
-        switch self {
-        case .unspecified: "未指定"
-        case .male: "男性"
-        case .female: "女性"
-        }
-    }
-}
-
 struct UnluckyYear: Sendable, Hashable {
     enum Phase: Sendable, Hashable {
         case before

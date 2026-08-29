@@ -111,12 +111,13 @@ struct YearDetailView: View {
             }
 
             if let nineStar {
-                Text("九星 \(nineStar.name)")
+                // 「九星」は暦の用語なので訳さない。読みだけ言語に合わせる
+                Text(verbatim: "九星 \(nineStar.name)\(reading(kana: nineStar.kana, romaji: nineStar.romaji))")
                     .foregroundStyle(.secondary)
             }
 
-            Text("\(row.stemBranch.branch.emoji) \(row.stemBranch.kanji)（\(row.stemBranch.kana)）")
-            Text("十二支 \(row.stemBranch.branch.kanji)（\(row.stemBranch.branch.kana)）")
+            Text(verbatim: "\(row.stemBranch.branch.emoji) \(row.stemBranch.kanji)\(reading(kana: row.stemBranch.kana, romaji: row.stemBranch.romaji))")
+            Text(verbatim: "十二支 \(row.stemBranch.branch.kanji)\(reading(kana: row.stemBranch.branch.kana, romaji: row.stemBranch.branch.romaji))")
                 .foregroundStyle(.secondary)
         }
         // 改元年は元号が2つ並んで長くなるため、折り返さず縮小して1行に収める
@@ -190,29 +191,39 @@ struct YearDetailView: View {
         )
     }
 
+    /// 日本語の読み。ja はかなのみ、en はかなとローマ字を併記する
+    private func reading(kana: String, romaji: String) -> String {
+        isJapanese ? "（\(kana)）" : "（\(kana) / \(romaji)）"
+    }
+
+    private var isJapanese: Bool {
+        Locale.current.language.languageCode?.identifier == "ja"
+    }
+
+    /// 年の意味を1行で説明する。操作の案内にあたるため訳す
     private func ageDescription(_ age: Int) -> String {
         switch ageDisplayMode {
         case .age:
             // 年齢が負の年はまだ生まれていないため、経過年数で表す
             if age > 0 {
-                "現在\(age)歳の方の誕生年"
+                String(localized: "現在\(age)歳の方の誕生年")
             } else if age == 0 {
-                "今年生まれた方の誕生年"
+                String(localized: "今年生まれた方の誕生年")
             } else {
-                "\(-age)年後に生まれる方の誕生年"
+                String(localized: "\(-age)年後に生まれる方の誕生年")
             }
         case .personal, .person:
             // 生年より前の年は、生まれるまでの残り年数で表す
             if age > 0 {
                 switch settings.ageReckoning {
                 // 数え年は元日に増えるので、誕生日を持ち出さない
-                case .actual: "この年の誕生日で満\(age)歳"
-                case .traditional: "この年は数え\(age)歳"
+                case .actual: String(localized: "この年の誕生日で満\(age)歳")
+                case .traditional: String(localized: "この年は数え\(age)歳")
                 }
             } else if age == 0 {
-                "この年に生まれました"
+                String(localized: "この年に生まれました")
             } else {
-                "生まれるまであと\(-age)年"
+                String(localized: "生まれるまであと\(-age)年")
             }
         }
     }
@@ -242,8 +253,8 @@ struct YearDetailView: View {
                         .stroke(Color(uiColor: .separator), lineWidth: 0.5)
                 }
 
-            if let message = memoStore.lastErrorMessage {
-                Text(message)
+            if let error = memoStore.lastError {
+                Text(error.message)
                     .font(.footnote)
                     .foregroundStyle(.red)
             }

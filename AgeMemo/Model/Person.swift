@@ -45,7 +45,7 @@ private struct PersonDocument: Codable {
 @Observable
 final class PersonStore {
     private(set) var people: [Person] = []
-    private(set) var lastErrorMessage: String?
+    private(set) var lastError: PersonStoreError?
 
     private let fileURL: URL
 
@@ -98,12 +98,12 @@ final class PersonStore {
             decoder.dateDecodingStrategy = .iso8601
             let document = try decoder.decode(PersonDocument.self, from: data)
             guard document.version == 1 else {
-                lastErrorMessage = "未対応の名簿データ形式です"
+                lastError = .unsupportedFormat
                 return
             }
             people = document.people
         } catch {
-            lastErrorMessage = "名簿を読み込めませんでした"
+            lastError = .loadFailed
         }
     }
 
@@ -118,9 +118,9 @@ final class PersonStore {
             encoder.dateEncodingStrategy = .iso8601
             let data = try encoder.encode(PersonDocument(version: 1, people: people))
             try data.write(to: fileURL, options: .atomic)
-            lastErrorMessage = nil
+            lastError = nil
         } catch {
-            lastErrorMessage = "名簿を保存できませんでした"
+            lastError = .saveFailed
         }
     }
 

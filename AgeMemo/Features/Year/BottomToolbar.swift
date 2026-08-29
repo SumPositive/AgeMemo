@@ -9,7 +9,7 @@ enum MainToolbarAction: CaseIterable, Identifiable {
 
     var id: Self { self }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
         case .age: "年齢"
         case .personal: "自分"

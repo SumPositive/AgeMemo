@@ -180,22 +180,27 @@ struct YearListView: View {
     }
 
     /// 一覧の使い方。モードごとに引く向きが違うので、それぞれに合わせて説明する
-    private var listHelp: String {
-        let tapGuide = showsMemo
-            ? "行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
-            : "行をタップすると、その年のカレンダーが開きます。"
-        switch ageDisplayMode {
-        case .age:
-            return "年齢を指定すると、その年齢の方が生まれた年へ移動します。" + tapGuide
-        case .personal:
-            return "自分の生年月日をもとに、各年に何歳になるかを表示します。" + tapGuide
-        case .person:
-            return "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。" + tapGuide
+    /// 一覧の使い方。モードとメモ表示の組み合わせごとに1つの訳文とする。
+    /// 文を連結すると訳したときに語順が崩れるため、あえて分割しない
+    private var listHelp: LocalizedStringKey {
+        switch (ageDisplayMode, showsMemo) {
+        case (.age, true):
+            "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+        case (.age, false):
+            "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーが開きます。"
+        case (.personal, true):
+            "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+        case (.personal, false):
+            "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。"
+        case (.person, true):
+            "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+        case (.person, false):
+            "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。"
         }
     }
 
     /// 初心者モードで一覧の読み方を示す。年齢一覧と自分／名簿では引く向きが逆になる
-    private var listSummary: String {
+    private var listSummary: LocalizedStringKey {
         switch ageDisplayMode {
         case .age: "年齢と生まれた年の早見表"
         case .personal, .person: "年と年齢の早見表"
@@ -246,12 +251,15 @@ struct YearListView: View {
         settings.appearanceMode.colorScheme ?? colorScheme
     }
 
+    /// アプリ名は en ではラテンブランド名を出す。
+    /// 名簿の人物名は訳す対象ではないため、ここは `String` のまま組み立てる
     private var navigationTitle: String {
+        let appName = String(localized: "和暦年齢メモ")
         switch ageDisplayMode {
         case .age, .personal:
-            "和暦年齢メモ"
+            return appName
         case .person:
-            selectedPerson?.name ?? "和暦年齢メモ"
+            return selectedPerson?.name ?? appName
         }
     }
 

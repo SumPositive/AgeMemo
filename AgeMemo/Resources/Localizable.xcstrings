@@ -1,0 +1,1002 @@
+{
+  "sourceLanguage" : "ja",
+  "strings" : {
+    "「%@」を削除します。この操作は取り消せません。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” will be deleted. This cannot be undone."
+          }
+        }
+      }
+    },
+    "%@ %@" : {
+      "comment" : "干支の絵文字と漢字",
+      "shouldTranslate" : false
+    },
+    "%@%%" : {
+      "comment" : "月の輝面比。記号のみ",
+      "shouldTranslate" : false
+    },
+    "%@を変更" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit %@"
+          }
+        }
+      }
+    },
+    "%@元年（%@月%@日〜）" : {
+      "comment" : "改元の開始日。元号名は ja のデータ、月日は単位付き",
+      "shouldTranslate" : false
+    },
+    "%@年  %@" : {
+      "comment" : "西暦と和暦の並び。どちらも ja のデータ",
+      "shouldTranslate" : false
+    },
+    "%@年生まれ・%@歳" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Born %@ · %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@年生まれ・%2$@歳"
+          }
+        }
+      }
+    },
+    "%@文字" : {
+
+    },
+    "%@月" : {
+      "comment" : "カレンダーの月。訳さない",
+      "shouldTranslate" : false
+    },
+    "%@歳" : {
+
+    },
+    "%lld年後に生まれる方の誕生年" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Birth year of someone born in %lld years"
+          }
+        }
+      }
+    },
+    "%lld文字" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld characters left"
+          }
+        }
+      }
+    },
+    "🎉 %@（%@）" : {
+      "comment" : "賀寿の名称とかな",
+      "shouldTranslate" : false
+    },
+    "🎓 %@" : {
+      "comment" : "学齢の名称",
+      "shouldTranslate" : false
+    },
+    "アプリ内の文字の大きさを決めます。自動を選ぶと、iPhoneの「設定」→「画面表示と明るさ」→「テキストサイズ」に合わせて変わります。標準・大・特大を選ぶと、端末の設定に関わらずその大きさになります。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sets the text size inside the app. Auto follows iPhone Settings → Display & Brightness → Text Size. Standard, Large, and Extra Large fix the size regardless of your device setting."
+          }
+        }
+      }
+    },
+    "オンにすると、年に書いたメモは「自分」の一覧でだけ表示されます。年齢や名簿の一覧ではメモが隠れるため、他の人に画面を見せるときに便利です。オフにするとどの一覧でもメモが表示されます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When on, the notes you write on a year appear only in the Myself list. They stay hidden in the Age and Roster lists, which is useful when showing your screen to someone else. When off, notes appear in every list."
+          }
+        }
+      }
+    },
+    "キャンセル" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "ここに自分の生年月日を登録すると、「自分」の一覧で各年に自分が何歳になるかが表示されます。生まれた年には目印が付きます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save your date of birth here and the Myself list will show how old you are in each year. Your birth year is marked."
+          }
+        }
+      }
+    },
+    "この年に生まれました" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Born this year"
+          }
+        }
+      }
+    },
+    "この年の誕生日で満%lld歳" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turns %lld on the birthday this year"
+          }
+        }
+      }
+    },
+    "この年は数え%lld歳" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kazoedoshi age %lld this year"
+          }
+        }
+      }
+    },
+    "ダーク" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark"
+          }
+        }
+      }
+    },
+    "ヘルプ" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help"
+          }
+        }
+      }
+    },
+    "メモ" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note"
+          }
+        }
+      }
+    },
+    "メモは自分だけに表示" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show notes only in Myself"
+          }
+        }
+      }
+    },
+    "メモを保存できませんでした" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not save notes"
+          }
+        }
+      }
+    },
+    "メモを読み込めませんでした" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not load notes"
+          }
+        }
+      }
+    },
+    "ライト" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light"
+          }
+        }
+      }
+    },
+    "レビューする" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write a Review"
+          }
+        }
+      }
+    },
+    "一覧に九星気学の本命星を表示します。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows the 本命星 (honmeisei) star from 九星気学 nine-star astrology."
+          }
+        }
+      }
+    },
+    "一覧に前厄・本厄・後厄を表示します。性別が未指定の場合は表示されません。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows 厄年 (yakudoshi) unlucky years — 前厄 before, 本厄 main, and 後厄 after. Nothing is shown while gender is unspecified, as the ages differ by gender."
+          }
+        }
+      }
+    },
+    "一覧に表示する" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show in the list"
+          }
+        }
+      }
+    },
+    "一覧に還暦、古希、喜寿などの長寿祝いを表示します。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows 賀寿 (gaju) longevity celebrations such as 還暦 (kanreki, 60), 古希 (koki, 70), and 喜寿 (kiju, 77)."
+          }
+        }
+      }
+    },
+    "一覧の各年に干支を絵文字と漢字で表示します。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows the 干支 (eto) zodiac sign for each year as an emoji and kanji."
+          }
+        }
+      }
+    },
+    "九星" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "今年生まれた方の誕生年" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Birth year of someone born this year"
+          }
+        }
+      }
+    },
+    "保存" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "入学・卒業" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "初心者" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beginner"
+          }
+        }
+      }
+    },
+    "初心者を選ぶと、ボタンの名前や一覧の見方といった説明が画面に表示されます。操作に慣れたら達人に切り替えると、説明が消えて一覧を広く使えます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beginner shows explanations on screen, such as button names and how to read the list. Once you are comfortable, switch to Expert to hide them and use more of the screen for the list."
+          }
+        }
+      }
+    },
+    "削除" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        }
+      }
+    },
+    "削除しますか？" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete?"
+          }
+        }
+      }
+    },
+    "厄年" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "厄年を表示するために使います。「未指定」を選ぶと、この方の厄年は表示されません。\n\n厄年は、人生の中で災いに遭いやすいとされる年齢です。数え年で見るのが基本で、本厄の前後1年をそれぞれ前厄・後厄と呼びます。\n\n男性は25歳・42歳・61歳、女性は19歳・33歳・37歳・61歳が本厄にあたります（いずれも数え年）。男性の42歳と女性の33歳はとくに「大厄」と呼ばれます。\n\n年齢や数え方は神社や地域によって異なる場合があります。目安としてご覧ください。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Used to show 厄年 (yakudoshi) unlucky years. Choose Unspecified and no unlucky years are shown for this person.\n\n厄年 are ages at which misfortune is traditionally thought more likely. They are reckoned in 数え年 (kazoedoshi), and the years either side of the main one are called 前厄 (maeyaku) and 後厄 (atoyaku).\n\nFor men the main years are 25, 42, and 61; for women 19, 33, 37, and 61 — all in kazoedoshi. Men's 42 and women's 33 are known as 大厄 (taiyaku), the great unlucky years.\n\nThe ages and the way they are counted vary between shrines and regions. Treat these as a rough guide."
+          }
+        }
+      }
+    },
+    "取扱説明" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "User Guide"
+          }
+        }
+      }
+    },
+    "名簿" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Roster"
+          }
+        }
+      }
+    },
+    "名簿が空です。右上の＋から追加してください。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No one saved yet. Tap + at the top right to add someone."
+          }
+        }
+      }
+    },
+    "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows how old the person selected from the roster is in each year. Tap a row to open that year's calendar."
+          }
+        }
+      }
+    },
+    "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows how old the person selected from the roster is in each year. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+          }
+        }
+      }
+    },
+    "名簿を保存できませんでした" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not save the roster"
+          }
+        }
+      }
+    },
+    "名簿を読み込めませんでした" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not load the roster"
+          }
+        }
+      }
+    },
+    "和暦年齢メモ" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenrin"
+          }
+        }
+      }
+    },
+    "変更" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
+      }
+    },
+    "外観モード" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appearance"
+          }
+        }
+      }
+    },
+    "大" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Large"
+          }
+        }
+      }
+    },
+    "女性" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Female"
+          }
+        }
+      }
+    },
+    "存在しない日付です" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That date does not exist"
+          }
+        }
+      }
+    },
+    "家族・親戚・友人など、年齢を調べたい方を登録しておく名簿です。登録すると一覧がその方の生年月日を基準になり、各年に何歳になるかを確認できます。\n\n【選ぶ】\n名前の行をタップすると、その方を基準にした一覧へ切り替わります。\n\n【追加】\n右上の＋を押し、名前と生年月日を入力して保存します。\n\n【変更】\n行の右端にある変更ボタンを押すと、名前と生年月日を編集できます。行を左へスワイプして「変更」を選ぶこともできます。\n\n【削除】\n行を左へスワイプして「削除」を選びます。確認の後に削除され、取り消しはできません。\n\n【並べ替え】\n行を長押ししたまま上下へドラッグすると、好きな順序に並べ替えられます。並び順は保存され、追加や変更をしても崩れません。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A roster of people whose ages you want to look up — family, relatives, friends. Once someone is saved, the list uses their date of birth so you can see how old they are in each year.\n\n[Select]\nTap a name to switch the list to that person.\n\n[Add]\nTap + at the top right, then enter a name and date of birth and save.\n\n[Edit]\nTap the edit button at the right of a row to change the name and date of birth. You can also swipe the row left and choose Edit.\n\n[Delete]\nSwipe the row left and choose Delete. You will be asked to confirm, and deletion cannot be undone.\n\n[Reorder]\nPress and hold a row, then drag it up or down. The order is saved and is not disturbed when you add or edit someone."
+          }
+        }
+      }
+    },
+    "干支" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "年" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "年と年齢の早見表" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Year → age"
+          }
+        }
+      }
+    },
+    "年齢" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Age"
+          }
+        }
+      }
+    },
+    "年齢と生まれた年の早見表" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Age → year of birth"
+          }
+        }
+      }
+    },
+    "年齢の数え方" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Age reckoning"
+          }
+        }
+      }
+    },
+    "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーが開きます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter an age to jump to the year someone of that age was born. Tap a row to open that year's calendar."
+          }
+        }
+      }
+    },
+    "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter an age to jump to the year someone of that age was born. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+          }
+        }
+      }
+    },
+    "性別" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gender"
+          }
+        }
+      }
+    },
+    "文字サイズ" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text Size"
+          }
+        }
+      }
+    },
+    "日" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "日生" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "暦" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar"
+          }
+        }
+      }
+    },
+    "月" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "未対応のメモ形式です" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsupported note format"
+          }
+        }
+      }
+    },
+    "未対応の名簿データ形式です" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsupported roster format"
+          }
+        }
+      }
+    },
+    "未指定" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unspecified"
+          }
+        }
+      }
+    },
+    "未設定" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not set"
+          }
+        }
+      }
+    },
+    "標準" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        }
+      }
+    },
+    "次" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "歳" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "満年齢は誕生日ごとに1つ増える、現在ふつうに使われている数え方です。数え年は生まれた時点で1歳とし、以後は元日ごとに1つ増える昔ながらの数え方で、年内では満年齢より1つ多くなります。還暦や喜寿などの長寿祝いは、もともと数え年で祝うものでした。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "満年齢 (man-nenrei) is the count used today: it goes up on each birthday, the same as in the West. 数え年 (kazoedoshi) is the traditional count: you are 1 at birth and everyone gains a year on New Year's Day, so it runs one ahead within the year. Longevity celebrations such as 還暦 (kanreki) and 喜寿 (kiju) were originally reckoned this way."
+          }
+        }
+      }
+    },
+    "特大" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extra Large"
+          }
+        }
+      }
+    },
+    "現在%lld歳の方の誕生年" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Birth year of someone now %lld"
+          }
+        }
+      }
+    },
+    "生まれるまであと%lld年" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld years before birth"
+          }
+        }
+      }
+    },
+    "生年月日をもとに一覧へ入学・卒業を表示します。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uses the date of birth to mark school entry and graduation years. The Japanese school year begins in April."
+          }
+        }
+      }
+    },
+    "男性" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Male"
+          }
+        }
+      }
+    },
+    "画面の明るさの見た目を決めます。自動を選ぶと、iPhone本体のライトモード・ダークモードの設定に合わせて変わります。ライトまたはダークを選ぶと、端末の設定に関わらずその見た目に固定されます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sets the app's appearance. Auto follows your iPhone's Light or Dark Mode setting. Light or Dark fixes the appearance regardless of your device setting."
+          }
+        }
+      }
+    },
+    "移動" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jump"
+          }
+        }
+      }
+    },
+    "移動先 西暦%@年" : {
+
+    },
+    "移動先 西暦%lld年" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Destination: %lld"
+          }
+        }
+      }
+    },
+    "符号を反転" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toggle sign"
+          }
+        }
+      }
+    },
+    "自分" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Myself"
+          }
+        }
+      }
+    },
+    "自分の性別" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your gender"
+          }
+        }
+      }
+    },
+    "自分の生年月日" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your date of birth"
+          }
+        }
+      }
+    },
+    "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows how old you are in each year, based on your date of birth. Tap a row to open that year's calendar."
+          }
+        }
+      }
+    },
+    "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows how old you are in each year, based on your date of birth. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+          }
+        }
+      }
+    },
+    "自動" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auto"
+          }
+        }
+      }
+    },
+    "表示モード" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Display Mode"
+          }
+        }
+      }
+    },
+    "表示範囲外のため %@年へ移動します" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outside the range — moving to %@"
+          }
+        }
+      }
+    },
+    "設定" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "追加" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
+          }
+        }
+      }
+    },
+    "達人" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expert"
+          }
+        }
+      }
+    },
+    "長寿祝い" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "閉じる" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
