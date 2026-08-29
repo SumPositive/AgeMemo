@@ -7,7 +7,7 @@ private enum PresentedSheet: Identifiable {
     case age
     case person
     case era
-    case settings
+    case settings(requestsBirthDateRegistration: Bool)
 
     var id: String {
         switch self {
@@ -15,7 +15,8 @@ private enum PresentedSheet: Identifiable {
         case .age: "age"
         case .person: "person"
         case .era: "era"
-        case .settings: "settings"
+        case .settings(let requestsBirthDateRegistration):
+            requestsBirthDateRegistration ? "settings-birth-date" : "settings"
         }
     }
 }
@@ -134,7 +135,7 @@ struct YearListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        presentedSheet = .settings
+                        presentedSheet = .settings(requestsBirthDateRegistration: false)
                     } label: {
                         Label("設定", systemImage: "gearshape")
                     }
@@ -299,8 +300,8 @@ struct YearListView: View {
                 selectedDestinationYear = year
                 scroll(to: year)
             }
-        case .settings:
-            SettingsView()
+        case .settings(let requestsBirthDateRegistration):
+            SettingsView(requestsBirthDateRegistration: requestsBirthDateRegistration)
         }
     }
 
@@ -319,7 +320,8 @@ struct YearListView: View {
             if birthYear != nil {
                 scroll(to: currentYear)
             } else {
-                presentedSheet = .settings
+                // 設定画面から生年月日入力を直接開き、登録が必要な理由を案内する
+                presentedSheet = .settings(requestsBirthDateRegistration: true)
             }
         case .person:
             selectedDestinationYear = nil

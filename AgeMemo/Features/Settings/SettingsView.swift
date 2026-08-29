@@ -10,7 +10,14 @@ struct SettingsView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.requestReview) private var requestReview
 
-    @State private var isEditingBirthDate = false
+    @State private var isEditingBirthDate: Bool
+    @State private var showsBirthDateRegistrationPrompt: Bool
+
+    init(requestsBirthDateRegistration: Bool = false) {
+        // 「自分」から開いた場合は生年月日入力と案内をすぐに表示する
+        _isEditingBirthDate = State(initialValue: requestsBirthDateRegistration)
+        _showsBirthDateRegistrationPrompt = State(initialValue: requestsBirthDateRegistration)
+    }
 
     private var versionText: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
@@ -213,6 +220,9 @@ struct SettingsView: View {
                     settings.birthDate = newValue
                 }
                 .appAppearance(colorScheme: sheetColorScheme)
+                .alert("自分の生年月日を登録してください", isPresented: $showsBirthDateRegistrationPrompt) {
+                    Button("OK") {}
+                }
             }
         }
         .presentationDragIndicator(.visible)
