@@ -74,7 +74,7 @@ Packlin からは「初心者/達人モード」「文字サイズ」「AdMob �
 | 向き | Portrait / Landscape 両対応 |
 | 言語 | アプリ UI は ja のみ。和暦・干支が主題のため UI の多言語化はしない（§12 参照） |
 | 永続化 | UserDefaults（設定）＋ JSON ファイル（メモ） |
-| 依存 | Firebase(Analytics/Crashlytics)、GoogleMobileAds。AZDial/AZCalc は不要 |
+| 依存 | GoogleMobileAds のみ。AZDial/AZCalc は不要。Firebase は当初案にあったが導入しない |
 
 ### ディレクトリ構成
 
@@ -571,7 +571,7 @@ enum AppConfig {
 5. 詳細シート（カレンダー＋メモ編集）
 6. 下部タブ3種とナビゲーションバーの操作、各シート
 7. 設定画面
-8. AdMob / Firebase 組み込み
+8. AdMob 組み込み
 9. アイコン、fastlane、取扱説明ページ
 
 
