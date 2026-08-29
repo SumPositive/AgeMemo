@@ -91,6 +91,26 @@ enum BirthYearCalendar: String, CaseIterable, Identifiable {
     }
 }
 
+private struct BirthYearCalendarLabel: View {
+    @Environment(\.azPickerIsSelectedLabel) private var isSelectedLabel
+    let title: String
+
+    @ViewBuilder
+    var body: some View {
+        if isSelectedLabel {
+            // 選択中だけ縦書きにして入力行の幅を詰める
+            VStack(spacing: -2) {
+                ForEach(Array(title), id: \.self) { character in
+                    Text(String(character))
+                }
+            }
+        } else {
+            // 候補一覧は読みやすい横書きにする
+            Text(title)
+        }
+    }
+}
+
 /// 年月日を桁単位で保持し、確定した日付へ変換する
 struct BirthDateEntry: Equatable {
     var year = ""
@@ -306,9 +326,11 @@ struct BirthDateEntry: Equatable {
 
 struct BirthDatePad: View {
     @Binding var entry: BirthDateEntry
+    /// 名前入力などのキーボードを閉じるため、日付操作の開始を親へ通知する
+    var onInteraction: () -> Void = {}
+    @State private var isCalendarPickerExpanded = false
 
     @ScaledMetric(relativeTo: .title2) private var scaledFieldHeight: CGFloat = 44
-    @ScaledMetric(relativeTo: .caption) private var scaledCalendarWidth: CGFloat = 38
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -329,6 +351,7 @@ struct BirthDatePad: View {
 
             ForEach(BirthDateField.allCases, id: \.rawValue) { field in
                 Button {
+                    onInteraction()
                     entry.moveFocus(to: field)
                 } label: {
                     fieldLabel(field)
@@ -340,31 +363,31 @@ struct BirthDatePad: View {
     }
 
     private var calendarMenu: some View {
-        Menu {
-            Picker("暦", selection: $entry.calendar) {
-                ForEach(BirthYearCalendar.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-        } label: {
-            // 漢字2文字を縦に積んで幅を詰める
-            VStack(spacing: -2) {
-                ForEach(Array(entry.calendar.title), id: \.self) { character in
-                    Text(String(character))
-                        .font(.caption.weight(.semibold))
-                }
-            }
-            .lineLimit(1)
-            .minimumScaleFactor(0.5)
-            .foregroundStyle(Color.accentColor)
-            .padding(.horizontal, 6)
-            // 2文字が窮屈にならない最小幅を確保しつつ、日付欄より狭く保つ
-            .frame(minWidth: scaledCalendarWidth, minHeight: scaledFieldHeight)
-            .background(Color(.tertiarySystemFill))
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .fixedSize(horizontal: true, vertical: false)
+        AZDropdownPicker(
+            options: BirthYearCalendar.allCases,
+            selection: $entry.calendar,
+            isExpanded: $isCalendarPickerExpanded,
+            minWidth: 0,
+            style: calendarPickerStyle
+        ) { option in
+            BirthYearCalendarLabel(title: option.title)
         }
         .accessibilityLabel("暦 \(entry.calendar.title)")
+        .onChange(of: isCalendarPickerExpanded) { _, isExpanded in
+            guard isExpanded else { return }
+            // 年号選択を開いた時点で名前入力を終了する
+            onInteraction()
+        }
+    }
+
+    private var calendarPickerStyle: AZPickerStyle {
+        var style = AZPickerStyle.form
+        style.optionFont = .caption
+        style.optionWeight = .semibold
+        style.dropdownIndicator = .none
+        style.dropdownTextFitMode = .scale(minimumScaleFactor: 0.6)
+        style.dropdownOptionHorizontalPadding = 12
+        return style
     }
 
     private func fieldLabel(_ field: BirthDateField) -> some View {
@@ -398,6 +421,7 @@ struct BirthDatePad: View {
     }
 
     private func handle(_ key: NumericKeypadKey) {
+        onInteraction()
         switch key {
         case .digit(let digit):
             entry.append(digit)
@@ -424,6 +448,7 @@ struct BirthDateInputSheet<Header: View>: View {
 
     private let title: String
     private let canSave: Bool
+    private let onContentInteraction: () -> Void
     private let header: Header
     private let commit: (Date) -> Void
 
@@ -431,11 +456,13 @@ struct BirthDateInputSheet<Header: View>: View {
         title: String,
         birthDate: Date?,
         canSave: Bool = true,
+        onContentInteraction: @escaping () -> Void = {},
         commit: @escaping (Date) -> Void,
         @ViewBuilder header: () -> Header = { EmptyView() }
     ) {
         self.title = title
         self.canSave = canSave
+        self.onContentInteraction = onContentInteraction
         self.commit = commit
         self.header = header()
         _entry = State(initialValue: birthDate.map { BirthDateEntry(placeholderDate: $0) } ?? BirthDateEntry())
@@ -457,20 +484,27 @@ struct BirthDateInputSheet<Header: View>: View {
                 VStack(spacing: 14) {
                     header
 
-                    BirthDatePad(entry: $entry)
+                    BirthDatePad(entry: $entry, onInteraction: onContentInteraction)
                         // 直し始めたら警告は引っ込める
                         .onChange(of: entry) { _, _ in didAttemptSave = false }
 
-                    // 警告の有無でシート高が変わらないよう、領域は常に確保しておく
-                    Text("存在しない日付です")
-                        .font(.footnote)
-                        .foregroundStyle(.red)
-                        .opacity(showsInvalidDateWarning ? 1 : 0)
-                        .accessibilityHidden(!showsInvalidDateWarning)
+                    if showsInvalidDateWarning {
+                        // 必要なときだけ表示し、通常時のテンキー下余白を増やさない
+                        Text("存在しない日付です")
+                            .font(.footnote)
+                            .foregroundStyle(.red)
+                    }
                 }
                 .padding()
                 .measuredSheetContent()
+                .background {
+                    // 入力欄以外の空白をタップした場合もキーボードを閉じる
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture(perform: onContentInteraction)
+                }
             }
+            .scrollDismissesKeyboard(.interactively)
             .scrollBounceBehavior(.basedOnSize)
             .scrollIndicators(.hidden)
             .navigationTitle(title)

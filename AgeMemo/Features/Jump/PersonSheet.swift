@@ -196,6 +196,8 @@ private struct PersonEditorSheet: View {
 
     @State private var name: String
     @State private var gender: Gender
+    /// 追加のときは名前が未入力なので、開いた直後に入力を始められるようにする
+    @FocusState private var isNameFocused: Bool
 
     let target: PersonEditorTarget
 
@@ -245,7 +247,8 @@ private struct PersonEditorSheet: View {
         BirthDateInputSheet(
             title: title,
             birthDate: existingBirthDate,
-            canSave: !trimmedName.isEmpty
+            canSave: !trimmedName.isEmpty,
+            onContentInteraction: { isNameFocused = false }
         ) { birthDate in
             switch target {
             case .add:
@@ -257,6 +260,17 @@ private struct PersonEditorSheet: View {
             VStack(alignment: .leading, spacing: 8) {
                 TextField("名前", text: $name)
                     .textFieldStyle(.roundedBorder)
+                    .submitLabel(.done)
+                    .focused($isNameFocused)
+                    .onSubmit {
+                        // 改行せず名前入力を完了してキーボードを閉じる
+                        isNameFocused = false
+                    }
+                    // 変更のときは既に名前が入っているため、勝手にキーボードを出さない
+                    .onAppear {
+                        guard case .add = target else { return }
+                        isNameFocused = true
+                    }
                     .onChange(of: name) { _, newValue in
                         if newValue.count > AppConfig.maximumPersonNameLength {
                             name = String(newValue.prefix(AppConfig.maximumPersonNameLength))
@@ -280,6 +294,10 @@ private struct PersonEditorSheet: View {
                 } label: { option in
                     Text(option.title)
                 }
+                .simultaneousGesture(TapGesture().onEnded { _ in
+                    // 同じ性別を選び直した場合もキーボードを閉じる
+                    isNameFocused = false
+                })
             }
         }
     }

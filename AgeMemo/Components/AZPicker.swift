@@ -1,6 +1,18 @@
 import SwiftUI
 import UIKit
 
+private struct AZPickerSelectedLabelKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    /// 選択中ボタンと候補一覧でラベルの見た目を分けるために使う
+    var azPickerIsSelectedLabel: Bool {
+        get { self[AZPickerSelectedLabelKey.self] }
+        set { self[AZPickerSelectedLabelKey.self] = newValue }
+    }
+}
+
 private extension DynamicTypeSize {
     /// UIKitの文字サイズ設定をSwiftUIのDynamicTypeSizeへ変換する
     init(uiContentSizeCategory category: UIContentSizeCategory) {
@@ -222,6 +234,7 @@ struct AZDropdownPicker<Option: Hashable & Identifiable, Label: View>: View {
 
     private var selectedLabel: some View {
         label(selection)
+            .environment(\.azPickerIsSelectedLabel, true)
             .font(style.optionFont)
             .foregroundStyle(Color.primary)
             .azPickerTextFit(style.dropdownTextFitMode, alignment: .center)
