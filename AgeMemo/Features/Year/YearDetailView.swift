@@ -8,6 +8,8 @@ struct YearDetailView: View {
     @Environment(PersonStore.self) private var personStore
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     let row: YearRow
     @State private var memoText: String
@@ -41,6 +43,13 @@ struct YearDetailView: View {
             }
         }
         .presentationDragIndicator(.visible)
+        // iPadでは内容量に合わせた中間サイズで表示する
+        .modifier(
+            YearDetailPresentationSizingModifier(
+                usesBalancedSize: horizontalSizeClass == .regular && verticalSizeClass == .regular,
+                includesMemo: showsMemo
+            )
+        )
         .onAppear {
             memoText = memoStore.text(for: row.gregorian) ?? ""
         }
@@ -259,5 +268,30 @@ struct YearDetailView: View {
                     .foregroundStyle(.red)
             }
         }
+    }
+}
+
+/// iPadでは概要・メモ・カレンダーが収まる中間サイズにする
+private struct YearDetailPresentationSizingModifier: ViewModifier {
+    let usesBalancedSize: Bool
+    let includesMemo: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *), usesBalancedSize {
+            content.presentationSizing(YearDetailBalancedSizing(includesMemo: includesMemo))
+        } else {
+            content
+        }
+    }
+}
+
+/// メモの有無に応じて余白が大きくなりすぎない高さを提案する
+@available(iOS 18.0, *)
+private struct YearDetailBalancedSizing: PresentationSizing {
+    let includesMemo: Bool
+
+    func proposedSize(for root: PresentationSizingRoot, context: PresentationSizingContext) -> ProposedViewSize {
+        ProposedViewSize(width: 720, height: includesMemo ? 1_040 : 820)
     }
 }
