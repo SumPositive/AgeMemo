@@ -1,0 +1,1 @@
+Read the Japanese dates on any document. Convert 令和 and 昭和 era years, find any year's zodiac animal, and look up ages both ways — 1600 to 2100, all on one line.

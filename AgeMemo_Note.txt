@@ -1,0 +1,40 @@
+Nenrin 和暦年齢メモ
+- 日本語名は `和暦年齢メモ`
+- iOSアプリ `Nenrin` のコードは `GitLocal/AgeMemo` にある
+- 取扱説明の日本語版は `GitLocal/azukid.com/docs/jp/sumpo/Nenrin/` にある
+- 取扱説明の英語版は `GitLocal/azukid.com/docs/en/sumpo/Nenrin/` にある
+- 言語ロケールは、ja,en に対応
+
+----------------------------------------------------------
+割勘や体調メモのように fastlane を使い次の ja/en のメタデータを生成したい
+fastlane/metadata
+　description
+　keywords
+　promotional_text　類似アプリが多いので新規性を強調したい
+　release_notes
+　subtitle
+
+fastlane/screenshots に次の画面を用意したい
+　主画面（年齢）補助表示なし
+　主画面（自分）補助全部表示
+　年詳細画面
+　設定画面（補助表示選択のあたり）
+
+
+----------------------------------------------------------
+1.0.0
+- 
+- 
+-----
+fastlane メタデータを更新して
+1.0.0 審査提出中、README.mdの開発メモ、公開アプリパネル、取扱説明を更新して
+-----
+cd /Users/sumpositive/GitLocal/Calclin
+fastlane preview_metadata
+fastlane upload_metadata
+---
+fastlane screenshots
+fastlane upload_screenshots
+------------------------------------------------
+
+
