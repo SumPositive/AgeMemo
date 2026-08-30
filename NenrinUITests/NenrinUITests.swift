@@ -4,9 +4,9 @@
 //
 //  fastlane snapshot 用の UI テスト
 //  3カットを撮影する:
-//    01 主画面（年齢）補助表示なし
-//    02 主画面（自分）補助表示あり
-//    03 年詳細画面
+//    01 主画面（年齢）1963年へ移動
+//    02 主画面（自分）当年を表示
+//    03 自分一覧の1963年詳細
 //
 //  【重要】アプリの起動は1回だけにする
 //  自分一覧の補助表示は撮影モードでタブを選んだ時にアプリ側で有効にする
@@ -32,26 +32,24 @@ final class NenrinUITests: XCTestCase {
 
         waitForList(app)
 
-        // 01: 主画面（年齢）補助表示なし
-        // 起動時点で年齢一覧が選択済み。再タップすると年齢入力シートが開くため触らない
+        // 01: 主画面（年齢）1963年を移動先として表示
         snapshot("01YearList")
 
-        // 02: 主画面（自分）補助表示あり
+        // 02: 1963年9月1日生まれの自分一覧で当年を表示
         selectTab(app, id: "tab.personal", index: 1)
         snapshot("02Personal")
 
-        // 03: 年詳細。生年（1964）は賀寿・厄年・干支・カレンダーが揃う
-        openYearDetail(app, year: 1964)
+        // 03: 自分一覧の1963年詳細を開く
+        open1963Detail(app)
         snapshot("03YearDetail")
     }
 
     // MARK: - 補助
 
-    /// iPad は余白が目立つので撮影時だけ文字サイズを上げる
+    /// 全端末の撮影文字サイズを設定の「大」に揃える
     @MainActor
     private func extraLaunchArguments() -> [String] {
-        guard UIDevice.current.userInterfaceIdiom == .pad else { return [] }
-        return ["-SNAPSHOT_FONT_SCALE", "xlarge"]
+        ["-SNAPSHOT_FONT_SCALE", "large"]
     }
 
     /// 一覧が描画されるまで待つ
@@ -78,26 +76,15 @@ final class NenrinUITests: XCTestCase {
         }
     }
 
-    /// 指定年の行を開く。画面外なら見えるまでスクロールする。
-    /// SwiftUI の行がどの要素種別で公開されるかは環境で変わるため、
-    /// otherElements / buttons / cells を順に探し、最後は画面中央のタップに落とす
+    /// スワイプ位置に依存せず撮影専用操作から1963年詳細を開く
     @MainActor
-    private func openYearDetail(_ app: XCUIApplication, year: Int) {
-        let identifier = "row.\(year)"
-        let candidates = [app.otherElements[identifier], app.buttons[identifier], app.cells[identifier]]
-
-        for _ in 0..<15 {
-            if let hit = candidates.first(where: { $0.exists && $0.isHittable }) {
-                hit.tap()
-                sleep(2)
-                return
-            }
-            app.swipeDown()
-        }
-
-        // 識別子で見つからなければ、一覧の中央あたりを直接叩いて詳細を開く
-        let list = app.scrollViews.firstMatch.exists ? app.scrollViews.firstMatch : app
-        list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+    private func open1963Detail(_ app: XCUIApplication) {
+        let button = app.buttons["snapshot.open1963Detail"]
+        XCTAssertTrue(button.waitForExistence(timeout: 10), "1963年詳細の撮影用操作が見つからない")
+        XCTAssertTrue(button.isHittable, "1963年詳細の撮影用操作をタップできない")
+        button.tap()
+        let yearHeading = app.staticTexts["detail.year.1963"]
+        XCTAssertTrue(yearHeading.waitForExistence(timeout: 10), "1963年詳細シートが開かない")
         sleep(2)
     }
 }

@@ -91,6 +91,8 @@ struct YearDetailView: View {
             // 改元年は元号を並べず、年初の元号だけを見出しに置く
             Text("\(String(row.gregorian))年  \(headlineEraText)")
                 .font(.title2.bold())
+                // 撮影時に開いた年を検証できるようにする
+                .accessibilityIdentifier("detail.year.\(row.gregorian)")
 
             if let ganNen = ganNenSpan {
                 // 改元があった年は、いつから元年になったのかを次の行に添える

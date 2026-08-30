@@ -124,9 +124,17 @@ struct YearListView: View {
                 .task {
                     guard !didSetInitialPosition else { return }
                     didSetInitialPosition = true
-                    // 初回レイアウト後に当年へ移動する
+                    var initialYear = currentYear
+#if DEBUG
+                    if SnapshotSetup.isActive {
+                        // 撮影時の1枚目は1963年を移動先として明示する
+                        initialYear = SnapshotSetup.initialListYear
+                        selectedDestinationYear = initialYear
+                    }
+#endif
+                    // 初回レイアウト後に撮影用の年または当年へ移動する
                     await Task.yield()
-                    proxy.scrollTo(currentYear, anchor: .center)
+                    proxy.scrollTo(initialYear, anchor: .center)
                 }
                 .onChange(of: scrollRequest) { _, request in
                     guard let request else { return }
@@ -173,6 +181,23 @@ struct YearListView: View {
                     action: handleToolbarAction
                 )
             }
+        }
+        .overlay(alignment: .topLeading) {
+#if DEBUG
+            if SnapshotSetup.isActive {
+                // UIテストから1963年詳細を直接開くための撮影専用操作
+                Button {
+                    presentedSheet = .detail(SnapshotSetup.initialListYear)
+                } label: {
+                    Color.clear
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("1963年詳細を開く")
+                .accessibilityIdentifier("snapshot.open1963Detail")
+            }
+#endif
         }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active {

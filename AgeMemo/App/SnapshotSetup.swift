@@ -8,6 +8,9 @@ import Foundation
 
 #if DEBUG
 enum SnapshotSetup {
+    /// 1枚目で移動先として表示する年
+    static let initialListYear = 1963
+
     /// 撮影モードかどうか
     static var isActive: Bool {
         UserDefaults.standard.string(forKey: "FASTLANE_SNAPSHOT") == "YES"
@@ -24,7 +27,7 @@ enum SnapshotSetup {
         // 生年月日。「自分」タブと長寿祝い・厄年・学齢の判定に要る
         settings.birthDate = DateComponents(
             calendar: Calendar(identifier: .gregorian),
-            year: 1964, month: 5, day: 15
+            year: 1963, month: 9, day: 1
         ).date
         settings.gender = .male
         settings.ageReckoning = .actual
@@ -38,7 +41,7 @@ enum SnapshotSetup {
         settings.showsLongevity = false
         settings.showsUnluckyYear = false
 
-        // 文字サイズ。iPad は余白が目立つので撮影時だけ大きくする
+        // 撮影用に指定された文字サイズを全端末へ適用する
         if let index = arguments.firstIndex(of: "-SNAPSHOT_FONT_SCALE"),
            index + 1 < arguments.count {
             switch arguments[index + 1] {
@@ -48,7 +51,7 @@ enum SnapshotSetup {
             }
         }
 
-        applySampleMemos(memoStore)
+        removeObsoleteSampleMemos(memoStore)
         applySamplePeople(personStore)
     }
 
@@ -63,17 +66,18 @@ enum SnapshotSetup {
         settings.showsUnluckyYear = true
     }
 
-    /// メモがある行を見せるための例。実データは触らず、既に何か入っていれば何もしない
+    /// 以前の撮影処理で追加した要件外のサンプルメモを取り除く
     @MainActor
-    private static func applySampleMemos(_ memoStore: MemoStore) {
+    private static func removeObsoleteSampleMemos(_ memoStore: MemoStore) {
         let currentYear = Calendar(identifier: .gregorian).component(.year, from: .now)
-        // 以前の撮影処理で追加した不要な現在年メモだけを取り除く
-        if memoStore.text(for: currentYear) == "還暦の準備をはじめる" {
-            memoStore.update(year: currentYear, text: "")
+        let obsoleteMemos = [
+            (currentYear, "還暦の準備をはじめる"),
+            (1964, "東京オリンピック。この年に生まれた"),
+            (1989, "平成に改元。社会人になった年"),
+        ]
+        for (year, text) in obsoleteMemos where memoStore.text(for: year) == text {
+            memoStore.update(year: year, text: "")
         }
-        guard memoStore.memos.isEmpty else { return }
-        memoStore.update(year: 1964, text: String(localized: "東京オリンピック。この年に生まれた"))
-        memoStore.update(year: 1989, text: String(localized: "平成に改元。社会人になった年"))
     }
 
     /// 名簿タブを空にしないための例
