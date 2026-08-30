@@ -17,6 +17,15 @@ enum MainToolbarAction: CaseIterable, Identifiable {
         }
     }
 
+    /// UITest から指定するための識別子
+    var identifier: String {
+        switch self {
+        case .age: "age"
+        case .personal: "personal"
+        case .person: "person"
+        }
+    }
+
     var symbol: String {
         switch self {
         case .age: "number"
@@ -50,6 +59,8 @@ struct BottomToolbar: View {
                     .foregroundStyle(selection == item ? Color.accentColor : Color.secondary)
                 }
                 .buttonStyle(.plain)
+                // fastlane snapshot から確実に叩けるようにする
+                .accessibilityIdentifier("tab.\(item.identifier)")
                 .accessibilityLabel(item.title)
                 .accessibilityAddTraits(selection == item ? [.isSelected] : [])
             }

@@ -21,6 +21,13 @@ struct AgeMemoApp: App {
         startAdMobIfAvailable()
     }
 
+    /// 撮影用の状態づくり。DEBUG かつ -FASTLANE_SNAPSHOT のときだけ働く
+    private func applySnapshotSetupIfNeeded() {
+        #if DEBUG
+        SnapshotSetup.applyIfNeeded(settings: settings, personStore: personStore, memoStore: memoStore)
+        #endif
+    }
+
     /// SDKを入れていないビルドでも通るようにしておく
     private func startAdMobIfAvailable() {
         #if canImport(GoogleMobileAds)
@@ -36,6 +43,7 @@ struct AgeMemoApp: App {
                 .environment(personStore)
                 .preferredColorScheme(settings.appearanceMode.colorScheme)
                 .dynamicTypeSize(effectiveDynamicTypeSize)
+                .task { applySnapshotSetupIfNeeded() }
         }
     }
 }

@@ -14,5 +14,7 @@ struct SheetCloseButton: View {
                 .symbolRenderingMode(.hierarchical)
         }
         .accessibilityLabel("閉じる")
+        // UIテストから言語に依存せず閉じられるようにする
+        .accessibilityIdentifier("sheet.close")
     }
 }

@@ -107,6 +107,11 @@ struct YearListView: View {
                                     tappedYear = row.gregorian
                                     presentedSheet = .detail(row.gregorian)
                                 }
+                                // 行の中身は個別の Text に分かれていて、そのままでは
+                                // コンテナに付けた識別子が公開されない。1要素にまとめる
+                                .accessibilityElement(children: .combine)
+                                // fastlane snapshot から特定の年を開くため
+                                .accessibilityIdentifier("row.\(row.gregorian)")
 
                                 Divider()
                                     .padding(.leading, 12)
@@ -137,8 +142,12 @@ struct YearListView: View {
                     Button {
                         presentedSheet = .settings(requestsBirthDateRegistration: false)
                     } label: {
+                        // ToolbarItem の外側に付けた識別子は公開されないことがあるため、
+                        // ラベル側にも同じ識別子を持たせる
                         Label("設定", systemImage: "gearshape")
+                            .accessibilityIdentifier("nav.settings")
                     }
+                    .accessibilityIdentifier("nav.settings")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -318,6 +327,10 @@ struct YearListView: View {
             ageDisplayMode = .personal
             selectedDestinationYear = nil
             if birthYear != nil {
+#if DEBUG
+                // 撮影時は設定画面を経由せず、自分一覧の補助表示をすべて有効にする
+                SnapshotSetup.enableAuxiliaryDisplaysIfNeeded(settings: settings)
+#endif
                 scroll(to: currentYear)
             } else {
                 // 設定画面から生年月日入力を直接開き、登録が必要な理由を案内する

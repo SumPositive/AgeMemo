@@ -18,11 +18,19 @@
 			remoteGlobalIDString = A10000000000000000000010;
 			remoteInfo = AgeMemo;
 		};
+		C3EE426A3043BD9D00FF68B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000010;
+			remoteInfo = AgeMemo;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		A10000000000000000000031 /* AgeMemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgeMemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000032 /* AgeMemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgeMemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3EE42643043BD9D00FF68B1 /* NenrinUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NenrinUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -49,6 +57,11 @@
 			path = AgeMemoTests;
 			sourceTree = "<group>";
 		};
+		C3EE42653043BD9D00FF68B1 /* NenrinUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = NenrinUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +76,11 @@
 			files = (
 			);
 		};
+		C3EE42613043BD9D00FF68B1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -71,6 +89,7 @@
 			children = (
 				A10000000000000000000041 /* AgeMemo */,
 				A10000000000000000000042 /* AgeMemoTests */,
+				C3EE42653043BD9D00FF68B1 /* NenrinUITests */,
 				A10000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -80,6 +99,7 @@
 			children = (
 				A10000000000000000000031 /* AgeMemo.app */,
 				A10000000000000000000032 /* AgeMemoTests.xctest */,
+				C3EE42643043BD9D00FF68B1 /* NenrinUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -129,6 +149,27 @@
 			productReference = A10000000000000000000032 /* AgeMemoTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		C3EE42633043BD9D00FF68B1 /* NenrinUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3EE426C3043BD9D00FF68B1 /* Build configuration list for PBXNativeTarget "NenrinUITests" */;
+			buildPhases = (
+				C3EE42603043BD9D00FF68B1 /* Sources */,
+				C3EE42613043BD9D00FF68B1 /* Frameworks */,
+				C3EE42623043BD9D00FF68B1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C3EE426B3043BD9D00FF68B1 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C3EE42653043BD9D00FF68B1 /* NenrinUITests */,
+			);
+			name = NenrinUITests;
+			productName = NenrinUITests;
+			productReference = C3EE42643043BD9D00FF68B1 /* NenrinUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -143,6 +184,10 @@
 						CreatedOnToolsVersion = 26.6;
 					};
 					A10000000000000000000011 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = A10000000000000000000010;
+					};
+					C3EE42633043BD9D00FF68B1 = {
 						CreatedOnToolsVersion = 26.6;
 						TestTargetID = A10000000000000000000010;
 					};
@@ -168,6 +213,7 @@
 			targets = (
 				A10000000000000000000010 /* AgeMemo */,
 				A10000000000000000000011 /* AgeMemoTests */,
+				C3EE42633043BD9D00FF68B1 /* NenrinUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -179,6 +225,11 @@
 			);
 		};
 		A10000000000000000000072 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		C3EE42623043BD9D00FF68B1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -196,6 +247,11 @@
 			files = (
 			);
 		};
+		C3EE42603043BD9D00FF68B1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -203,6 +259,11 @@
 			isa = PBXTargetDependency;
 			target = A10000000000000000000010 /* AgeMemo */;
 			targetProxy = A10000000000000000000021 /* PBXContainerItemProxy */;
+		};
+		C3EE426B3043BD9D00FF68B1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000010 /* AgeMemo */;
+			targetProxy = C3EE426A3043BD9D00FF68B1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -357,6 +418,111 @@
 			};
 			name = Release;
 		};
+		C3EE426D3043BD9D00FF68B1 /* Debug configuration for PBXNativeTarget "NenrinUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5C2UYK6F45;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.azukid.sumpo.NenrinUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AgeMemo;
+			};
+			name = Debug;
+		};
+		C3EE426E3043BD9D00FF68B1 /* Release configuration for PBXNativeTarget "NenrinUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5C2UYK6F45;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.azukid.sumpo.NenrinUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AgeMemo;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -381,6 +547,14 @@
 			buildConfigurations = (
 				A10000000000000000000081 /* Debug configuration for PBXProject "AgeMemo" */,
 				A10000000000000000000082 /* Release configuration for PBXProject "AgeMemo" */,
+			);
+			defaultConfigurationName = Debug;
+		};
+		C3EE426C3043BD9D00FF68B1 /* Build configuration list for PBXNativeTarget "NenrinUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3EE426D3043BD9D00FF68B1 /* Debug configuration for PBXNativeTarget "NenrinUITests" */,
+				C3EE426E3043BD9D00FF68B1 /* Release configuration for PBXNativeTarget "NenrinUITests" */,
 			);
 			defaultConfigurationName = Debug;
 		};

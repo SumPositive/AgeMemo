@@ -24,7 +24,10 @@ private func nonPersonalizedAdRequest() -> Request {
 
 struct HeaderBannerView: View {
     var body: some View {
-        if !AdMobConfig.bannerUnitID.isEmpty {
+        if hidesBannerForSnapshot {
+            // App Store用スクリーンショットには広告枠を含めない
+            Color.clear.frame(height: 0)
+        } else if !AdMobConfig.bannerUnitID.isEmpty {
             AdMobBannerRepresentable(adUnitID: AdMobConfig.bannerUnitID)
                 .frame(width: 320, height: 50)
                 .frame(maxWidth: .infinity)
@@ -33,6 +36,14 @@ struct HeaderBannerView: View {
             // ユニットID未設定時にEmptyViewを返すとsafeAreaInsetが破綻するため高さ0の実体を返す
             Color.clear.frame(height: 0)
         }
+    }
+
+    private var hidesBannerForSnapshot: Bool {
+        #if DEBUG
+        SnapshotSetup.isActive
+        #else
+        false
+        #endif
     }
 }
 

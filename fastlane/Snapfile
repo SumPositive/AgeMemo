@@ -1,0 +1,56 @@
+# fastlane snapshot 設定（Nenrin / 和暦年齢メモ）
+# ------------------------------------------------------------
+# 撮影カット（fastlane/uitest/NenrinUITests.swift）:
+#   01YearList  … 主画面（年齢）補助表示なし
+#   02Personal  … 主画面（自分）補助表示あり
+#   03YearDetail… 年詳細（カレンダー・六曜・月齢）
+#
+# 【重要】アプリの起動は1回だけ
+# 自分一覧の補助表示は撮影モードでタブを選んだ時に有効にする
+#
+# App Store 必須サイズ:
+#   - iPhone 6.9": iPhone 17 Pro Max（1320x2868）
+#   - iPad 13":    iPad Pro 13-inch (M5)
+#
+# 【注意】UITest ターゲット NenrinUITests の IPHONEOS_DEPLOYMENT_TARGET は
+# アプリ本体（17.0）に合わせる。devices([...]) の名前は
+# `xcrun simctl list devices` に出る名前と一致必須。
+
+devices([
+  "iPhone 17 Pro Max",
+  "iPad Pro 13-inch (M5)"
+])
+# 診断で1機種に絞る場合はどちらかをコメントアウトする
+
+# 言語コード = 出力フォルダ名（App Store のロケール名に一致）
+# Nenrin は 2 言語対応: ja, en-US
+languages(["ja","en-US"])
+
+# 撮影対象スキーム
+scheme("AgeMemo")
+
+# 撮影用 UITest を明示指定する
+# TestPlan 経由だと UITest が実行されず snapshot() が呼ばれない（結果0枚）ことがある
+only_testing(["NenrinUITests/NenrinUITests/testTakeScreenshots"])
+
+# 出力先。deliver がここから拾う
+output_directory("./fastlane/screenshots")
+
+# iPhone/iPad 両方を全カット撮り直すので、古いファイルを消してクリーンに出力する
+clear_previous_screenshots(true)
+
+# --- 撮影時間の短縮は行わない（Condition での実証・2026-07-06）-----------
+# derived_data_path 固定 + concurrent_simulators(true) は、USB上の Xcode +
+# シミュレータのクローン起動が RequestDenied / launch-failed で拒否されるため
+# 使わない。毎回クリーンビルド・逐次の素直な構成を保つ。
+
+# 起動を安定させる
+stop_after_first_error(true)
+
+# クローン起動が拒否される環境なので逐次実行に固定する
+concurrent_simulators(false)
+
+# シミュレータ起動失敗対策のリトライ
+# 失敗が続く場合は、実行前に `xcrun simctl shutdown all` +
+# `sudo killall -9 com.apple.CoreSimulator.CoreSimulatorService` でクリーンにする
+number_of_retries(3)

@@ -153,6 +153,7 @@ struct SettingsView: View {
                             BeginnerHelpBanner("一覧の各年に干支を絵文字と漢字で表示します。")
                         }
                     }
+                    .accessibilityIdentifier("toggle.zodiac")
 
                     Toggle(isOn: $settings.showsNineStar) {
                         HStack(alignment: .center, spacing: 4) {
@@ -160,6 +161,7 @@ struct SettingsView: View {
                             BeginnerHelpBanner("一覧に九星気学の本命星を表示します。")
                         }
                     }
+                    .accessibilityIdentifier("toggle.nineStar")
 
                     Toggle(isOn: $settings.showsSchoolAge) {
                         HStack(alignment: .center, spacing: 4) {
@@ -167,6 +169,7 @@ struct SettingsView: View {
                             BeginnerHelpBanner("生年月日をもとに、小学1年から大学4年までの学年を一覧に表示します。")
                         }
                     }
+                    .accessibilityIdentifier("toggle.schoolAge")
 
                     Toggle(isOn: $settings.showsLongevity) {
                         HStack(alignment: .center, spacing: 4) {
@@ -174,6 +177,7 @@ struct SettingsView: View {
                             BeginnerHelpBanner("一覧に還暦、古希、喜寿などの長寿祝いを表示します。")
                         }
                     }
+                    .accessibilityIdentifier("toggle.longevity")
 
                     Toggle(isOn: $settings.showsUnluckyYear) {
                         HStack(alignment: .center, spacing: 4) {
@@ -181,6 +185,7 @@ struct SettingsView: View {
                             BeginnerHelpBanner("一覧に前厄・本厄・後厄を表示します。性別が未指定の場合は表示されません。")
                         }
                     }
+                    .accessibilityIdentifier("toggle.unluckyYear")
 
                 }
 
