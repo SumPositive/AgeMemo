@@ -14,11 +14,19 @@ struct YearDetailView: View {
     let row: YearRow
     @State private var memoText: String
     let ageDisplayMode: AgeDisplayMode
+    /// 名簿人物を同姓同日でも区別するためのID
+    let selectedPersonID: UUID?
 
-    init(row: YearRow, ageDisplayMode: AgeDisplayMode) {
+    init(row: YearRow, ageDisplayMode: AgeDisplayMode, selectedPersonID: UUID? = nil) {
         self.row = row
         self.ageDisplayMode = ageDisplayMode
+        self.selectedPersonID = selectedPersonID
         _memoText = State(initialValue: "")
+    }
+
+    private var selectedPerson: Person? {
+        guard let selectedPersonID else { return nil }
+        return personStore.people.first { $0.id == selectedPersonID }
     }
 
     var body: some View {
@@ -148,7 +156,7 @@ struct YearDetailView: View {
         switch ageDisplayMode {
         case .age: nil
         case .personal: settings.birthDate
-        case .person(let birthDate): birthDate
+        case .person: selectedPerson?.birthDate
         }
     }
 
@@ -176,13 +184,8 @@ struct YearDetailView: View {
         // 年齢一覧は不特定の人を並べたものなので性別が決まらない
         case .age: .unspecified
         case .personal: settings.gender
-        case .person(let birthDate): personGender(for: birthDate)
+        case .person: selectedPerson?.gender ?? .unspecified
         }
-    }
-
-    /// 名簿から選ばれている人の性別を生年月日で引き当てる
-    private func personGender(for birthDate: Date) -> Gender {
-        personStore.people.first { $0.birthDate == birthDate }?.gender ?? .unspecified
     }
 
     /// その年の厄年。生まれる前の年には出さない
@@ -196,7 +199,7 @@ struct YearDetailView: View {
         AgeCalculator.displayedAge(
             for: row.gregorian,
             mode: ageDisplayMode,
-            birthDate: settings.birthDate,
+            birthDate: effectiveBirthDate,
             currentYear: Calendar.current.component(.year, from: .now),
             reckoning: settings.ageReckoning
         )

@@ -8,10 +8,14 @@ struct MoonPhase: Sendable {
 
     private static let synodicMonth = 29.530588853
 
+    /// 月を眺める時刻。日付の変わり目ではなく、夕方から夜にかけて
+    /// 実際に空へ出ている月に合わせるため半日ぶん進める
+    private static let eveningOffset = 0.5
+
     /// 旧暦の日から求める。旧暦の1日が朔にあたる
     init?(date: Date, calendar: Calendar = .lunisolar) {
         guard let day = calendar.dateComponents([.day], from: date).day else { return nil }
-        age = Double(day - 1)
+        age = Double(day - 1) + Self.eveningOffset
     }
 
     /// 満ちている割合。新月が0、満月が1

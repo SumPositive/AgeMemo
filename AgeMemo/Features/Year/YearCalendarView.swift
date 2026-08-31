@@ -6,6 +6,25 @@ struct YearCalendarView: View {
     let row: YearRow
 
     @State private var month: Int
+    @State private var isMonthPickerExpanded = false
+
+    /// AZDropdownPicker は Identifiable を要求するため、月を包む
+    private struct MonthOption: Hashable, Identifiable {
+        let value: Int
+        var id: Int { value }
+        var title: String { "\(value)月" }
+    }
+
+    private static let monthOptions = (1...12).map { MonthOption(value: $0) }
+
+    private var selectedMonthOption: Binding<MonthOption> {
+        Binding(
+            get: { MonthOption(value: month) },
+            set: { newValue in
+                withAnimation(.easeInOut(duration: 0.15)) { month = newValue.value }
+            }
+        )
+    }
 
     init(row: YearRow, initialMonth: Int = Calendar.current.component(.month, from: .now)) {
         self.row = row
@@ -31,6 +50,25 @@ struct YearCalendarView: View {
         )
     }
 
+    private var calendarHelp: LocalizedStringKey {
+        """
+        その年のカレンダーです。日付の下に六曜と月の満ち欠けを添えています。
+
+        【六曜】
+        先勝・友引・先負・仏滅・大安・赤口の6日周期で、旧暦の月日から求めます。日取りを選ぶときに探すことの多い大安は赤色で示します。
+
+        【月の満ち欠け】
+        パーセントは輝面率といい、月の光っている部分の面積の割合です。新月が0％、満月が100％になります。
+
+        夕方から夜にかけて実際に空へ出ている月に合わせて計算しているので、その晩に見上げる月の姿とおおよそ一致します。満月（100％）は黄色で示します。
+
+        旧暦をもとにした概算のため、実際の満月と1日ずれることがあります。
+
+        【改元】
+        改元があった年は、元号が変わる日に区切り線と新しい元号を表示します。
+        """
+    }
+
     private var monthSwitcher: some View {
         HStack {
             Button {
@@ -45,14 +83,21 @@ struct YearCalendarView: View {
 
             Spacer(minLength: 0)
 
-            // 月を直接選べるようにして12か月へ一度に移動できる
-            Picker("月", selection: $month) {
-                ForEach(1...12, id: \.self) { value in
-                    Text("\(String(value))月").tag(value)
-                }
+            // 月を直接選べるようにして12か月へ一度に移動できる。
+            // 標準の Picker はラベルが折り返し、文字サイズ設定にも追従しないため
+            // アプリ共通の AZDropdownPicker を使う
+            AZDropdownPicker(
+                options: Self.monthOptions,
+                selection: selectedMonthOption,
+                isExpanded: $isMonthPickerExpanded,
+                minWidth: 0
+            ) { option in
+                Text(option.title)
             }
-            .pickerStyle(.menu)
-            .font(.headline)
+            // 幅が足りないときに削られるのはヘルプ側であって月ではない
+            .layoutPriority(1)
+
+            BeginnerHelpBanner(calendarHelp)
 
             Spacer(minLength: 0)
 
@@ -160,10 +205,10 @@ private struct MonthCalendarView: View {
                     .minimumScaleFactor(0.6)
             }
             if let moon {
-                // 満月（輝面比100%）は黄色系で示す
+                // 満月はライト時も読める濃さへ切り替える
                 let isFullMoon = moon.illuminationPercent == 100
                 let moonStyle = isFullMoon
-                    ? AnyShapeStyle(Color(uiColor: .systemYellow))
+                    ? AnyShapeStyle(fullMoonColor)
                     : AnyShapeStyle(.secondary)
                 Image(systemName: moon.symbolName)
                     .font(.system(size: scaledMoonFontSize))
@@ -184,6 +229,13 @@ private struct MonthCalendarView: View {
             }
         }
         .accessibilityLabel(accessibilityLabel(day: day, era: era, rokuyo: rokuyo, moon: moon))
+    }
+
+    /// 満月の色を外観ごとに読みやすくする
+    private var fullMoonColor: Color {
+        Color(uiColor: UIColor { traits in
+            traits.userInterfaceStyle == .dark ? .systemYellow : .systemOrange
+        })
     }
 
     private func moonPhase(for day: Int) -> MoonPhase? {

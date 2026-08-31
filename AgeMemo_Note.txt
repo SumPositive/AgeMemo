@@ -15,10 +15,9 @@ fastlane/metadata
 　subtitle
 
 fastlane/screenshots に次の画面を用意したい
-　主画面（年齢）補助表示なし
-　主画面（自分）補助全部表示
-　年詳細画面
-　設定画面（補助表示選択のあたり）
+　1.主画面（年齢）補助表示なし
+　2.主画面（自分）補助全部表示
+　3.年詳細画面
 
 
 ----------------------------------------------------------
@@ -29,7 +28,7 @@ fastlane/screenshots に次の画面を用意したい
 fastlane メタデータを更新して
 1.0.0 審査提出中、README.mdの開発メモ、公開アプリパネル、取扱説明を更新して
 -----
-cd /Users/sumpositive/GitLocal/Calclin
+cd /Users/sumpositive/GitLocal/AgeMemo
 fastlane preview_metadata
 fastlane upload_metadata
 ---

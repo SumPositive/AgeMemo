@@ -1,7 +1,7 @@
 # fastlane snapshot 設定（Nenrin / 和暦年齢メモ）
 # ------------------------------------------------------------
 # 撮影カット（fastlane/uitest/NenrinUITests.swift）:
-#   01YearList  … 主画面（年齢）1963年へ移動
+#   01YearList  … 主画面（年齢）2026年へ移動
 #   02Personal  … 1963年9月1日生まれの自分一覧で当年を表示
 #   03YearDetail… 自分一覧の1963年詳細
 #

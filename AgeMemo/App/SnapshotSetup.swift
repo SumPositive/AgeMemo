@@ -8,8 +8,10 @@ import Foundation
 
 #if DEBUG
 enum SnapshotSetup {
-    /// 1枚目で移動先として表示する年
-    static let initialListYear = 1963
+    /// 1枚目の年齢一覧で表示する年
+    static let initialListYear = 2026
+    /// 3枚目の詳細で表示する年
+    static let detailYear = 1963
 
     /// 撮影モードかどうか
     static var isActive: Bool {

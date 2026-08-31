@@ -98,6 +98,12 @@ enum AgeReckoning: Int, CaseIterable, Identifiable {
         case .traditional: age - 1
         }
     }
+
+    /// 数え年では0歳を使わず、負数だけは生まれる前の年として保つ
+    func clampedInputAge(_ inputAge: Int) -> Int {
+        guard 0 <= inputAge else { return inputAge }
+        return max(inputAge, age(fromActual: 0))
+    }
 }
 
 @MainActor

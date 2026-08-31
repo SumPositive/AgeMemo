@@ -24,11 +24,10 @@ struct AgeJumpSheet: View {
         return clamped(isNegative ? -magnitude : magnitude)
     }
 
-    /// 数え年には0歳がなく1歳から始まるため、下限を数え方に合わせる。
+    /// 数え年には0歳がなく1歳から始まるため、下限を数え方に合わせる
     /// マイナスはまだ生まれていない年を指すので、そのまま通す
     private func clamped(_ age: Int) -> Int {
-        guard 0 <= age else { return age }
-        return max(age, settings.ageReckoning.age(fromActual: 0))
+        settings.ageReckoning.clampedInputAge(age)
     }
 
     private var destinationYear: Int {
@@ -90,7 +89,7 @@ struct AgeJumpSheet: View {
     private var display: some View {
         HStack(alignment: .lastTextBaseline, spacing: 6) {
             // 未入力のあいだは前回値をグレーで示し、数字を押すと上書きする
-            Text(isEmpty ? "\(placeholderAge)" : "\(isNegative ? "−" : "")\(digits)")
+            Text(isEmpty ? "\(age)" : "\(isNegative ? "−" : "")\(digits)")
                 .font(.system(size: displayFontSize, weight: .bold, design: .rounded).monospacedDigit())
                 .foregroundStyle(isEmpty ? Color(.tertiaryLabel) : Color(.label))
                 .contentTransition(.numericText())
@@ -112,7 +111,8 @@ struct AgeJumpSheet: View {
         case .auxiliary:
             break
         case .toggleSign:
-            isNegative.toggle()
+            // 0は符号を持たせず、−0表示を防ぐ
+            if digits != "0" { isNegative.toggle() }
         }
     }
 
@@ -120,6 +120,8 @@ struct AgeJumpSheet: View {
         // 空または "0" のときは置き換えて先頭ゼロを防ぐ
         let next = (digits.isEmpty || digits == "0") ? String(digit) : digits + String(digit)
         guard let value = Int(next), value <= AppConfig.maximumAgeInput else { return }
-        digits = String(value)
+        let normalizedAge = clamped(isNegative ? -value : value)
+        isNegative = normalizedAge < 0
+        digits = String(abs(normalizedAge))
     }
 }

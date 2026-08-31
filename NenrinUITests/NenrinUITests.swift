@@ -4,7 +4,7 @@
 //
 //  fastlane snapshot 用の UI テスト
 //  3カットを撮影する:
-//    01 主画面（年齢）1963年へ移動
+//    01 主画面（年齢）2026年へ移動
 //    02 主画面（自分）当年を表示
 //    03 自分一覧の1963年詳細
 //
@@ -32,7 +32,8 @@ final class NenrinUITests: XCTestCase {
 
         waitForList(app)
 
-        // 01: 主画面（年齢）1963年を移動先として表示
+        // 01: 主画面（年齢）2026年を移動先として表示
+        waitForYear(app, year: 2026)
         snapshot("01YearList")
 
         // 02: 1963年9月1日生まれの自分一覧で当年を表示
@@ -57,6 +58,14 @@ final class NenrinUITests: XCTestCase {
     private func waitForList(_ app: XCUIApplication) {
         _ = app.buttons["tab.age"].waitForExistence(timeout: 30)
         sleep(2)   // 当年へのスクロールと一覧レイアウトの確定を待つ
+    }
+
+    /// 指定年の行が画面へ現れてから撮影する
+    @MainActor
+    private func waitForYear(_ app: XCUIApplication, year: Int) {
+        let row = app.descendants(matching: .any)["row.\(year)"]
+        XCTAssertTrue(row.waitForExistence(timeout: 10), "\(year)年の行が表示されない")
+        XCTAssertTrue(row.isHittable, "\(year)年の行が画面内にない")
     }
 
     /// タブを多段フォールバックで叩く（iPad では id 直接が hittable にならないことがある）

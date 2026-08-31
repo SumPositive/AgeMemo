@@ -70,8 +70,8 @@ final class CoreLogicTests: XCTestCase {
         XCTAssertEqual(
             AgeCalculator.displayedAge(
                 for: 2026,
-                mode: .person(birthDate),
-                birthDate: nil,
+                mode: .person,
+                birthDate: birthDate,
                 currentYear: 2026
             ),
             76
@@ -81,6 +81,9 @@ final class CoreLogicTests: XCTestCase {
     func testBirthYearForAge() {
         XCTAssertEqual(AgeCalculator.birthYear(forAge: 38, currentYear: 2026), 1988)
         XCTAssertEqual(AgeCalculator.birthYear(forAge: 0, currentYear: 2026), 2026)
+        // 数え年に存在しない0歳は1歳として扱う
+        XCTAssertEqual(AgeCalculator.birthYear(forAge: 0, currentYear: 2026, reckoning: .traditional), 2026)
+        XCTAssertEqual(AgeCalculator.birthYear(forAge: -1, currentYear: 2026, reckoning: .traditional), 2027)
     }
 
     func testYearForPersonalAge() throws {
@@ -93,7 +96,14 @@ final class CoreLogicTests: XCTestCase {
             AgeCalculator.year(forAge: 11, birthDate: birthDate, reckoning: .traditional),
             1998
         )
+        XCTAssertEqual(AgeCalculator.year(forAge: 0, birthDate: birthDate, reckoning: .traditional), 1988)
         XCTAssertEqual(AgeCalculator.year(forAge: -2, birthDate: birthDate), 1986)
+    }
+
+    func testAgeInputLowerBoundMatchesReckoning() {
+        XCTAssertEqual(AgeReckoning.actual.clampedInputAge(0), 0)
+        XCTAssertEqual(AgeReckoning.traditional.clampedInputAge(0), 1)
+        XCTAssertEqual(AgeReckoning.traditional.clampedInputAge(-1), -1)
     }
 
     func testEraChoiceUsesActualFirstYear() throws {

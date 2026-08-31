@@ -8,7 +8,7 @@ enum AgeDisplayMode: Equatable {
     /// 自分の生年月日を基準に各年の年齢を表示する
     case personal
     /// 名簿から選んだ人の生年月日を基準に各年の年齢を表示する
-    case person(Date)
+    case person
 }
 
 enum AgeCalculator {
@@ -24,10 +24,8 @@ enum AgeCalculator {
         case .age:
             // その年に生まれた人の当年時点の年齢を求める
             actualAge = currentYear - rowYear
-        case .personal:
+        case .personal, .person:
             actualAge = age(in: rowYear, birthDate: birthDate)
-        case .person(let personBirthDate):
-            actualAge = age(in: rowYear, birthDate: personBirthDate)
         }
         guard let actualAge else { return nil }
         // 生まれる前は数え年の考え方が当てはまらないので、そのまま負の値を返す
@@ -37,8 +35,10 @@ enum AgeCalculator {
 
     /// 指定した年齢の人が生まれた年を求める。displayedAge の逆算にあたる
     static func birthYear(forAge age: Int, currentYear: Int, reckoning: AgeReckoning = .actual) -> Int {
+        // 数え年の0歳は1歳へ補正し、逆算結果のずれを防ぐ
+        let normalizedAge = reckoning.clampedInputAge(age)
         // 生まれる前は数え年の変換をしないため、逆算でも戻さない
-        let actualAge = 0 <= age ? reckoning.actualAge(from: age) : age
+        let actualAge = 0 <= normalizedAge ? reckoning.actualAge(from: normalizedAge) : normalizedAge
         return currentYear - actualAge
     }
 
@@ -50,8 +50,10 @@ enum AgeCalculator {
         calendar: Calendar = Calendar(identifier: .gregorian)
     ) -> Int {
         let birthYear = calendar.component(.year, from: birthDate)
+        // 数え年の0歳は1歳へ補正し、逆算結果のずれを防ぐ
+        let normalizedAge = reckoning.clampedInputAge(age)
         // 生まれる前の負数はそのまま生年から逆方向へ足す
-        let actualAge = 0 <= age ? reckoning.actualAge(from: age) : age
+        let actualAge = 0 <= normalizedAge ? reckoning.actualAge(from: normalizedAge) : normalizedAge
         return birthYear + actualAge
     }
 

@@ -39,13 +39,20 @@ struct YearListView: View {
     @State private var didSetInitialPosition = false
     @State private var selectedToolbarAction = MainToolbarAction.age
     @State private var ageDisplayMode = AgeDisplayMode.age
-    @State private var selectedPerson: Person?
+    /// 選択人物は値コピーではなくIDで保持し、名簿の編集へ追随させる
+    @State private var selectedPersonID: UUID?
     /// シートから移動した年。その行を移動先として明示する
     @State private var selectedDestinationYear: Int?
     /// 一覧でタップした年。次の一覧切り替えまたは移動まで明示する
     @State private var tappedYear: Int?
 
-    private let currentYear = Calendar.current.component(.year, from: .now)
+    /// 復帰時に年越しを反映できるよう状態値として保持する
+    @State private var currentYear = Calendar.current.component(.year, from: .now)
+
+    private var selectedPerson: Person? {
+        guard let selectedPersonID else { return nil }
+        return personStore.people.first { $0.id == selectedPersonID }
+    }
 
     private var birthYear: Int? {
         AgeCalculator.birthYear(from: settings.birthDate)
@@ -128,7 +135,7 @@ struct YearListView: View {
                     var initialYear = currentYear
 #if DEBUG
                     if SnapshotSetup.isActive {
-                        // 撮影時の1枚目は1963年を移動先として明示する
+                        // 撮影時の1枚目は2026年を移動先として明示する
                         initialYear = SnapshotSetup.initialListYear
                         selectedDestinationYear = initialYear
                     }
@@ -188,7 +195,7 @@ struct YearListView: View {
             if SnapshotSetup.isActive {
                 // UIテストから1963年詳細を直接開くための撮影専用操作
                 Button {
-                    presentedSheet = .detail(SnapshotSetup.initialListYear)
+                    presentedSheet = .detail(SnapshotSetup.detailYear)
                 } label: {
                     Color.clear
                         .frame(width: 44, height: 44)
@@ -201,9 +208,28 @@ struct YearListView: View {
 #endif
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase != .active {
+            if phase == .active {
+                refreshCurrentYear()
+            } else {
                 memoStore.flushPendingSave()
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
+            // 起動したまま日付が変わった場合も当年を更新する
+            refreshCurrentYear()
+        }
+        .onChange(of: personStore.people) { _, people in
+            // 選択中人物が削除されたら年齢一覧へ安全に戻す
+            guard ageDisplayMode == .person,
+                  let selectedPersonID,
+                  !people.contains(where: { $0.id == selectedPersonID }) else { return }
+            self.selectedPersonID = nil
+            ageDisplayMode = .age
+            selectedToolbarAction = .age
+            selectedDestinationYear = nil
+            tappedYear = nil
+            // 名簿シートを閉じずに当年へ戻す
+            scrollRequest = YearScrollRequest(year: currentYear)
         }
         .sheet(item: $presentedSheet) { sheet in
             sheetContent(sheet)
@@ -309,7 +335,11 @@ struct YearListView: View {
         switch sheet {
         case .detail(let year):
             if let row = rows.first(where: { $0.gregorian == year }) {
-                YearDetailView(row: row, ageDisplayMode: ageDisplayMode)
+                YearDetailView(
+                    row: row,
+                    ageDisplayMode: ageDisplayMode,
+                    selectedPersonID: selectedPersonID
+                )
             }
         case .age:
             AgeJumpSheet(placeholderAge: settings.lastEnteredAge, currentYear: currentYear) { enteredAge, year in
@@ -320,14 +350,15 @@ struct YearListView: View {
             }
         case .person:
             PersonSheet(currentYear: currentYear) { person in
-                selectedPerson = person
-                ageDisplayMode = .person(person.birthDate)
+                selectedPersonID = person.id
+                ageDisplayMode = .person
                 scroll(to: currentYear)
             }
         case .era:
             EraJumpSheet(
                 rows: rows,
                 ageDisplayMode: ageDisplayMode,
+                birthDate: effectiveBirthDate,
                 initialSelectionID: settings.lastJumpSelectionID,
                 initialInput: settings.lastJumpInput
             ) { year in
@@ -377,6 +408,14 @@ struct YearListView: View {
         presentedSheet = nil
     }
 
+    /// 年をまたいで復帰した場合は当年を更新して中央へ移動する
+    private func refreshCurrentYear() {
+        let refreshedYear = Calendar.current.component(.year, from: .now)
+        guard currentYear != refreshedYear else { return }
+        currentYear = refreshedYear
+        scroll(to: refreshedYear)
+    }
+
     /// その年に迎える賀寿。生まれる前の年には出さない
     /// 学齢・賀寿・厄年のいずれかがONなら、該当しない年でも列幅を確保する。
     /// 行ごとに列位置がずれると一覧として読みにくいため
@@ -417,7 +456,7 @@ struct YearListView: View {
         switch ageDisplayMode {
         case .age: nil
         case .personal: settings.birthDate
-        case .person(let birthDate): birthDate
+        case .person: selectedPerson?.birthDate
         }
     }
 
@@ -439,7 +478,7 @@ struct YearListView: View {
         AgeCalculator.displayedAge(
             for: year,
             mode: ageDisplayMode,
-            birthDate: settings.birthDate,
+            birthDate: effectiveBirthDate,
             currentYear: currentYear,
             reckoning: settings.ageReckoning
         )

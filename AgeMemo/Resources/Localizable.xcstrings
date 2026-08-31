@@ -57,14 +57,19 @@
       }
     },
     "%@文字" : {
-
-    },
-    "%@月" : {
-      "comment" : "カレンダーの月。訳さない",
-      "shouldTranslate" : false
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ characters left"
+          }
+        }
+      }
     },
     "%@歳" : {
-
+      "comment" : "年齢の単位。桁揃えに影響するため訳さない",
+      "shouldTranslate" : false
     },
     "%lld年後に生まれる方の誕生年" : {
       "extractionState" : "manual",
@@ -73,17 +78,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Birth year of someone born in %lld years"
-          }
-        }
-      }
-    },
-    "%lld文字" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld characters left"
           }
         }
       }
@@ -169,6 +163,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kazoedoshi age %lld this year"
+          }
+        }
+      }
+    },
+    "その年のカレンダーです。日付の下に六曜と月の満ち欠けを添えています。\n\n【六曜】\n先勝・友引・先負・仏滅・大安・赤口の6日周期で、旧暦の月日から求めます。日取りを選ぶときに探すことの多い大安は赤色で示します。\n\n【月の満ち欠け】\nパーセントは輝面率といい、月の光っている部分の面積の割合です。新月が0％、満月が100％になります。\n\n夕方から夜にかけて実際に空へ出ている月に合わせて計算しているので、その晩に見上げる月の姿とおおよそ一致します。満月（100％）は黄色で示します。\n\n旧暦をもとにした概算のため、実際の満月と1日ずれることがあります。\n\n【改元】\n改元があった年は、元号が変わる日に区切り線と新しい元号を表示します。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The calendar for that year. Under each date you will find the rokuyo and the phase of the moon.\n\n[六曜 rokuyo]\nA six-day cycle — 先勝 senshō, 友引 tomobiki, 先負 senbu, 仏滅 butsumetsu, 大安 taian, 赤口 shakkō — derived from the lunisolar calendar. 大安, the day most often sought when choosing a date, is marked in red.\n\n[The moon]\nThe percentage is the illuminated fraction: how much of the moon's face is lit. A new moon is 0% and a full moon is 100%.\n\nIt is calculated for the moon as it actually stands in the sky from evening into night, so it matches roughly what you would see looking up that night. A full moon (100%) is marked in yellow.\n\nBecause it is an approximation based on the lunisolar calendar, it can be a day off from the true full moon.\n\n[Era changes]\nIn a year when the era changed, the day it changed is marked with a rule and the new era name."
           }
         }
       }
@@ -837,15 +842,12 @@
       }
     },
     "移動先 西暦%@年" : {
-
-    },
-    "移動先 西暦%lld年" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Destination: %lld"
+            "value" : "Destination: %@"
           }
         }
       }

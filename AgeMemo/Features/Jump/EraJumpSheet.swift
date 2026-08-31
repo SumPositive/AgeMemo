@@ -36,6 +36,8 @@ struct EraJumpSheet: View {
 
     let rows: [YearRow]
     let ageDisplayMode: AgeDisplayMode
+    /// 自分または名簿人物の年齢換算に使う生年月日
+    let birthDate: Date?
     let jump: (Int) -> Void
 
     private let currentYear = Calendar.current.component(.year, from: .now)
@@ -43,12 +45,14 @@ struct EraJumpSheet: View {
     init(
         rows: [YearRow],
         ageDisplayMode: AgeDisplayMode,
+        birthDate: Date?,
         initialSelectionID: String?,
         initialInput: Int?,
         jump: @escaping (Int) -> Void
     ) {
         self.rows = rows
         self.ageDisplayMode = ageDisplayMode
+        self.birthDate = birthDate
         self.jump = jump
         let eraChoices = JapaneseEra.eraChoices(from: rows)
         // 保存値がなければ対象範囲の最新元号を初期表示にする
@@ -105,7 +109,7 @@ struct EraJumpSheet: View {
             AgeCalculator.displayedAge(
                 for: currentYear,
                 mode: ageDisplayMode,
-                birthDate: settings.birthDate,
+                birthDate: birthDate,
                 currentYear: currentYear,
                 reckoning: settings.ageReckoning
             ) ?? settings.ageReckoning.age(fromActual: 0)
@@ -117,9 +121,11 @@ struct EraJumpSheet: View {
     }
 
     private var inputYear: Int {
-        guard let value = Int(digits) else { return retainedInput ?? placeholderInputYear }
+        guard let value = Int(digits) else {
+            return boundedInput(retainedInput ?? placeholderInputYear, for: selection)
+        }
         let magnitude = min(value, maximumInput)
-        return isNegative ? -magnitude : magnitude
+        return boundedInput(isNegative ? -magnitude : magnitude, for: selection)
     }
 
     private var eraChoices: [EraChoice] {
@@ -161,7 +167,7 @@ struct EraJumpSheet: View {
             return AgeCalculator.displayedAge(
                 for: destinationYear,
                 mode: ageDisplayMode,
-                birthDate: settings.birthDate,
+                birthDate: birthDate,
                 currentYear: currentYear,
                 reckoning: settings.ageReckoning
             ) ?? settings.ageReckoning.age(fromActual: 0)
@@ -174,7 +180,9 @@ struct EraJumpSheet: View {
 
     private func boundedInput(_ input: Int, for selection: EraJumpSelection) -> Int {
         let magnitude = min(abs(input), Self.maximumInput(for: selection))
-        return input < 0 ? -magnitude : magnitude
+        let bounded = input < 0 ? -magnitude : magnitude
+        guard selection == .age else { return bounded }
+        return settings.ageReckoning.clampedInputAge(bounded)
     }
 
     private var boundedYear: Int {
@@ -190,7 +198,7 @@ struct EraJumpSheet: View {
                 reckoning: settings.ageReckoning
             )
         case .personal:
-            guard let birthDate = settings.birthDate else {
+            guard let birthDate else {
                 return currentYear
             }
             return AgeCalculator.year(
@@ -198,7 +206,10 @@ struct EraJumpSheet: View {
                 birthDate: birthDate,
                 reckoning: settings.ageReckoning
             )
-        case .person(let birthDate):
+        case .person:
+            guard let birthDate else {
+                return currentYear
+            }
             return AgeCalculator.year(
                 forAge: age,
                 birthDate: birthDate,
@@ -305,7 +316,7 @@ struct EraJumpSheet: View {
 
     private var inputDisplayText: String {
         if isEmpty {
-            let placeholder = retainedInput ?? placeholderInputYear
+            let placeholder = boundedInput(retainedInput ?? placeholderInputYear, for: selection)
             return placeholder < 0 ? "−\(-placeholder)" : String(placeholder)
         }
         return "\(isNegative ? "−" : "")\(digits)"
@@ -320,7 +331,8 @@ struct EraJumpSheet: View {
         case .auxiliary:
             break
         case .toggleSign:
-            isNegative.toggle()
+            // 0は符号を持たせず、−0表示を防ぐ
+            if digits != "0" { isNegative.toggle() }
         }
         // 閉じた後も直前の選択と入力を復元できるよう随時保存する
         settings.lastJumpSelectionID = selection.id
@@ -333,7 +345,9 @@ struct EraJumpSheet: View {
         guard let value = Int(next), value <= maximumInput else { return }
         // 最初の数字で直前値のプレースホルダーを上書きする
         retainedInput = nil
-        digits = String(value)
+        let normalizedInput = boundedInput(isNegative ? -value : value, for: selection)
+        isNegative = normalizedInput < 0
+        digits = String(abs(normalizedInput))
     }
 
     private var signedInput: Int? {

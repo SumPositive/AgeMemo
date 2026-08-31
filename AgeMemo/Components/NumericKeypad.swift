@@ -115,6 +115,11 @@ private struct KeypadPressBehavior: ViewModifier {
                 // ScrollViewのスクロールより先にキー入力を受け取る
                 including: .gesture
             )
+            // VoiceOverのアクティベートでも同じ入力を実行する
+            .accessibilityAction {
+                guard isEnabled else { return }
+                action()
+            }
             .animation(.easeOut(duration: 0.08), value: isPressed)
     }
 }
