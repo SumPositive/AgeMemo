@@ -32,6 +32,7 @@ struct YearListView: View {
     @Environment(MemoStore.self) private var memoStore
     @Environment(PersonStore.self) private var personStore
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     @State private var rows = JapaneseEra.makeRows()
     @State private var scrollRequest: YearScrollRequest?
@@ -108,7 +109,7 @@ struct YearListView: View {
                                     schoolMilestone: schoolMilestone(for: row.gregorian),
                                     nineStar: nineStar(for: row.gregorian),
                                     reservesBadgeColumn: reservesBadgeColumn,
-                                    compact: settings.displayMode == .expert
+                                    compact: effectiveDisplayMode == .expert
                                 )
                                 .onTapGesture {
                                     // 詳細を閉じた後も、どの行を開いたか分かるようにする
@@ -178,13 +179,20 @@ struct YearListView: View {
                     if isBeginner {
                         beginnerCaptions
                     }
-                    HeaderBannerView()
+                    // 横向きは一覧に使える高さが少ないためバナーを出さない。
+                    // ただし中身が空になると safeAreaInset がレイアウトを確定できず
+                    // インセットが画面全体へ膨張するため、高さ0の実体を必ず置く
+                    if isLandscape {
+                        Color.clear.frame(height: 0)
+                    } else {
+                        HeaderBannerView()
+                    }
                 }
                 .background(.bar)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 BottomToolbar(
-                    displayMode: settings.displayMode,
+                    displayMode: effectiveDisplayMode,
                     selection: selectedToolbarAction,
                     action: handleToolbarAction
                 )
@@ -237,8 +245,19 @@ struct YearListView: View {
         }
     }
 
+    /// 横向きは縦の余白が乏しい。ヒントや広告に高さを使うと一覧が数行しか
+    /// 見えなくなるため、設定が初心者でも達人として扱う
+    private var isLandscape: Bool {
+        verticalSizeClass == .compact
+    }
+
+    /// 画面の向きまで加味した実効の表示モード
+    private var effectiveDisplayMode: DisplayMode {
+        isLandscape ? .expert : settings.displayMode
+    }
+
     private var isBeginner: Bool {
-        settings.displayMode == .beginner
+        effectiveDisplayMode == .beginner
     }
 
     /// 一覧上のヒント。メモを表示しない設定のときはメモに触れない
