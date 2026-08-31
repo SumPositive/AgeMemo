@@ -24,32 +24,32 @@ struct YearRowView: View {
     var schoolMilestone: SchoolMilestone?
     /// 九星の本命星。設定がOFFなら nil
     var nineStar: NineStar?
+    /// 学齢・賀寿・厄年のいずれかが設定でONか。
+    /// ONの間は該当しない年でも列幅を確保し、行ごとに列位置がずれないようにする
+    var reservesBadgeColumn: Bool = false
     let compact: Bool
     @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-    /// 列間の最小幅。余った幅は各列間へ均等に配分する
-    private let columnSpacing: CGFloat = 8
+    /// 基本3列（年齢・西暦・和暦）の列間。常にこの幅で詰めて並べる
+    private let baseColumnSpacing: CGFloat = 10
+    /// 行の左右端に空ける幅
+    private let edgeInset: CGFloat = 12
 
-    /// 特大以上では横に並べきれないので2段へ落とす
-    private var stacksNineStar: Bool {
-        DynamicTypeSize.accessibility1 <= dynamicTypeSize
-    }
-
-    private var hasSecondaryLine: Bool {
+    private var hasMemo: Bool {
         !(memo?.isEmpty ?? true)
-            || longevity != nil || unluckyYear != nil || schoolMilestone != nil
     }
+
+    /// 2行目はメモのためだけに使う
+    private var hasSecondaryLine: Bool { hasMemo }
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 2 : 5) {
+            // 補助表示は固定幅の列にしたので、行ごとに形が変わらない。
+            // 倍率だけを ViewThatFits で決める
             ViewThatFits(in: .horizontal) {
-                primaryLine(scale: 1.0)
-                primaryLine(scale: 0.9)
-                primaryLine(scale: 0.8)
-                primaryLine(scale: 0.7)
-                primaryLine(scale: 0.6)
-                primaryLine(scale: 0.55)
+                ForEach(primaryScales, id: \.self) { scale in
+                    primaryLine(scale: scale)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -61,30 +61,7 @@ struct YearRowView: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     }
-
                     Spacer(minLength: 6)
-
-                    // 節目は右端にまとめる
-                    if let schoolMilestone {
-                        Text(schoolMilestone.shortName)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-
-                    if let longevity {
-                        Text(longevity.name)
-                            .font(.caption)
-                            .foregroundStyle(.tint)
-                            .lineLimit(1)
-                    }
-
-                    if let unluckyYear {
-                        Text(unluckyYear.name)
-                            .font(.caption)
-                            .foregroundStyle(.red)
-                            .lineLimit(1)
-                    }
                 }
                 .padding(.horizontal, 6)
                 .padding(.leading, 60)
@@ -97,6 +74,9 @@ struct YearRowView: View {
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
     }
+
+    /// 収まる倍率を上から順に試す
+    private var primaryScales: [CGFloat] { [1.0, 0.9, 0.8, 0.7, 0.6, 0.55] }
 
     /// ダークモードの純白は一覧が明滅して見えるため、少し落ち着かせる
     private var rowTextColor: Color {
@@ -125,41 +105,91 @@ struct YearRowView: View {
     }
 
     private func primaryLine(scale: CGFloat) -> some View {
-        let fontSize = preferredFontSize * scale
-        // 収まる文字倍率を決めた後、余った幅をSpacerで左右端と各列間へ均等に配る
+        // 基本3列は設定した文字サイズのまま出す。縮めると行ごとに大きさが
+        // 変わって読みにくいので、狭いときに縮むのは補助項目だけにする
+        let baseFontSize = preferredFontSize
+        let auxiliaryFontSize = preferredFontSize * scale
+
+        // 補助列は常に縦積みで最小幅なので、すべての余白を可変にして
+        // 均等に配れる。3列なら4か所、5列なら6か所へ同じ幅で分かれる
         return HStack(spacing: 0) {
-            columnGap
-            if showsAgeFirst {
-                ageColumn(fontSize: fontSize)
-                columnGap
-                gregorianColumn(fontSize: fontSize)
-                columnGap
-                eraColumn(fontSize: fontSize)
-                    .frame(width: fontSize * 4.1, alignment: .leading)
-                if showsZodiac || nineStar != nil {
-                    columnGap
-                    zodiacColumn(fontSize: fontSize)
-                }
-            } else {
-                gregorianColumn(fontSize: fontSize)
-                columnGap
-                eraColumn(fontSize: fontSize)
-                    .frame(width: fontSize * 4.1, alignment: .leading)
-                if showsZodiac || nineStar != nil {
-                    columnGap
-                    zodiacColumn(fontSize: fontSize)
-                }
-                columnGap
-                ageColumn(fontSize: fontSize)
+            Spacer(minLength: edgeInset)
+
+            baseColumn(at: 0, fontSize: baseFontSize)
+            Spacer(minLength: baseColumnSpacing)
+            baseColumn(at: 1, fontSize: baseFontSize)
+            Spacer(minLength: baseColumnSpacing)
+            baseColumn(at: 2, fontSize: baseFontSize)
+
+            if showsZodiac || nineStar != nil {
+                Spacer(minLength: baseColumnSpacing)
+                zodiacColumn(fontSize: auxiliaryFontSize)
             }
-            columnGap
+
+            if reservesBadgeColumn {
+                Spacer(minLength: baseColumnSpacing)
+                badgeColumn(fontSize: auxiliaryFontSize)
+            }
+
+            Spacer(minLength: edgeInset)
         }
         .frame(maxWidth: .infinity)
     }
 
-    /// 複数のSpacerは余白を同じ幅で分け合う
-    private var columnGap: some View {
-        Spacer(minLength: columnSpacing)
+    /// 基本3列の index 番目。年齢一覧だけ年齢が先頭に来る
+    @ViewBuilder
+    private func baseColumn(at index: Int, fontSize: CGFloat) -> some View {
+        let order: [BaseColumnKind] = showsAgeFirst ? [.age, .gregorian, .era] : [.gregorian, .era, .age]
+        switch order[index] {
+        case .age:
+            ageColumn(fontSize: fontSize)
+        case .gregorian:
+            gregorianColumn(fontSize: fontSize)
+        case .era:
+            eraColumn(fontSize: fontSize)
+                .frame(width: fontSize * 4.1, alignment: .leading)
+        }
+    }
+
+    private enum BaseColumnKind {
+        case age, gregorian, era
+    }
+
+    /// 学齢・賀寿・厄年をまとめて出す
+    @ViewBuilder
+    private func badgeGroup(font: Font) -> some View {
+        if let schoolMilestone {
+            Text(schoolMilestone.shortName)
+                .font(font)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+
+        if let longevity {
+            Text(longevity.name)
+                .font(font)
+                .foregroundStyle(.tint)
+                .lineLimit(1)
+        }
+
+        if let unluckyYear {
+            Text(unluckyYear.name)
+                .font(font)
+                .foregroundStyle(.red)
+                .lineLimit(1)
+        }
+    }
+
+    /// 学齢・賀寿・厄年の列。一定幅を保ち、該当しない年は空のまま場所だけ取る
+    private func badgeColumn(fontSize: CGFloat) -> some View {
+        // 常に縦積み。幅は最長の「大還暦」（3文字）が収まる分で固定し、
+        // 該当の有無や文字数で列位置がずれないようにする
+        let badgeFontSize = fontSize * 0.66
+        return VStack(alignment: .leading, spacing: 0) {
+            badgeGroup(font: .system(size: badgeFontSize))
+        }
+        .lineLimit(1)
+        .frame(width: badgeFontSize * 3, alignment: .leading)
     }
 
     private func gregorianColumn(fontSize: CGFloat) -> some View {
@@ -171,36 +201,23 @@ struct YearRowView: View {
 
     @ViewBuilder
     private func zodiacColumn(fontSize: CGFloat) -> some View {
+        // 干支と九星も常に縦積み。幅は九星の「一白水星」（4文字）に合わせて
+        // 固定し、行ごとに列位置がずれないようにする
         if showsZodiac, let nineStar {
-            // 文字が大きいときだけ2段にする。ViewThatFits に任せると
-            // 列幅の取り合いで行全体が縮み、文字サイズの差が消えてしまう
-            Group {
-                if stacksNineStar {
-                    VStack(alignment: .leading, spacing: 0) {
-                        zodiacText(size: fontSize * 0.82)
-                        nineStarText(nineStar, size: fontSize * 0.70)
-                    }
-                } else {
-                    HStack(spacing: 3) {
-                        zodiacText(size: fontSize)
-                        nineStarText(nineStar, size: fontSize * 0.72)
-                    }
-                }
+            let nineStarFontSize = fontSize * 0.70
+            VStack(alignment: .leading, spacing: 0) {
+                zodiacText(size: fontSize * 0.82)
+                nineStarText(nineStar, size: nineStarFontSize)
             }
-            // 2段は中身が幅を決める。固定幅にすると余りが右に溜まり、
-            // 隣の年齢との間だけが空いて見える
-            .fixedSize(horizontal: stacksNineStar, vertical: false)
-            .frame(
-                width: stacksNineStar ? nil : fontSize * 5.5,
-                height: fontSize * 1.25,
-                alignment: .leading
-            )
+            .frame(width: nineStarFontSize * 4, alignment: .leading)
         } else if showsZodiac {
+            // 絵文字＋漢字1文字ぶん
             zodiacText(size: fontSize)
-                .frame(width: fontSize * 2.55, alignment: .leading)
+                .frame(width: fontSize * 2.6, alignment: .leading)
         } else if let nineStar {
-            nineStarText(nineStar, size: fontSize * 0.72)
-                .frame(width: fontSize * 3.2, alignment: .leading)
+            let nineStarFontSize = fontSize * 0.72
+            nineStarText(nineStar, size: nineStarFontSize)
+                .frame(width: nineStarFontSize * 4, alignment: .leading)
         }
     }
 

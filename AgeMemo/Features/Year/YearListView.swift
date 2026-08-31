@@ -100,6 +100,7 @@ struct YearListView: View {
                                     unluckyYear: unluckyYear(for: row.gregorian),
                                     schoolMilestone: schoolMilestone(for: row.gregorian),
                                     nineStar: nineStar(for: row.gregorian),
+                                    reservesBadgeColumn: reservesBadgeColumn,
                                     compact: settings.displayMode == .expert
                                 )
                                 .onTapGesture {
@@ -377,6 +378,12 @@ struct YearListView: View {
     }
 
     /// その年に迎える賀寿。生まれる前の年には出さない
+    /// 学齢・賀寿・厄年のいずれかがONなら、該当しない年でも列幅を確保する。
+    /// 行ごとに列位置がずれると一覧として読みにくいため
+    private var reservesBadgeColumn: Bool {
+        settings.showsLongevity || settings.showsSchoolAge || settings.showsUnluckyYear
+    }
+
     private func longevity(for year: Int) -> Longevity? {
         guard settings.showsLongevity,
               let age = displayedAge(for: year), 0 <= age else { return nil }
