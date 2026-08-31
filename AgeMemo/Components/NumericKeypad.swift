@@ -40,15 +40,38 @@ struct NumericKeypad: View {
 
     private let rows = [[7, 8, 9], [4, 5, 6], [1, 2, 3]]
 
-    /// 特大などのアクセシビリティサイズでは、キーが画面に収まるよう詰めて配置する
+    /// 特大などのアクセシビリティサイズ、または画面が低い端末では
+    /// キーが画面に収まるよう詰めて配置する。
+    /// iPhone SE のような 4.7 インチ級ではシートに全段が入りきらない
     private var compact: Bool {
-        explicitCompact ?? dynamicTypeSize.isAccessibilitySize
+        explicitCompact ?? (dynamicTypeSize.isAccessibilitySize || isShortScreen)
+    }
+
+    /// シートへテンキー4段を素直に置くと下端が欠ける高さかどうか
+    private var isShortScreen: Bool {
+        UIScreen.main.bounds.height <= 700
+    }
+
+    /// 低い画面ではキー1つあたりの高さをさらに削って4段を収める。
+    /// 文字サイズ設定には引き続き追従させたいので、上限だけを与える
+    private var keyHeightLimit: CGFloat? {
+        isShortScreen ? 44 : nil
+    }
+
+    /// 実際に使うキーの高さ
+    private var keyHeight: CGFloat {
+        let base = compact ? scaledCompactHeight : scaledHeight
+        guard let limit = keyHeightLimit else { return base }
+        return min(base, limit)
     }
 
     @ScaledMetric(relativeTo: .title) private var scaledHeight: CGFloat = 56
     @ScaledMetric(relativeTo: .title2) private var scaledCompactHeight: CGFloat = 52
 
-    private var spacing: CGFloat { compact ? 8 : 10 }
+    private var spacing: CGFloat {
+        if isShortScreen { return 6 }
+        return compact ? 8 : 10
+    }
 
     var body: some View {
         VStack(spacing: spacing) {
@@ -79,7 +102,7 @@ struct NumericKeypad: View {
                     .accessibilityLabel("符号を反転")
                 case nil:
                     Color.clear
-                        .frame(maxWidth: .infinity, minHeight: compact ? scaledCompactHeight : scaledHeight)
+                        .frame(maxWidth: .infinity, minHeight: keyHeight)
                 }
             }
         }
@@ -138,7 +161,11 @@ private struct KeypadDigitButton: View {
     @ScaledMetric(relativeTo: .title) private var scaledHeight: CGFloat = 56
     @ScaledMetric(relativeTo: .title2) private var scaledCompactHeight: CGFloat = 52
 
-    private var minHeight: CGFloat { compact ? scaledCompactHeight : scaledHeight }
+    private var minHeight: CGFloat {
+        let base = compact ? scaledCompactHeight : scaledHeight
+        // 低い画面では4段が収まるよう上限を設ける
+        return UIScreen.main.bounds.height <= 700 ? min(base, 44) : base
+    }
     private var font: Font { compact ? .title2.weight(.medium) : .title.weight(.medium) }
 
     var body: some View {
@@ -164,7 +191,11 @@ private struct KeypadAuxiliaryButton: View {
     @ScaledMetric(relativeTo: .title2) private var scaledHeight: CGFloat = 56
     @ScaledMetric(relativeTo: .title3) private var scaledCompactHeight: CGFloat = 52
 
-    private var minHeight: CGFloat { compact ? scaledCompactHeight : scaledHeight }
+    private var minHeight: CGFloat {
+        let base = compact ? scaledCompactHeight : scaledHeight
+        // 低い画面では4段が収まるよう上限を設ける
+        return UIScreen.main.bounds.height <= 700 ? min(base, 44) : base
+    }
     private var font: Font { compact ? .title3.weight(.medium) : .title2.weight(.medium) }
 
     var body: some View {
@@ -191,7 +222,11 @@ private struct KeypadAuxiliarySymbolButton: View {
     @ScaledMetric(relativeTo: .title2) private var scaledHeight: CGFloat = 56
     @ScaledMetric(relativeTo: .title3) private var scaledCompactHeight: CGFloat = 52
 
-    private var minHeight: CGFloat { compact ? scaledCompactHeight : scaledHeight }
+    private var minHeight: CGFloat {
+        let base = compact ? scaledCompactHeight : scaledHeight
+        // 低い画面では4段が収まるよう上限を設ける
+        return UIScreen.main.bounds.height <= 700 ? min(base, 44) : base
+    }
     private var font: Font { compact ? .title3.weight(.medium) : .title2.weight(.medium) }
 
     var body: some View {
@@ -213,7 +248,11 @@ private struct KeypadDeleteButton: View {
     @ScaledMetric(relativeTo: .title2) private var scaledHeight: CGFloat = 56
     @ScaledMetric(relativeTo: .title3) private var scaledCompactHeight: CGFloat = 52
 
-    private var minHeight: CGFloat { compact ? scaledCompactHeight : scaledHeight }
+    private var minHeight: CGFloat {
+        let base = compact ? scaledCompactHeight : scaledHeight
+        // 低い画面では4段が収まるよう上限を設ける
+        return UIScreen.main.bounds.height <= 700 ? min(base, 44) : base
+    }
     private var font: Font { compact ? .title3 : .title2 }
 
     var body: some View {

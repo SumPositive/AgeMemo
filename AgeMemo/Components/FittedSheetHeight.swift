@@ -31,6 +31,11 @@ private struct FittedSheetHeight: ViewModifier {
     /// 測定→detent変更→再測定のループも起きない
     @State private var contentHeight: CGFloat?
 
+    /// シートに使える高さの上限。画面上端の余白ぶんを残す
+    private var maximumSheetHeight: CGFloat {
+        UIScreen.main.bounds.height * 0.92
+    }
+
     func body(content: Content) -> some View {
         content
             .onPreferenceChange(SheetContentHeightKey.self) { height in
@@ -39,9 +44,14 @@ private struct FittedSheetHeight: ViewModifier {
             }
             // 実測前は .medium で表示し、確定後に中身ぴったりの高さへ切り替える。
             // 測るのは ScrollView の中身だけなので、ナビゲーションバーとハンドルの
-            // 分を足さないと最後の要素が下端で切れる
+            // 分を足さないと最後の要素が下端で切れる。
+            //
+            // ただし中身が画面より高いときは、その高さをそのまま要求すると
+            // シートが画面に収まらず下端が欠ける（iPhone SE で発生）。
+            // 画面に収まる上限で頭打ちにし、あふれるぶんはスクロールで見せる
             .presentationDetents(
-                contentHeight.map { [.height($0 + Self.chromeHeight), .large] } ?? [.medium, .large]
+                contentHeight.map { [.height(min($0 + Self.chromeHeight, maximumSheetHeight)), .large] }
+                    ?? [.medium, .large]
             )
     }
 }
