@@ -678,6 +678,12 @@ SwiftUI では行の中の Text が別要素になるため、行には
 `concurrent_simulators(false)` と `number_of_retries(3)` は、クローン起動が
 拒否される環境への対策。`derived_data_path` の固定は使わない（体調メモで実証済み）。
 
+**アップロードで画像が重複することがある。** `overwrite_screenshots: true` は実行の冒頭で
+既存を消すだけで、ASC 側の画像処理が非同期なため、deliver が「まだ反映されていない」と
+誤判定して同一実行内でリトライし、二重に登録される。設定では防げないので、
+全削除 → 数分おく → アップロード → 枚数を目視確認、の手順を取る。
+詳細と実際のログは `fastlane/README_screenshots.md` に残した。
+
 
 ## 13. 多言語対応の方針
 

@@ -117,6 +117,8 @@ fastlane screenshots        # 3カット × 2言語 × 2機種
 - **撮影中にアプリを再起動しないこと。** USB 上の Xcode ではクローン起動が
   拒否され、必ず失敗します。撮影用の状態は `SnapshotSetup` が起動引数で用意します
 - `xcode-select` が CommandLineTools を指していると `xcodebuild` が動きません
+- **アップロード後は ASC で枚数を目視確認してください。** 画像が二重登録されることがあります
+  （原因と対処は [fastlane/README_screenshots.md](fastlane/README_screenshots.md)）
 
 ### 広告
 
