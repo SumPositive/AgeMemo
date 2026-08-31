@@ -151,19 +151,26 @@ private struct MonthCalendarView: View {
             Text(String(day))
                 .font(.caption.monospacedDigit())
             if let rokuyo {
+                // 大安は日取りを選ぶときに真っ先に探されるので赤系で目立たせる
+                let isTaian = rokuyo == .taian
                 Text(rokuyo.name)
-                    .font(.system(size: scaledRokuyoFontSize))
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: scaledRokuyoFontSize, weight: isTaian ? .bold : .regular))
+                    .foregroundStyle(isTaian ? AnyShapeStyle(Color(uiColor: .systemRed)) : AnyShapeStyle(.secondary))
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
             }
             if let moon {
+                // 満月（輝面比100%）は黄色系で示す
+                let isFullMoon = moon.illuminationPercent == 100
+                let moonStyle = isFullMoon
+                    ? AnyShapeStyle(Color(uiColor: .systemYellow))
+                    : AnyShapeStyle(.secondary)
                 Image(systemName: moon.symbolName)
                     .font(.system(size: scaledMoonFontSize))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(moonStyle)
                 Text("\(String(moon.illuminationPercent))%")
-                    .font(.system(size: scaledMoonFontSize).monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: scaledMoonFontSize, weight: isFullMoon ? .bold : .regular).monospacedDigit())
+                    .foregroundStyle(moonStyle)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
             }
