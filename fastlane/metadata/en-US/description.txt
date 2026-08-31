@@ -24,6 +24,7 @@ Note: the app's interface is available in English, but the calendar data it show
 ・A full calendar, month by month
 ・Rokuyo, the six-day luck cycle used to choose wedding and funeral dates
 ・The moon phase for each day
+・大安 taian, the most auspicious day, is marked in red; full moons in yellow
 ・Era transition days are marked in place
 ・Write a note of up to 400 characters on any year
 
