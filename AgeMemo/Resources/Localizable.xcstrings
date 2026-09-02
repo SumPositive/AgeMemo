@@ -1,1004 +1,3023 @@
 {
-  "sourceLanguage" : "ja",
-  "strings" : {
-    "「%@」を削除します。この操作は取り消せません。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“%@” will be deleted. This cannot be undone."
+  "sourceLanguage": "ja",
+  "strings": {
+    "%@ %@": {
+      "comment": "干支の絵文字と漢字",
+      "shouldTranslate": false
+    },
+    "%@%%": {
+      "comment": "月の輝面比。記号のみ",
+      "shouldTranslate": false
+    },
+    "%@を変更": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit %@"
           }
         }
       }
     },
-    "%@ %@" : {
-      "comment" : "干支の絵文字と漢字",
-      "shouldTranslate" : false
-    },
-    "%@%%" : {
-      "comment" : "月の輝面比。記号のみ",
-      "shouldTranslate" : false
-    },
-    "%@を変更" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Edit %@"
-          }
-        }
-      }
-    },
-    "%@元年（%@月%@日〜）" : {
-      "comment" : "改元の開始日。元号名は ja のデータ、月日は単位付き",
-      "shouldTranslate" : false
-    },
-    "%@年  %@" : {
-      "comment" : "西暦と和暦の並び。どちらも ja のデータ",
-      "shouldTranslate" : false
-    },
-    "%@年生まれ・%@歳" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Born %@ · %@"
+    "%@年生まれ・%@歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born %@ · %@"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@年生まれ・%2$@歳"
+        "ja": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@年生まれ・%2$@歳"
           }
         }
       }
     },
-    "%@文字" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ characters left"
+    "%@文字": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ characters left"
           }
         }
       }
     },
-    "%@歳" : {
-      "comment" : "年齢の単位。桁揃えに影響するため訳さない",
-      "shouldTranslate" : false
+    "%@歳": {
+      "comment": "年齢の単位。桁揃えに影響するため訳さない",
+      "shouldTranslate": false
     },
-    "%lld年後に生まれる方の誕生年" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Birth year of someone born in %lld years"
+    "%lld年後に生まれる方の誕生年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth year of someone born in %lld years"
           }
         }
       }
     },
-    "🎉 %@（%@）" : {
-      "comment" : "賀寿の名称とかな",
-      "shouldTranslate" : false
+    "1596年〜1615年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1596–1615"
+          }
+        }
+      }
+    },
+    "1615年〜1624年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1615–1624"
+          }
+        }
+      }
+    },
+    "1624年〜1644年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1624–1644"
+          }
+        }
+      }
+    },
+    "1644年〜1648年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1644–1648"
+          }
+        }
+      }
+    },
+    "1648年〜1652年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1648–1652"
+          }
+        }
+      }
+    },
+    "1652年〜1655年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1652–1655"
+          }
+        }
+      }
+    },
+    "1655年〜1658年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1655–1658"
+          }
+        }
+      }
+    },
+    "1658年〜1661年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1658–1661"
+          }
+        }
+      }
+    },
+    "1661年〜1673年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1661–1673"
+          }
+        }
+      }
+    },
+    "1673年〜1681年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1673–1681"
+          }
+        }
+      }
+    },
+    "1681年〜1684年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1681–1684"
+          }
+        }
+      }
+    },
+    "1684年〜1688年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1684–1688"
+          }
+        }
+      }
+    },
+    "1688年〜1704年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1688–1704"
+          }
+        }
+      }
+    },
+    "1704年〜1711年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1704–1711"
+          }
+        }
+      }
+    },
+    "1711年〜1716年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1711–1716"
+          }
+        }
+      }
+    },
+    "1716年〜1736年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1716–1736"
+          }
+        }
+      }
+    },
+    "1736年〜1741年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1736–1741"
+          }
+        }
+      }
+    },
+    "1741年〜1744年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1741–1744"
+          }
+        }
+      }
+    },
+    "1744年〜1748年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1744–1748"
+          }
+        }
+      }
+    },
+    "1748年〜1751年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1748–1751"
+          }
+        }
+      }
+    },
+    "1751年〜1764年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1751–1764"
+          }
+        }
+      }
+    },
+    "1764年〜1772年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1764–1772"
+          }
+        }
+      }
+    },
+    "1772年〜1781年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1772–1781"
+          }
+        }
+      }
+    },
+    "1781年〜1789年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1781–1789"
+          }
+        }
+      }
+    },
+    "1789年〜1801年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1789–1801"
+          }
+        }
+      }
+    },
+    "1801年〜1804年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1801–1804"
+          }
+        }
+      }
+    },
+    "1804年〜1818年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1804–1818"
+          }
+        }
+      }
+    },
+    "1818年〜1830年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1818–1830"
+          }
+        }
+      }
+    },
+    "1830年〜1844年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1830–1844"
+          }
+        }
+      }
+    },
+    "1844年〜1848年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1844–1848"
+          }
+        }
+      }
+    },
+    "1848年〜1854年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1848–1854"
+          }
+        }
+      }
+    },
+    "1854年〜1860年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1854–1860"
+          }
+        }
+      }
+    },
+    "1860年〜1861年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1860–1861"
+          }
+        }
+      }
+    },
+    "1861年〜1864年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1861–1864"
+          }
+        }
+      }
+    },
+    "1864年〜1865年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1864–1865"
+          }
+        }
+      }
+    },
+    "1865年〜1868年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1865–1868"
+          }
+        }
+      }
+    },
+    "1868年〜1912年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1868–1912"
+          }
+        }
+      }
+    },
+    "1912年〜1926年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1912–1926"
+          }
+        }
+      }
+    },
+    "1926年〜1989年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1926–1989"
+          }
+        }
+      }
+    },
+    "1989年〜2019年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1989–2019"
+          }
+        }
+      }
+    },
+    "2019年〜": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2019–"
+          }
+        }
+      }
+    },
+    "248番目の元号です。万葉集の梅花の歌の序文「初春の令月にして、気淑く風和ぎ」から採られ、中国の古典ではなく日本の書物を典拠とした初めての元号になりました。\n\n上皇の生前退位にともなう改元で、天皇の崩御によらない改元は約200年ぶりのことです。そのため事前に日付が決まっており、多くの人がテレビで新元号の発表を見守りました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The 248th era name. It was taken from the preface to the plum-blossom poems in the Man'yōshū — “in the auspicious month of early spring, the air is fine and the wind gentle” — making it the first era name drawn from a Japanese text rather than a Chinese classic.\n\nThe change came from the abdication of the emperor rather than his death, the first such transition in about 200 years. Because the date was therefore known in advance, the whole country watched the new name being unveiled live on television."
+          }
+        }
+      }
+    },
+    "3年ほどの短い元号です。人形浄瑠璃「仮名手本忠臣蔵」が初演されました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A short era of about three years. The puppet play Kanadehon Chūshingura — the classic tale of the forty-seven rōnin — was first performed."
+          }
+        }
+      }
+    },
+    "3年ほどの短い元号です。伊能忠敬が全国の測量を進めていた時期にあたります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A short era of about three years, during which Inō Tadataka was surveying the country to make the first accurate maps of Japan."
+          }
+        }
+      }
+    },
+    "3年ほどの短い元号です。関東を襲った大水害（寛保の洪水）が記録されています。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A short era of about three years. The Kanpō floods, which devastated the Kantō region, are recorded here."
+          }
+        }
+      }
+    },
+    "60年に一度めぐる、火の陽が重なる年です。「丙午の年に生まれた女性は気が強く夫の命を縮める」という江戸時代からの迷信があり、人口統計にはっきりと跡を残しています。\n\n直近の丙午である1966年（昭和41年）は、出生数が前年より25パーセントあまりも落ち込みました。迷信が国の統計を動かした例として知られています。次の丙午は2026年（令和8年）です。\n\n十干十二支の組み合わせは60年ごとに巡ってきます。生まれた年の干支に還る数え61歳を「還暦」と呼ぶのはこのためです。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A year in which yang fire falls on yang fire, coming round once every sixty years. A superstition dating from the Edo period holds that a woman born in a hinoeuma year will be headstrong and shorten her husband's life — and it has left a visible mark on Japan's population statistics.\n\nIn 1966 (Shōwa 41), the most recent hinoeuma, births fell by more than 25 percent from the previous year. It is a well-known case of a superstition moving a national statistic. The next hinoeuma is 2026 (Reiwa 8).\n\nStem-branch pairings come round every sixty years, which is why the 61st year by the traditional count, returning to the stem-branch of your birth, is called kanreki."
+          }
+        }
+      }
+    },
+    "「%@」を削除します。この操作は取り消せません。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” will be deleted. This cannot be undone."
+          }
+        }
+      }
+    },
+    "「傘」の略字が「八十」に見えることから。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The abbreviated form of 傘 looks like 八十 — eighty."
+          }
+        }
+      }
+    },
+    "「先んずれば即ち勝つ」の意味で、午前が吉、午後が凶とされます。急ぎの用事や訴訟ごとを午前中に済ませるとよい日とされます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From the saying “act first and you win.” The morning is lucky and the afternoon is not, so this is the day to settle urgent business or legal matters before noon."
+          }
+        }
+      }
+    },
+    "「先んずれば即ち負ける」の意味で、午前が凶、午後が吉とされます。急がず、静かに過ごすのがよい日とされ、勝負事や急用は避けられます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From the saying “act first and you lose” — the mirror of sensho. The morning is unlucky and the afternoon is lucky. It is a day to stay calm and unhurried, avoiding contests and urgent business."
+          }
+        }
+      }
+    },
+    "「内外、天地とも平和が達成される」という願いを込め、史記と書経から採られました。\n\n昭和天皇の崩御による改元で、元年はわずか7日間しかありません。バブル経済の崩壊に始まり、阪神・淡路大震災、東日本大震災を経験した時代で、携帯電話とインターネットが暮らしを大きく変えた時期にあたります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taken from the Records of the Grand Historian and the Book of Documents, expressing the wish that “peace be achieved both at home and abroad, in heaven and on earth.”\n\nThe era began on the death of the Shōwa emperor, so its first year lasted only seven days. It opened with the collapse of the bubble economy and saw the Kobe and Tōhoku earthquakes, as well as the years in which mobile phones and the internet reshaped daily life in Japan."
+          }
+        }
+      }
+    },
+    "「半」の字を分けると「八十一」になることから。将棋盤の目が81あることから盤寿とも呼ばれます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Splitting 半 apart gives 八十一 — eighty-one. It is also called banju, after the 81 squares of a shōgi board."
+          }
+        }
+      }
+    },
+    "「卒」の略字「卆」が「九十」と読めることから。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The abbreviated form of 卒, written 卆, reads as 九十 — ninety."
+          }
+        }
+      }
+    },
+    "「友を引く」と読まれ、葬儀を避ける日として広く知られています。友引の日は休業する火葬場も多くあります。一方で幸せを引き寄せるとして、結婚式や引き出物には好まれます。朝夕が吉、正午だけが凶とされます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read as “pulling friends along,” this is widely known as the day to avoid funerals — the fear being that the deceased draws a friend with them. Many crematoriums in Japan close on tomobiki. For the same reason it is favoured for weddings and gifts, since it is also said to pull happiness along. Morning and evening are lucky; only midday is not."
+          }
+        }
+      }
+    },
+    "「喜」の草書体が「七十七」と読める形になることから。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The cursive form of 喜 can be read as 七十七 — seventy-seven."
+          }
+        }
+      }
+    },
+    "「百」の字から一画を取ると「白」になることから。百引く一で99歳を表します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Removing one stroke from 百 (hundred) leaves 白 — a hundred minus one, ninety-nine."
+          }
+        }
+      }
+    },
+    "「皇」を分けると「白」（99）と「十」「一」になり、合わせて111になることから。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Splitting 皇 gives 白 (99) plus 十 and 一 — one hundred and eleven in total."
+          }
+        }
+      }
+    },
+    "「米」の字を分けると「八十八」になることから。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Splitting 米 apart gives 八十八 — eighty-eight."
+          }
+        }
+      }
+    },
+    "「緑」を「ろく」と読み、六十六の「六」を重ねたもの。2002年に提唱された新しい賀寿です。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading 緑 as roku and doubling the roku of sixty-six. A recent addition, proposed in 2002."
+          }
+        }
+      }
+    },
+    "「茶」の字の草冠が「十十」で二十、下が「八十八」となり、合わせて108になることから。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The grass radical atop 茶 reads as 十十, twenty, and the lower part as 八十八, eighty-eight — together one hundred and eight."
+          }
+        }
+      }
+    },
+    "ここに自分の生年月日を登録すると、「自分」の一覧で各年に自分が何歳になるかが表示されます。生まれた年には目印が付きます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save your date of birth here and the Myself list will show how old you are in each year. Your birth year is marked."
+          }
+        }
+      }
+    },
+    "この年に生まれました": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born this year"
+          }
+        }
+      }
+    },
+    "この年の誕生日で満%lld歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turns %lld on the birthday this year"
+          }
+        }
+      }
+    },
+    "この年は数え%lld歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kazoedoshi age %lld this year"
+          }
+        }
+      }
+    },
+    "この解説は一般に伝えられている説明にもとづくものです。暦の解釈や由来には諸説あります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This explanation follows the commonly given account. Interpretations and origins vary between sources."
+          }
+        }
+      }
+    },
+    "その年のカレンダーです。日付の下に六曜と月の満ち欠けを添えています。\n\n【六曜】\n先勝・友引・先負・仏滅・大安・赤口の6日周期で、旧暦の月日から求めます。日取りを選ぶときに探すことの多い大安は赤色で示します。\n\n【月の満ち欠け】\nパーセントは輝面率といい、月の光っている部分の面積の割合です。新月が0％、満月が100％になります。\n\n夕方から夜にかけて実際に空へ出ている月に合わせて計算しているので、その晩に見上げる月の姿とおおよそ一致します。満月（100％）は黄色で示します。\n\n旧暦をもとにした概算のため、実際の満月と1日ずれることがあります。\n\n【改元】\n改元があった年は、元号が変わる日に区切り線と新しい元号を表示します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The calendar for that year. Under each date you will find the rokuyo and the phase of the moon.\n\n[六曜 rokuyo]\nA six-day cycle — 先勝 senshō, 友引 tomobiki, 先負 senbu, 仏滅 butsumetsu, 大安 taian, 赤口 shakkō — derived from the lunisolar calendar. 大安, the day most often sought when choosing a date, is marked in red.\n\n[The moon]\nThe percentage is the illuminated fraction: how much of the moon's face is lit. A new moon is 0% and a full moon is 100%.\n\nIt is calculated for the moon as it actually stands in the sky from evening into night, so it matches roughly what you would see looking up that night. A full moon (100%) is marked in yellow.\n\nBecause it is an approximation based on the lunisolar calendar, it can be a day off from the true full moon.\n\n[Era changes]\nIn a year when the era changed, the day it changed is marked with a rule and the new era name."
+          }
+        }
+      }
+    },
+    "ねずみ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rat"
+          }
+        }
+      }
+    },
+    "アプリ内の文字の大きさを決めます。自動を選ぶと、iPhoneの「設定」→「画面表示と明るさ」→「テキストサイズ」に合わせて変わります。標準・大・特大を選ぶと、端末の設定に関わらずその大きさになります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sets the text size inside the app. Auto follows iPhone Settings → Display & Brightness → Text Size. Standard, Large, and Extra Large fix the size regardless of your device setting."
+          }
+        }
+      }
+    },
+    "オンにすると、年に書いたメモは「自分」の一覧でだけ表示されます。年齢や名簿の一覧ではメモが隠れるため、他の人に画面を見せるときに便利です。オフにするとどの一覧でもメモが表示されます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When on, the notes you write on a year appear only in the Myself list. They stay hidden in the Age and Roster lists, which is useful when showing your screen to someone else. When off, notes appear in every list."
+          }
+        }
+      }
+    },
+    "キャンセル": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "ダーク": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dark"
+          }
+        }
+      }
+    },
+    "ヘルプ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Help"
+          }
+        }
+      }
+    },
+    "メモ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note"
+          }
+        }
+      }
+    },
+    "メモは自分だけに表示": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show notes only in Myself"
+          }
+        }
+      }
+    },
+    "メモを保存できませんでした": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save notes"
+          }
+        }
+      }
+    },
+    "メモを読み込めませんでした": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load notes"
+          }
+        }
+      }
+    },
+    "ライト": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
+          }
+        }
+      }
+    },
+    "レビューする": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write a Review"
+          }
+        }
+      }
+    },
+    "一覧に九星気学の本命星を表示します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows the 本命星 (honmeisei) star from 九星気学 nine-star astrology."
+          }
+        }
+      }
+    },
+    "一覧に前厄・本厄・後厄を表示します。性別が未指定の場合は表示されません。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows 厄年 (yakudoshi) unlucky years — 前厄 before, 本厄 main, and 後厄 after. Nothing is shown while gender is unspecified, as the ages differ by gender."
+          }
+        }
+      }
+    },
+    "一覧に表示する": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show in the list"
+          }
+        }
+      }
+    },
+    "一覧に還暦、古希、喜寿などの長寿祝いを表示します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows 賀寿 (gaju) longevity celebrations such as 還暦 (kanreki, 60), 古希 (koki, 70), and 喜寿 (kiju, 77)."
+          }
+        }
+      }
+    },
+    "一覧の各年に干支を絵文字と漢字で表示します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows the 干支 (eto) zodiac sign for each year as an emoji and kanji."
+          }
+        }
+      }
+    },
+    "三越の前身である越後屋が江戸に開店し、現金正価販売という新しい商法を始めました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Echigoya — the shop that would become the Mitsukoshi department store — opened in Edo, pioneering fixed prices and cash sales."
+          }
+        }
+      }
+    },
+    "九星": {
+      "extractionState": "manual",
+      "shouldTranslate": false
+    },
+    "九星の中央に位置する星で、五行は土にあたります。他の八星すべてを従える定位置を持たない星とされ、良くも悪くも力が強く、中心に立つ性質とされます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The star at the centre of the nine, belonging to earth. Having no fixed position of its own, it is said to command the other eight — a strong force for good or ill, and one that ends up at the centre of things."
+          }
+        }
+      }
+    },
+    "九星の最初の星で、五行は水にあたります。水が高い所から低い所へ流れ、器に合わせて形を変えるように、周りに合わせて柔らかく動きながら、深く考える性質とされます。方位では北を司ります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The first of the nine stars, belonging to water. As water runs from high ground to low and takes the shape of whatever holds it, this star is said to adapt softly to its surroundings while thinking deeply. It governs the north."
+          }
+        }
+      }
+    },
+    "九星の最後の星で、五行は火にあたります。太陽や炎のように明るく人目を引き、物事をはっきりと照らし出す性質とされます。方位では南を司ります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The last of the nine stars, belonging to fire. Like the sun or a flame it is bright and draws the eye, showing things up clearly. It governs the south."
+          }
+        }
+      }
+    },
+    "九星気学は、生まれた年によって九つの星のいずれかに分ける占いです。一白水星から九紫火星まであり、9年で一巡します。\n\n星は立春（2月4日ごろ）を境に変わるため、1月1日から立春の前日までに生まれた人は、前の年の星になります。\n\nそれぞれの星には木・火・土・金・水の五行が結びつけられ、性格や相性、その年の運勢を見るときの目安として使われます。方角の吉凶を見る「方位学」でも用いられます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kyūsei kigaku sorts people into nine stars according to their birth year, from Ippaku Suisei to Kyūshi Kasei, cycling every nine years.\n\nThe star changes at risshun, the start of spring around 4 February — so anyone born between 1 January and the day before risshun belongs to the previous year's star.\n\nEach star is tied to one of the five phases (wood, fire, earth, metal, water) and is consulted for character, compatibility and the fortunes of a given year. The same system underlies hōigaku, the reading of lucky and unlucky directions."
+          }
+        }
+      }
+    },
+    "五行は土": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Earth among the five phases"
+          }
+        }
+      }
+    },
+    "五行は土にあたります。動かない山にたとえられ、粘り強く、変化の節目に立つ性質とされます。方位では北東を司ります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An earth star, likened to an unmoving mountain: persistent, and standing at the turning points of change. It governs the north-east."
+          }
+        }
+      }
+    },
+    "五行は土にあたります。畑の土のように、時間をかけて物事を育てる働きとされ、地道な努力と面倒見のよさが持ち味とされます。方位では南西を司ります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An earth star. Like soil in a field, it is said to bring things along slowly, its strengths being steady effort and care for others. It governs the south-west."
+          }
+        }
+      }
+    },
+    "五行は木": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wood among the five phases"
+          }
+        }
+      }
+    },
+    "五行は木にあたります。同じ木でも、風に揺れて伸びていく樹木にたとえられ、人との縁を広げ、信用を積み重ねる性質とされます。方位では南東を司ります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Also a wood star, but likened to a tree swaying in the wind as it grows — widening its connections and building trust over time. It governs the south-east."
+          }
+        }
+      }
+    },
+    "五行は木にあたります。春に草木が勢いよく芽吹く姿にたとえられ、若々しく行動が早い性質とされます。雷の象意も持ちます。方位では東を司ります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A wood star, likened to plants bursting into leaf in spring: youthful and quick to act. It also carries the image of thunder. It governs the east."
+          }
+        }
+      }
+    },
+    "五行は水": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Water among the five phases"
+          }
+        }
+      }
+    },
+    "五行は火": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fire among the five phases"
+          }
+        }
+      }
+    },
+    "五行は金": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metal among the five phases"
+          }
+        }
+      }
+    },
+    "五行は金にあたります。同じ金でも、実った作物や装飾品にたとえられ、人を楽しませる愛嬌と社交性が持ち味とされます。方位では西を司ります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Also a metal star, but likened to ripened crops and ornaments — charming, sociable, and good at giving others pleasure. It governs the west."
+          }
+        }
+      }
+    },
+    "五行は金にあたります。天の働きや、鍛えられた金属にたとえられ、筋を通す強さと責任感が持ち味とされます。方位では北西を司ります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A metal star, likened to the workings of heaven and to tempered metal: principled, strong and responsible. It governs the north-west."
+          }
+        }
+      }
+    },
+    "今年生まれた方の誕生年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth year of someone born this year"
+          }
+        }
+      }
+    },
+    "仏も滅する": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Literally “even the Buddha perishes”"
+          }
+        }
+      }
+    },
+    "保存": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+    "元号は、天皇の即位や社会の節目に付けられる年の名前です。西暦645年の「大化」に始まり、令和で248番目にあたります。年は「令和8年」のように元号と数字で数え、元号が変わるとまた1年（元年）に戻ります。\n\n改元のあった年は、1年の途中で元号が入れ替わります。この一覧では、そうした年に2つの元号を併記しています。\n\n中国から伝わった仕組みですが、いまも国として使い続けているのは日本だけです。運転免許証、戸籍、確定申告の書類など、日本の公的な書類の多くは今も元号で年を書きます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An era name is a name given to a span of years, marking an emperor's accession or a turning point in national life. The practice began with Taika in 645, and Reiwa is the 248th. Years are counted as “Reiwa 8,” and when the era changes the count returns to 1 — the “first year,” written 元年 rather than 1.\n\nIn a year when the era changed, two era names apply to different parts of the same year. This list shows both for such years.\n\nThe system came from China, but Japan is now the only country still using it. Driving licences, family registers, tax filings and most other official Japanese documents still write the year this way."
+          }
+        }
+      }
+    },
+    "元号は、天皇の即位や社会の節目に付けられる年の名前です。西暦645年の「大化」に始まり、令和はその248番目にあたります（南北朝時代に並び立った元号をどう数えるかで異説があります）。年は「令和8年」のように元号と数字で数え、元号が変わるとまた1年（元年）に戻ります。\n\n改元のあった年は、1年の途中で元号が入れ替わります。この一覧では、そうした年に2つの元号を併記しています。\n\n中国から伝わった仕組みですが、いまも国として使い続けているのは日本だけです。運転免許証、戸籍、確定申告の書類など、日本の公的な書類の多くは今も元号で年を書きます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An era name is a name given to a span of years, marking an emperor's accession or a turning point in national life. The practice began with Taika in 645, and Reiwa is the 248th — though the total depends on how the rival era names of the Nanboku-chō period are counted. Years are counted as “Reiwa 8,” and when the era changes the count returns to 1 — the “first year,” written 元年 rather than 1.\n\nIn a year when the era changed, two era names apply to different parts of the same year. This list shows both for such years.\n\nThe system came from China, but Japan is now the only country still using it. Driving licences, family registers, tax filings and most other official Japanese documents still write the year this way."
+          }
+        }
+      }
+    },
+    "元年（%@月%@日〜）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " 1 (from %@/%@)"
+          }
+        }
+      }
+    },
+    "先んずれば勝ち": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Literally “first wins”"
+          }
+        }
+      }
+    },
+    "先んずれば負け": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Literally “first loses”"
+          }
+        }
+      }
+    },
+    "兎": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rabbit"
+          }
+        }
+      }
+    },
+    "入学・卒業": {
+      "extractionState": "manual",
+      "shouldTranslate": false
+    },
+    "六曜でもっとも凶とされる日です。「仏も滅する」と書き、一日を通して凶とされるため、結婚式や開店などの祝い事は避けられます。逆に法事は差し支えないとされ、結婚式場では割引されることもあります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The most inauspicious day of the cycle. Written with characters meaning “even the Buddha perishes,” it is unlucky all day, so weddings and shop openings are avoided. Buddhist memorial services, however, are considered perfectly fine, and wedding venues often discount their rates on this day."
+          }
+        }
+      }
+    },
+    "六曜でもっとも縁起のよい日とされます。一日を通して吉で、結婚式や入籍、開店、契約など、めでたい事を始める日に選ばれます。結婚式場の料金が大安の日だけ高いこともあります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The most auspicious day of the rokuyo cycle. It is considered lucky from morning to night, so it is the day people pick to begin something happy — a wedding, registering a marriage, opening a shop, signing a contract. Japanese wedding venues often charge more on a taian than on any other day."
+          }
+        }
+      }
+    },
+    "六曜の意味を見る": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show what this rokuyo means"
+          }
+        }
+      }
+    },
+    "六曜は、先勝・友引・先負・仏滅・大安・赤口の6日周期で、旧暦の月日から求めます。旧暦の月が変わるたびに並びが飛ぶのは、この計算方法によるものです。\n\n日取りを選ぶときの目安として、暦や手帳にいまも広く印刷されています。結婚式は大安に、葬儀は友引を避けて、というように、人生の節目の日取りは今も六曜を見て決められることが多くあります。\n\n仏教とは関係がなく、中国から伝わった占いが江戸時代に広まったものです。迷信として公的な暦から外されたこともありましたが、慣習として根強く残っています。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rokuyo is a six-day cycle — sensho, tomobiki, senbu, butsumetsu, taian, shakko — calculated from the month and day of the old lunisolar calendar. The sequence jumps whenever the old month turns, which is a consequence of that calculation.\n\nIt is still printed in Japanese calendars and diaries as a guide to choosing dates. Weddings are set on taian and funerals kept off tomobiki, and the timing of many of life's formal occasions is still decided this way.\n\nDespite the Buddhist look of butsumetsu, the system has no connection to Buddhism: it came from China and spread in the Edo period. It has been struck from official calendars as superstition more than once, yet survives firmly as custom."
+          }
+        }
+      }
+    },
+    "六曜は先勝・友引・先負・仏滅・大安・赤口の6日周期で、旧暦の月日から求めます。日取りを選ぶときの目安として、暦や手帳にいまも広く印刷されています。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rokuyo is a six-day cycle — sensho, tomobiki, senbu, butsumetsu, taian, shakko — calculated from the month and day of the old lunisolar calendar. It is still printed in Japanese calendars and diaries today, and people consult it when choosing a date for an important occasion."
+          }
+        }
+      }
+    },
+    "凶の日とされ、正午前後（おおよそ11時から13時）だけが吉とされます。「赤」の字から火や刃物、血を連想させるとして、祝い事は避けられます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An unlucky day, except for the hours around noon (roughly 11:00 to 13:00), which are considered safe. The character 赤 (“red”) is associated with fire, blades and blood, so celebrations are avoided on this day."
+          }
+        }
+      }
+    },
+    "初心者": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beginner"
+          }
+        }
+      }
+    },
+    "初心者を選ぶと、ボタンの名前や一覧の見方といった説明が画面に表示されます。操作に慣れたら達人に切り替えると、説明が消えて一覧を広く使えます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beginner shows explanations on screen, such as button names and how to read the list. Once you are comfortable, switch to Expert to hide them and use more of the screen for the list."
+          }
+        }
+      }
+    },
+    "削除": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "削除しますか？": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete?"
+          }
+        }
+      }
+    },
+    "十二の動物で表す12年周期": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A 12-year cycle of animals"
+          }
+        }
+      }
+    },
+    "十二支の10番目です。動物は鶏。時刻では午後6時ごろ、方角では西を表します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The tenth branch. Its animal is the rooster. It marks around 6 p.m. and due west."
+          }
+        }
+      }
+    },
+    "十二支の11番目です。動物は犬。時刻では午後8時ごろ、方角では西北西を表します。戌と亥の間の方角は「戌亥（いぬい）」と呼ばれます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The eleventh branch. Its animal is the dog. It marks around 8 p.m. and the west-north-west. The direction between the dog and the boar is called inui."
+          }
+        }
+      }
     },
-    "🎓 %@" : {
-      "comment" : "学齢の名称",
-      "shouldTranslate" : false
+    "十二支の2番目です。動物は牛。時刻では午前2時ごろ、方角では北北東を表します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The second branch. Its animal is the ox. It marks around 2 a.m. and the north-north-east."
+          }
+        }
+      }
+    },
+    "十二支の3番目です。動物は虎。時刻では午前4時ごろ、方角では東北東を表します。丑と寅の間の方角は「丑寅（うしとら）」と呼ばれ、鬼が出入りする鬼門として避けられてきました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The third branch. Its animal is the tiger. It marks around 4 a.m. and the east-north-east. The direction between the ox and the tiger, ushitora, is the “demon gate” through which evil was believed to pass, and has long been avoided."
+          }
+        }
+      }
+    },
+    "十二支の4番目です。動物は兎。時刻では午前6時ごろ、方角では東を表します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The fourth branch. Its animal is the rabbit. It marks around 6 a.m. and due east."
+          }
+        }
+      }
+    },
+    "十二支の5番目です。動物は龍で、十二支の中で唯一の想像上の生き物です。時刻では午前8時ごろ、方角では東南東を表します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The fifth branch. Its animal is the dragon — the only imaginary creature among the twelve. It marks around 8 a.m. and the east-south-east."
+          }
+        }
+      }
+    },
+    "十二支の6番目です。動物は蛇。時刻では午前10時ごろ、方角では南南東を表します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The sixth branch. Its animal is the snake. It marks around 10 a.m. and the south-south-east."
+          }
+        }
+      }
+    },
+    "十二支の7番目です。動物は馬。時刻では真昼の12時ごろ、方角では南を表します。「正午」「午前」「午後」ということばは、この午の刻を基準にしたものです。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The seventh branch. Its animal is the horse. It marks midday and due south. The Japanese words for noon (shōgo), morning (gozen) and afternoon (gogo) are all built on this horse hour."
+          }
+        }
+      }
+    },
+    "十二支の8番目です。動物は羊。時刻では午後2時ごろ、方角では南南西を表します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The eighth branch. Its animal is the sheep. It marks around 2 p.m. and the south-south-west."
+          }
+        }
+      }
+    },
+    "十二支の9番目です。動物は猿。時刻では午後4時ごろ、方角では西南西を表します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The ninth branch. Its animal is the monkey. It marks around 4 p.m. and the west-south-west."
+          }
+        }
+      }
+    },
+    "十二支の最初にあたります。動物はねずみ。昔の時刻では真夜中の0時ごろ、方角では北を表します。一日と方角の起点にあたる位置です。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The first of the twelve branches. Its animal is the rat. In the old system of hours it marks midnight, and in directions the north — the starting point of both the day and the compass."
+          }
+        }
+      }
+    },
+    "十二支の最後にあたります。動物は猪で、中国や韓国では豚とされます。時刻では午後10時ごろ、方角では北北西を表します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The last of the twelve branches. Its animal is the boar — a pig in the Chinese and Korean zodiacs. It marks around 10 p.m. and the north-north-west."
+          }
+        }
+      }
+    },
+    "十二支は、子・丑・寅・卯・辰・巳・午・未・申・酉・戌・亥の12種で、12年で一巡します。それぞれに動物が当てられ、年賀状や初詣の縁起物でおなじみです。\n\nもとは順序を表す記号で、動物は覚えやすくするために後から結び付けられたものです。年だけでなく、時刻（午前・午後の「午」は正午の意味）や方角（「北東」を丑寅＝鬼門と呼ぶ）を表すのにも使われてきました。\n\n初対面の人に年齢を直接たずねる代わりに、干支をたずねて年齢を推し量る習慣もあります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The twelve branches — 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥 — run in a twelve-year cycle. Each carries an animal, familiar from New Year cards and shrine charms.\n\nThey began as plain ordinal markers; the animals were attached later as a memory aid. They mark not only years but hours (the 午 in 午前 “a.m.” and 午後 “p.m.” is the horse hour, noon) and directions (the north-east, 丑寅, is the “demon gate” to be avoided).\n\nRather than ask someone's age directly, people in Japan sometimes ask their zodiac animal and work the age out from there."
+          }
+        }
+      }
+    },
+    "十干と十二支を組み合わせた60年周期": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A 60-year cycle of stems and branches"
+          }
+        }
+      }
+    },
+    "十干（甲・乙・丙…の10種）と十二支（子・丑・寅…の12種）を組み合わせた60通りのうちの一つです。十干は木・火・土・金・水の五行を陰陽に分けたもので、読みの「のえ」は兄（陽）、「のと」は弟（陰）を表します。\n\nこの組み合わせは60年ごとに巡ってきます。生まれた年の干支に還る数え61歳を「還暦」と呼ぶのはこのためです。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One of the sixty pairings of a heavenly stem (甲, 乙, 丙 …) with an earthly branch (子, 丑, 寅 …). The ten stems are the five phases — wood, fire, earth, metal, water — each split into yang and yin; the -noe in a reading marks the elder (yang) form and -noto the younger (yin).\n\nEach pairing comes round once every sixty years. That is why the 61st year by the traditional count, when you return to the stem-branch of your birth, is called kanreki."
+          }
+        }
+      }
+    },
+    "十返舎一九や葛飾北斎らが活躍し、江戸の出版文化が最盛期を迎えました。間宮林蔵の樺太探査もこの頃です。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jippensha Ikku and Katsushika Hokusai were at work, and Edo's publishing culture reached its height. Mamiya Rinzō explored Sakhalin in this period."
+          }
+        }
+      }
+    },
+    "南北朝の並立を含めて数えると248番目にあたります。万葉集の梅花の歌の序文「初春の令月にして、気淑く風和ぎ」から採られ、中国の古典ではなく日本の書物を典拠とした初めての元号になりました。\n\n上皇の生前退位にともなう改元で、天皇の崩御によらない改元は約200年ぶりのことです。そのため事前に日付が決まっており、多くの人がテレビで新元号の発表を見守りました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Counting the rival courts of the Nanboku-chō period, it is the 248th era name. It was taken from the preface to the plum-blossom poems in the Man'yōshū — “in the auspicious month of early spring, the air is fine and the wind gentle” — making it the first era name drawn from a Japanese text rather than a Chinese classic.\n\nThe change came from the abdication of the emperor rather than his death, the first such transition in about 200 years. Because the date was therefore known in advance, the whole country watched the new name being unveiled live on television."
+          }
+        }
+      }
+    },
+    "厄年": {
+      "extractionState": "manual",
+      "shouldTranslate": false
+    },
+    "厄年の中心にあたる年で、もっとも災いに遭いやすいとされます。神社や寺で厄払いの祈祷を受ける人が多く、正月から節分にかけて社寺が賑わいます。新しい事を始めるのは避け、身を慎むのがよいとされます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The central year of the yakudoshi, when misfortune is thought most likely. Many visit a shrine or temple for a purification rite, filling them from New Year through to setsubun. Starting new ventures is avoided and restraint is advised."
+          }
+        }
+      }
+    },
+    "厄年は、災いに遭いやすいとされる年齢です。数え年で見るのが基本で、男性は25・42・61歳、女性は19・33・37・61歳が本厄にあたります。その前後の年も前厄・後厄として警戒します。\n\n男性42歳（「死に」）と女性33歳（「散々」）は大厄と呼ばれ、とくに重く見られます。\n\n平安時代から続く風習で、この年には神社や寺で厄払いの祈祷を受ける人が多く、正月から節分にかけて社寺が賑わいます。ちょうど心身の変わり目や、社会的な責任が重くなる年齢にあたるため、生活を見直す節目として受け止められています。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yakudoshi are ages at which misfortune is thought to come easily. They are counted by the traditional reckoning: for men 25, 42 and 61; for women 19, 33, 37 and 61. The years either side are watched as well, as maeyaku and atoyaku.\n\nA man's 42nd year and a woman's 33rd are the “great” yakudoshi, taken most seriously — 42 can be read as shi-ni, “to death,” and 33 as sanzan, “disastrous.”\n\nThe custom dates from the Heian period. Many people visit a shrine or temple for a purification rite in these years, filling them from New Year through to setsubun in early February. Since the ages fall where health and responsibilities tend to shift, they are widely treated as a natural moment to take stock."
+          }
+        }
+      }
+    },
+    "厄年を表示するために使います。「未指定」を選ぶと、この方の厄年は表示されません。\n\n厄年は、人生の中で災いに遭いやすいとされる年齢です。数え年で見るのが基本で、本厄の前後1年をそれぞれ前厄・後厄と呼びます。\n\n男性は25歳・42歳・61歳、女性は19歳・33歳・37歳・61歳が本厄にあたります（いずれも数え年）。男性の42歳と女性の33歳はとくに「大厄」と呼ばれます。\n\n年齢や数え方は神社や地域によって異なる場合があります。目安としてご覧ください。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Used to show 厄年 (yakudoshi) unlucky years. Choose Unspecified and no unlucky years are shown for this person.\n\n厄年 are ages at which misfortune is traditionally thought more likely. They are reckoned in 数え年 (kazoedoshi), and the years either side of the main one are called 前厄 (maeyaku) and 後厄 (atoyaku).\n\nFor men the main years are 25, 42, and 61; for women 19, 33, 37, and 61 — all in kazoedoshi. Men's 42 and women's 33 are known as 大厄 (taiyaku), the great unlucky years.\n\nThe ages and the way they are counted vary between shrines and regions. Treat these as a rough guide."
+          }
+        }
+      }
+    },
+    "友を引く": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Literally “pulls friends along”"
+          }
+        }
+      }
+    },
+    "取扱説明": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "User Guide"
+          }
+        }
+      }
+    },
+    "名簿": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Roster"
+          }
+        }
+      }
+    },
+    "名簿が空です。右上の＋から追加してください。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No one saved yet. Tap + at the top right to add someone."
+          }
+        }
+      }
+    },
+    "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows how old the person selected from the roster is in each year. Tap a row to open that year's calendar."
+          }
+        }
+      }
+    },
+    "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows how old the person selected from the roster is in each year. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+          }
+        }
+      }
+    },
+    "名簿を保存できませんでした": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save the roster"
+          }
+        }
+      }
+    },
+    "名簿を読み込めませんでした": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load the roster"
+          }
+        }
+      }
+    },
+    "和暦年齢メモ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenrin"
+          }
+        }
+      }
+    },
+    "嘉永6年にペリーが浦賀へ来航しました。200年以上続いた鎖国が終わりに向かう転換点です。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perry's fleet arrived at Uraga in Kaei 6 — the turning point at which more than two centuries of national seclusion began to end."
+          }
+        }
+      }
+    },
+    "土の兄（つち のえ）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elder earth (yang)"
+          }
+        }
+      }
+    },
+    "土の弟（つち のと）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Younger earth (yin)"
+          }
+        }
+      }
+    },
+    "変更": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit"
+          }
+        }
+      }
+    },
+    "外観モード": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appearance"
+          }
+        }
+      }
     },
-    "アプリ内の文字の大きさを決めます。自動を選ぶと、iPhoneの「設定」→「画面表示と明るさ」→「テキストサイズ」に合わせて変わります。標準・大・特大を選ぶと、端末の設定に関わらずその大きさになります。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sets the text size inside the app. Auto follows iPhone Settings → Display & Brightness → Text Size. Standard, Large, and Extra Large fix the size regardless of your device setting."
+    "大": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large"
           }
         }
       }
     },
-    "オンにすると、年に書いたメモは「自分」の一覧でだけ表示されます。年齢や名簿の一覧ではメモが隠れるため、他の人に画面を見せるときに便利です。オフにするとどの一覧でもメモが表示されます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "When on, the notes you write on a year appear only in the Myself list. They stay hidden in the Age and Roster lists, which is useful when showing your screen to someone else. When off, notes appear in every list."
+    "大いに安らか": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Literally “great peace”"
           }
         }
       }
     },
-    "キャンセル" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cancel"
+    "大坂夏の陣で豊臣氏が滅び、戦国の世が終わりました。戦が絶えたことを「元和偃武」と呼びます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The summer siege of Osaka destroyed the Toyotomi house and ended the age of warring states. The resulting peace is known as the Genna Enbu — “laying down of arms.”"
           }
         }
       }
     },
-    "ここに自分の生年月日を登録すると、「自分」の一覧で各年に自分が何歳になるかが表示されます。生まれた年には目印が付きます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save your date of birth here and the Myself list will show how old you are in each year. Your birth year is marked."
+    "大飢饉（天保の飢饉）と、それに端を発する大塩平八郎の乱が起きました。幕府は天保の改革で立て直しを図りますが、失敗に終わります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Tenpō famine struck, and with it the rebellion of Ōshio Heihachirō. The shogunate attempted the Tenpō Reforms in response, without success."
           }
         }
       }
     },
-    "この年に生まれました" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Born this year"
+    "女性": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Female"
           }
         }
       }
     },
-    "この年の誕生日で満%lld歳" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Turns %lld on the birthday this year"
+    "存在しない日付です": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That date does not exist"
           }
         }
       }
     },
-    "この年は数え%lld歳" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kazoedoshi age %lld this year"
+    "学年は4月に始まる": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Japanese school year starts in April"
           }
         }
       }
     },
-    "その年のカレンダーです。日付の下に六曜と月の満ち欠けを添えています。\n\n【六曜】\n先勝・友引・先負・仏滅・大安・赤口の6日周期で、旧暦の月日から求めます。日取りを選ぶときに探すことの多い大安は赤色で示します。\n\n【月の満ち欠け】\nパーセントは輝面率といい、月の光っている部分の面積の割合です。新月が0％、満月が100％になります。\n\n夕方から夜にかけて実際に空へ出ている月に合わせて計算しているので、その晩に見上げる月の姿とおおよそ一致します。満月（100％）は黄色で示します。\n\n旧暦をもとにした概算のため、実際の満月と1日ずれることがあります。\n\n【改元】\n改元があった年は、元号が変わる日に区切り線と新しい元号を表示します。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The calendar for that year. Under each date you will find the rokuyo and the phase of the moon.\n\n[六曜 rokuyo]\nA six-day cycle — 先勝 senshō, 友引 tomobiki, 先負 senbu, 仏滅 butsumetsu, 大安 taian, 赤口 shakkō — derived from the lunisolar calendar. 大安, the day most often sought when choosing a date, is marked in red.\n\n[The moon]\nThe percentage is the illuminated fraction: how much of the moon's face is lit. A new moon is 0% and a full moon is 100%.\n\nIt is calculated for the moon as it actually stands in the sky from evening into night, so it matches roughly what you would see looking up that night. A full moon (100%) is marked in yellow.\n\nBecause it is an approximation based on the lunisolar calendar, it can be a day off from the true full moon.\n\n[Era changes]\nIn a year when the era changed, the day it changed is marked with a rule and the new era name."
+    "学校は4月に始まり、翌年3月に終わります。そのため、4月2日から翌年4月1日までに生まれた人が同じ学年になります。\n\n小学校は6年、中学校は3年、高校は3年で、6歳になった次の4月に小学校へ入学します。早生まれ（1月1日から4月1日生まれ）の人は、同じ西暦年に生まれた人より1学年上になる点が、年齢から学年を考えるときに間違えやすいところです。\n\n4月入学は明治期に会計年度に合わせて定められたもので、桜の季節と重なることから、入学式は春の風物詩になっています。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Japanese school year runs from April to the following March, so children born between 2 April and 1 April of the next year form one grade.\n\nElementary school lasts six years, junior high three and high school three; a child enters elementary school in the April after turning six. Those born between 1 January and 1 April — called hayaumare, “early born” — end up a grade above others born in the same calendar year, which is the easiest thing to get wrong when working a grade out from an age.\n\nThe April start was fixed in the Meiji period to match the fiscal year. Because it coincides with the cherry blossom, the entrance ceremony has become one of the images of spring in Japan."
           }
         }
       }
     },
-    "ダーク" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dark"
+    "宝永地震と、その49日後に起きた富士山の宝永噴火が記録されています。富士山の最後の噴火です。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Hōei earthquake is recorded here, along with the eruption of Mount Fuji 49 days later — the mountain's most recent eruption."
           }
         }
       }
     },
-    "ヘルプ" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Help"
+    "家族・親戚・友人など、年齢を調べたい方を登録しておく名簿です。登録すると一覧がその方の生年月日を基準になり、各年に何歳になるかを確認できます。\n\n【選ぶ】\n名前の行をタップすると、その方を基準にした一覧へ切り替わります。\n\n【追加】\n右上の＋を押し、名前と生年月日を入力して保存します。\n\n【変更】\n行の右端にある変更ボタンを押すと、名前と生年月日を編集できます。行を左へスワイプして「変更」を選ぶこともできます。\n\n【削除】\n行を左へスワイプして「削除」を選びます。確認の後に削除され、取り消しはできません。\n\n【並べ替え】\n行を長押ししたまま上下へドラッグすると、好きな順序に並べ替えられます。並び順は保存され、追加や変更をしても崩れません。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A roster of people whose ages you want to look up — family, relatives, friends. Once someone is saved, the list uses their date of birth so you can see how old they are in each year.\n\n[Select]\nTap a name to switch the list to that person.\n\n[Add]\nTap + at the top right, then enter a name and date of birth and save.\n\n[Edit]\nTap the edit button at the right of a row to change the name and date of birth. You can also swipe the row left and choose Edit.\n\n[Delete]\nSwipe the row left and choose Delete. You will be asked to confirm, and deletion cannot be undone.\n\n[Reorder]\nPress and hold a row, then drag it up or down. The order is saved and is not disturbed when you add or edit someone."
           }
         }
       }
     },
-    "メモ" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Note"
+    "島原の乱と、それを受けたポルトガル船の来航禁止により、鎖国が完成しました。寛永通宝が広く流通します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Shimabara rebellion, and the ban on Portuguese ships that followed it, completed the closing of the country. The Kan'ei Tsūhō coin came into wide circulation."
           }
         }
       }
     },
-    "メモは自分だけに表示" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show notes only in Myself"
+    "幕府の体制が固まり、社会が安定した時期です。各地で新田開発が進みました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The shogunate's institutions settled and society stabilised. New rice fields were developed across the country."
           }
         }
       }
     },
-    "メモを保存できませんでした" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Could not save notes"
+    "干支": {
+      "extractionState": "manual",
+      "shouldTranslate": false
+    },
+    "干支は、十干（甲・乙・丙…の10種）と十二支（子・丑・寅…の12種）を順に組み合わせたものです。10と12の最小公倍数である60年で一巡し、61年目にまた同じ組み合わせへ戻ります。\n\n60年で生まれ年の干支に還ることを「還暦」といい、数え61歳を祝う習慣はここから来ています。\n\n「今年の干支は午年」のように十二支だけを指すことも多いのですが、暦の上での干支は十干と合わせた「丙午」のような形が本来の呼び方です。歴史上の出来事にも、壬申の乱や戊辰戦争のように干支の名が残っています。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eto pairs the ten heavenly stems (甲, 乙, 丙 …) with the twelve earthly branches (子, 丑, 寅 …) in order. Because 60 is the least common multiple of 10 and 12, the cycle takes 60 years to return to its starting point.\n\nReturning to the stem-branch of your birth year after 60 years is called kanreki, which is why the 61st year (by traditional count) is celebrated.\n\nIn everyday Japanese, “this year's eto” usually means the animal alone, but a full calendrical eto is the paired form, such as hinoeuma. Historical events carry these names too — the Jinshin War and the Boshin War are both named after the stem-branch year in which they were fought."
+          }
+        }
+      }
+    },
+    "年": {
+      "extractionState": "manual",
+      "shouldTranslate": false
+    },
+    "年と年齢の早見表": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Year → age"
+          }
+        }
+      }
+    },
+    "年に付ける日本独自の名前": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Japan's own way of naming years"
+          }
+        }
+      }
+    },
+    "年齢": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Age"
+          }
+        }
+      }
+    },
+    "年齢と生まれた年の早見表": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Age → year of birth"
+          }
+        }
+      }
+    },
+    "年齢の数え方": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Age reckoning"
+          }
+        }
+      }
+    },
+    "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーが開きます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter an age to jump to the year someone of that age was born. Tap a row to open that year's calendar."
+          }
+        }
+      }
+    },
+    "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter an age to jump to the year someone of that age was born. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+          }
+        }
+      }
+    },
+    "後桜町天皇の即位にともなって改元されました。錦絵（多色刷の浮世絵）が生まれ、鈴木春信が人気を集めました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The era name was changed on the accession of Empress Go-Sakuramachi. Full-colour woodblock printing (nishiki-e) was invented in this era, and Suzuki Harunobu became popular."
+          }
+        }
+      }
+    },
+    "徳川吉宗が将軍を退き、家重が継いだ時期にあたります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The era in which Tokugawa Yoshimune stepped down as shogun and was succeeded by Ieshige."
+          }
+        }
+      }
+    },
+    "徳川吉宗による享保の改革が行われました。倹約と新田開発で幕府財政を立て直し、目安箱の設置や小石川養生所の開設もこの時期です。享保の飢饉も起きています。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokugawa Yoshimune carried out the Kyōhō Reforms, restoring shogunate finances through frugality and new rice-field development. The public suggestion box and the Koishikawa clinic date from this era, as does the Kyōhō famine."
+          }
+        }
+      }
+    },
+    "徳川吉宗の死去にともなう時期です。暦の誤差を正した宝暦暦が施行されました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The era in which Tokugawa Yoshimune died. The Hōreki calendar was adopted to correct accumulated errors in the old one."
+          }
+        }
+      }
+    },
+    "性別": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gender"
+          }
+        }
+      }
+    },
+    "数え%lld歳（満%lld歳）の祝い": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Celebrated at %lld by the traditional count (%lld by actual age)"
+          }
+        }
+      }
+    },
+    "文字どおり百歳。紀寿（きじゅ）とも呼ばれ、一世紀を生きたことを意味します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Literally a hundred years. Also called kiju, marking a full century of life."
+          }
+        }
+      }
+    },
+    "文字サイズ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text Size"
+          }
+        }
+      }
+    },
+    "新井白石による正徳の治が行われ、貨幣の質を元に戻す改革が進められました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arai Hakuseki directed the Shōtoku administration, restoring the debased currency to its former quality."
+          }
+        }
+      }
+    },
+    "日": {
+      "extractionState": "manual",
+      "shouldTranslate": false
+    },
+    "日の吉凶を表す6日周期": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A six-day cycle of lucky and unlucky days"
+          }
+        }
+      }
+    },
+    "日生": {
+      "extractionState": "manual",
+      "shouldTranslate": false
+    },
+    "明暦の大火からの江戸復興が進められた時期にあたります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The era in which Edo was rebuilt after the Meireki fire."
+          }
+        }
+      }
+    },
+    "易経の「大亨は以て正天の道なり」から採られました。\n\n15年と短い時代ですが、都市文化が花開き、洋装や喫茶店、活動写真が広まった時期として知られます。政党政治や普通選挙運動が盛り上がったこの風潮は「大正デモクラシー」と呼ばれます。末期の1923年に関東大震災が起きました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taken from the I Ching: “great success comes through righteousness, the way of heaven.”\n\nThough only 15 years long, it is remembered as the period when urban culture flourished — Western dress, coffee houses and moving pictures spread through the cities. The accompanying enthusiasm for party politics and universal suffrage is known as “Taishō democracy.” The Great Kantō Earthquake struck near the end of the era, in 1923."
+          }
+        }
+      }
+    },
+    "易経の「聖人南面して天下を聴き、明に嚮ひて治む」から採られました。\n\nこの改元から、一人の天皇に一つの元号とする「一世一元」の制度が始まります。それ以前は、災害や吉兆のたびに改元されていました。\n\n武士の世が終わり、日本が近代国家へと大きく作り替えられた時代です。太陽暦の採用（明治5年12月3日を明治6年1月1日とした）もこの時期で、これより前の日付は旧暦である点に注意が必要です。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taken from the I Ching: “the sage faces south and listens to the world, turning toward the light to govern.”\n\nThis transition established the rule of one era name per emperor. Before Meiji, the era name was changed whenever a disaster or an auspicious omen seemed to call for it.\n\nIt was the era in which the age of the samurai ended and Japan was rebuilt as a modern state. The switch to the solar calendar also happened here: 3 December of Meiji 5 was declared 1 January of Meiji 6. Dates before that point are given in the old lunisolar calendar, which is worth remembering when reading old documents."
+          }
+        }
+      }
+    },
+    "暦": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calendar"
+          }
+        }
+      }
+    },
+    "書経の「百姓昭明、協和万邦」から採られ、「国民の平和と世界の共存繁栄」を願う名です。\n\n64年続いた、日本の元号でもっとも長い時代です。戦争と敗戦、そして高度経済成長という激動を含むため、今も「昭和の時代は」と一つの時代像として語られます。現在の高齢者の多くが昭和生まれで、書類の生年月日欄でもっともよく見かける元号です。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taken from the Book of Documents, expressing a wish for “peace for the people and prosperity shared among all nations.”\n\nAt 64 years it is the longest era in Japanese history. Because it contains the war, the defeat, and the rapid economic growth that followed, “back in the Shōwa era” is still used in Japan to evoke a whole period of national life. Most elderly people alive today were born in Shōwa, and it is the era name you will meet most often in the date-of-birth field of a form."
+          }
+        }
+      }
+    },
+    "月": {
+      "extractionState": "manual",
+      "shouldTranslate": false
+    },
+    "木の兄（き のえ）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elder wood (yang)"
+          }
+        }
+      }
+    },
+    "木の弟（き のと）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Younger wood (yin)"
           }
         }
       }
     },
-    "メモを読み込めませんでした" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Could not load notes"
+    "未対応のメモ形式です": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unsupported note format"
           }
         }
       }
     },
-    "ライト" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Light"
+    "未対応の名簿データ形式です": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unsupported roster format"
           }
         }
       }
     },
-    "レビューする" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Write a Review"
+    "未指定": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unspecified"
           }
         }
       }
     },
-    "一覧に九星気学の本命星を表示します。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows the 本命星 (honmeisei) star from 九星気学 nine-star astrology."
+    "未設定": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not set"
           }
         }
       }
     },
-    "一覧に前厄・本厄・後厄を表示します。性別が未指定の場合は表示されません。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows 厄年 (yakudoshi) unlucky years — 前厄 before, 本厄 main, and 後厄 after. Nothing is shown while gender is unspecified, as the ages differ by gender."
+    "本厄の前の年です。厄の兆しが現れ始める年とされ、この年から慎重に過ごすよう勧められます。厄払いを受ける人も少なくありません。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The year before the main yakudoshi. Misfortune is said to begin showing itself, and caution is advised from this year on. Many people already seek a purification rite."
           }
         }
       }
     },
-    "一覧に表示する" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show in the list"
+    "本厄の次の年です。厄が薄らいでいく年とされますが、油断せずに過ごすのがよいとされます。この年をもって厄が明けます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The year after the main yakudoshi. The danger is said to be fading, though caution is still advised. With this year the unlucky period ends."
           }
         }
       }
     },
-    "一覧に還暦、古希、喜寿などの長寿祝いを表示します。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows 賀寿 (gaju) longevity celebrations such as 還暦 (kanreki, 60), 古希 (koki, 70), and 喜寿 (kiju, 77)."
+    "杜甫の詩「人生七十古来稀なり」から。昔は70歳まで生きることが稀だったことに由来します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From a poem by Du Fu: “to live seventy years has been rare since ancient times.” Reaching 70 was once uncommon."
           }
         }
       }
     },
-    "一覧の各年に干支を絵文字と漢字で表示します。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows the 干支 (eto) zodiac sign for each year as an emoji and kanji."
+    "松平定信による寛政の改革が行われました。倹約を求める厳しい統制で、風紀の取り締まりや出版の規制が敷かれました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Matsudaira Sadanobu carried out the Kansei Reforms — a severe programme of enforced frugality, with crackdowns on public morals and censorship of publishing."
           }
         }
       }
     },
-    "九星" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "桜田門外の変で大老井伊直弼が暗殺された年に改元されました。1年余りで文久に改まります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The name was changed in the year the chief minister Ii Naosuke was assassinated outside the Sakurada Gate. It lasted little more than a year before becoming Bunkyū."
+          }
+        }
+      }
     },
-    "今年生まれた方の誕生年" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Birth year of someone born this year"
+    "標準": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard"
           }
         }
       }
     },
-    "保存" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save"
+    "次": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next"
           }
         }
       }
     },
-    "入学・卒業" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "歳": {
+      "extractionState": "manual",
+      "shouldTranslate": false
     },
-    "初心者" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beginner"
+    "水の兄（みず のえ）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elder water (yang)"
           }
         }
       }
     },
-    "初心者を選ぶと、ボタンの名前や一覧の見方といった説明が画面に表示されます。操作に慣れたら達人に切り替えると、説明が消えて一覧を広く使えます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beginner shows explanations on screen, such as button names and how to read the list. Once you are comfortable, switch to Expert to hide them and use more of the screen for the list."
+    "水の弟（みず のと）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Younger water (yin)"
           }
         }
       }
     },
-    "削除" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete"
+    "江戸の大半を焼き、江戸城の天守も失われた明暦の大火が起きました。天守はその後再建されていません。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Meireki fire burned most of Edo and destroyed the keep of Edo Castle. It was never rebuilt."
           }
         }
       }
     },
-    "削除しますか？" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete?"
+    "江戸の水不足を解消するため、玉川上水が開かれました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Tamagawa aqueduct was opened to relieve Edo's shortage of drinking water."
           }
         }
       }
     },
-    "厄年" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "江戸を焼いた天和の大火が起きました。八百屋お七の話はこの火事に由来します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Tenna fire burned through Edo. The well-known story of Oshichi, the greengrocer's daughter, comes from this blaze."
+          }
+        }
+      }
     },
-    "厄年を表示するために使います。「未指定」を選ぶと、この方の厄年は表示されません。\n\n厄年は、人生の中で災いに遭いやすいとされる年齢です。数え年で見るのが基本で、本厄の前後1年をそれぞれ前厄・後厄と呼びます。\n\n男性は25歳・42歳・61歳、女性は19歳・33歳・37歳・61歳が本厄にあたります（いずれも数え年）。男性の42歳と女性の33歳はとくに「大厄」と呼ばれます。\n\n年齢や数え方は神社や地域によって異なる場合があります。目安としてご覧ください。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Used to show 厄年 (yakudoshi) unlucky years. Choose Unspecified and no unlucky years are shown for this person.\n\n厄年 are ages at which misfortune is traditionally thought more likely. They are reckoned in 数え年 (kazoedoshi), and the years either side of the main one are called 前厄 (maeyaku) and 後厄 (atoyaku).\n\nFor men the main years are 25, 42, and 61; for women 19, 33, 37, and 61 — all in kazoedoshi. Men's 42 and women's 33 are known as 大厄 (taiyaku), the great unlucky years.\n\nThe ages and the way they are counted vary between shrines and regions. Treat these as a rough guide."
+    "江戸城本丸の火災を理由に改元されました。外国船の来航が相次ぎ、海防への関心が高まった時期です。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The name was changed after a fire in the main keep of Edo Castle. Foreign ships were arriving with increasing frequency, and coastal defence became a pressing concern."
           }
         }
       }
     },
-    "取扱説明" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "User Guide"
+    "江戸時代最後の元号です。禁門の変後の混乱を理由に改元されました。慶応3年の大政奉還を経て、慶応4年9月に明治へ改元されます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The last era of the Edo period. The name was changed after the upheaval of the Kinmon incident. The shogun returned power to the emperor in Keiō 3, and in the ninth month of Keiō 4 the era became Meiji."
           }
         }
       }
     },
-    "名簿" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Roster"
+    "浅間山の噴火と天明の大飢饉により、多数の餓死者が出ました。江戸時代でもっとも深刻な飢饉とされます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The eruption of Mount Asama and the Tenmei famine caused mass starvation. It is considered the worst famine of the Edo period."
           }
         }
       }
     },
-    "名簿が空です。右上の＋から追加してください。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No one saved yet. Tap + at the top right to add someone."
+    "渋川春海が日本人の手による初の暦法「貞享暦」を作り、それまでの中国の暦から改められました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shibukawa Harumi produced the Jōkyō calendar, the first calendrical system devised by a Japanese astronomer, replacing the Chinese calendar used until then."
           }
         }
       }
     },
-    "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows how old the person selected from the roster is in each year. Tap a row to open that year's calendar."
+    "満年齢は誕生日ごとに1つ増える、現在ふつうに使われている数え方です。数え年は生まれた時点で1歳とし、以後は元日ごとに1つ増える昔ながらの数え方で、年内では満年齢より1つ多くなります。還暦や喜寿などの長寿祝いは、もともと数え年で祝うものでした。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "満年齢 (man-nenrei) is the count used today: it goes up on each birthday, the same as in the West. 数え年 (kazoedoshi) is the traditional count: you are 1 at birth and everyone gains a year on New Year's Day, so it runs one ahead within the year. Longevity celebrations such as 還暦 (kanreki) and 喜寿 (kiju) were originally reckoned this way."
           }
         }
       }
     },
-    "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows how old the person selected from the roster is in each year. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+    "漢字（熟語）をタップすると解説を表示します": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap any Japanese term to see what it means"
           }
         }
       }
     },
-    "名簿を保存できませんでした" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Could not save the roster"
+    "火の兄（ひ のえ）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elder fire (yang)"
           }
         }
       }
     },
-    "名簿を読み込めませんでした" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Could not load the roster"
+    "火の弟（ひ のと）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Younger fire (yin)"
           }
         }
       }
     },
-    "和暦年齢メモ" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nenrin"
+    "災いが多いとされる年齢": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ages said to attract misfortune"
           }
         }
       }
     },
-    "変更" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Edit"
+    "牛": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ox"
           }
         }
       }
     },
-    "外観モード" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appearance"
+    "特大": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extra Large"
           }
         }
       }
     },
-    "大" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Large"
+    "犬": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dog"
           }
         }
       }
     },
-    "女性" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Female"
+    "猪": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boar"
           }
         }
       }
     },
-    "存在しない日付です" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "That date does not exist"
+    "猿": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monkey"
           }
         }
       }
     },
-    "家族・親戚・友人など、年齢を調べたい方を登録しておく名簿です。登録すると一覧がその方の生年月日を基準になり、各年に何歳になるかを確認できます。\n\n【選ぶ】\n名前の行をタップすると、その方を基準にした一覧へ切り替わります。\n\n【追加】\n右上の＋を押し、名前と生年月日を入力して保存します。\n\n【変更】\n行の右端にある変更ボタンを押すと、名前と生年月日を編集できます。行を左へスワイプして「変更」を選ぶこともできます。\n\n【削除】\n行を左へスワイプして「削除」を選びます。確認の後に削除され、取り消しはできません。\n\n【並べ替え】\n行を長押ししたまま上下へドラッグすると、好きな順序に並べ替えられます。並び順は保存され、追加や変更をしても崩れません。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A roster of people whose ages you want to look up — family, relatives, friends. Once someone is saved, the list uses their date of birth so you can see how old they are in each year.\n\n[Select]\nTap a name to switch the list to that person.\n\n[Add]\nTap + at the top right, then enter a name and date of birth and save.\n\n[Edit]\nTap the edit button at the right of a row to change the name and date of birth. You can also swipe the row left and choose Edit.\n\n[Delete]\nSwipe the row left and choose Delete. You will be asked to confirm, and deletion cannot be undone.\n\n[Reorder]\nPress and hold a row, then drag it up or down. The order is saved and is not disturbed when you add or edit someone."
+    "現在%lld歳の方の誕生年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth year of someone now %lld"
           }
         }
       }
     },
-    "干支" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "生まれた年の干支に還ることから。十干十二支は60年で一巡し、数え61歳でもとの干支に戻ります。赤いちゃんちゃんこを贈るのは、赤ん坊に還る意味と、赤が魔除けの色であることによります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Named for the return to the stem-branch of one's birth year: the sixty-year cycle completes, and the 61st year by the traditional count brings it back round. The red vest given on this occasion means both a return to infancy and the protective power of the colour red."
+          }
+        }
+      }
     },
-    "年" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "生まれるまであと%lld年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld years before birth"
+          }
+        }
+      }
     },
-    "年と年齢の早見表" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Year → age"
+    "生まれ年で決まる九つの星": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nine stars, one for each birth year"
           }
         }
       }
     },
-    "年齢" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Age"
+    "生年月日をもとに、小学1年から大学4年までの学年を一覧に表示します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uses the date of birth to show each grade from elementary school year 1 through university year 4."
           }
         }
       }
     },
-    "年齢と生まれた年の早見表" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Age → year of birth"
+    "用語の意味を見る": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show what this term means"
           }
         }
       }
     },
-    "年齢の数え方" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Age reckoning"
+    "由井正雪らによる幕府転覆の計画（慶安の変）が発覚しました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A plot by Yui Shōsetsu and others to overthrow the shogunate — the Keian uprising — was uncovered."
           }
         }
       }
     },
-    "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーが開きます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter an age to jump to the year someone of that age was born. Tap a row to open that year's calendar."
+    "甲子（きのえね）の年は変革が起きるとされ、その災いを避けるために改元されました。1年ほどで終わった短い元号で、池田屋事件や禁門の変が起き、幕末の動乱が頂点に向かう時期にあたります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A kasshi year was believed to bring upheaval, and the era name was changed to ward off the associated calamities. It lasted only about a year: the Ikedaya and Kinmon incidents both fell in this period, as the turmoil of the late shogunate approached its peak."
           }
         }
       }
     },
-    "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter an age to jump to the year someone of that age was born. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+    "男性": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Male"
           }
         }
       }
     },
-    "性別" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gender"
+    "町人文化が円熟した時期です。貨幣の質を落としたことで経済が活気づき、化政文化と呼ばれる町人文化が栄えました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A period in which townspeople's culture came to maturity. Debasing the currency stimulated the economy, and the merchant culture known as Kasei flourished."
           }
         }
       }
     },
-    "文字サイズ" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Text Size"
+    "町人文化が花開いた元禄文化の時代です。松尾芭蕉、井原西鶴、近松門左衛門が活躍しました。赤穂浪士の討ち入りもこの時期です。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The age of Genroku culture, when the arts of the townspeople flowered. Matsuo Bashō, Ihara Saikaku and Chikamatsu Monzaemon were all at work, and the forty-seven rōnin took their revenge in this era."
           }
         }
       }
     },
-    "日" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "画面の明るさの見た目を決めます。自動を選ぶと、iPhone本体のライトモード・ダークモードの設定に合わせて変わります。ライトまたはダークを選ぶと、端末の設定に関わらずその見た目に固定されます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sets the app's appearance. Auto follows your iPhone's Light or Dark Mode setting. Light or Dark fixes the appearance regardless of your device setting."
+          }
+        }
+      }
     },
-    "日生" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "目黒行人坂の大火などの災いに加え、「明和九年」が「迷惑」に通じることも嫌われて改元されました。杉田玄白らの「解体新書」が刊行され、蘭学が広まります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The era name was changed after disasters including the great fire at Meguro Gyōninzaka — and partly because “Meiwa 9” (meiwa-ku) sounded like meiwaku, “trouble.” Sugita Genpaku's Kaitai Shinsho, a translated anatomy text, was published, and Dutch learning spread."
+          }
+        }
+      }
     },
-    "暦" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Calendar"
+    "移動": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jump"
           }
         }
       }
     },
-    "月" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "移動先 西暦%@年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Destination: %@"
+          }
+        }
+      }
     },
-    "未対応のメモ形式です" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unsupported note format"
+    "符号を反転": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toggle sign"
           }
         }
       }
     },
-    "未対応の名簿データ形式です" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unsupported roster format"
+    "羊": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sheep"
           }
         }
       }
     },
-    "未指定" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unspecified"
+    "自分": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Myself"
           }
         }
       }
     },
-    "未設定" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not set"
+    "自分の性別": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your gender"
           }
         }
       }
     },
-    "標準" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standard"
+    "自分の生年月日": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your date of birth"
           }
         }
       }
     },
-    "次" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Next"
+    "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows how old you are in each year, based on your date of birth. Tap a row to open that year's calendar."
           }
         }
       }
     },
-    "歳" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows how old you are in each year, based on your date of birth. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+          }
+        }
+      }
     },
-    "満年齢は誕生日ごとに1つ増える、現在ふつうに使われている数え方です。数え年は生まれた時点で1歳とし、以後は元日ごとに1つ増える昔ながらの数え方で、年内では満年齢より1つ多くなります。還暦や喜寿などの長寿祝いは、もともと数え年で祝うものでした。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "満年齢 (man-nenrei) is the count used today: it goes up on each birthday, the same as in the West. 数え年 (kazoedoshi) is the traditional count: you are 1 at birth and everyone gains a year on New Year's Day, so it runs one ahead within the year. Longevity celebrations such as 還暦 (kanreki) and 喜寿 (kiju) were originally reckoned this way."
+    "自動": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto"
           }
         }
       }
     },
-    "特大" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Extra Large"
+    "虎": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiger"
           }
         }
       }
     },
-    "現在%lld歳の方の誕生年" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Birth year of someone now %lld"
+    "蛇": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snake"
           }
         }
       }
     },
-    "生まれるまであと%lld年" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld years before birth"
+    "表示モード": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display Mode"
           }
         }
       }
     },
-    "生年月日をもとに、小学1年から大学4年までの学年を一覧に表示します。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uses the date of birth to show each grade from elementary school year 1 through university year 4."
+    "表示範囲外のため %@年へ移動します": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outside the range — moving to %@"
           }
         }
       }
     },
-    "男性" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Male"
+    "設定": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
           }
         }
       }
     },
-    "画面の明るさの見た目を決めます。自動を選ぶと、iPhone本体のライトモード・ダークモードの設定に合わせて変わります。ライトまたはダークを選ぶと、端末の設定に関わらずその見た目に固定されます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sets the app's appearance. Auto follows your iPhone's Light or Dark Mode setting. Light or Dark fixes the appearance regardless of your device setting."
+    "貨幣の改鋳が行われ、物価が落ち着いた時期とされます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The currency was recoined in this era, and prices are said to have settled."
           }
         }
       }
     },
-    "移動" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jump"
+    "賀寿は、節目の年齢に長寿を祝う習わしです。数え年で祝うのが本来ですが、今は満年齢で祝うことも増えています。\n\n還暦（61歳）だけは干支が一巡することに由来し、それ以外の多くは漢字の形の遊びから来ています。たとえば「喜」の草書体が「七十七」に見えることから喜寿（77歳）、「米」の字を分けると「八十八」になることから米寿（88歳）といった具合です。\n\n還暦に赤いちゃんちゃんこを贈るのは、赤ん坊に還るという意味と、赤が魔除けの色であることによります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gaju are the milestone ages at which long life is celebrated. Traditionally they follow the old age count, though celebrating by actual age is now common.\n\nOnly kanreki (61) comes from the calendar itself, marking one full turn of the sixty-year cycle. Most of the others are plays on the shapes of characters: the cursive form of 喜 resembles 七十七, giving kiju at 77; splitting 米 apart yields 八十八, giving beiju at 88.\n\nThe red vest given at kanreki carries two meanings at once — a return to infancy, and red as a colour that wards off misfortune."
           }
         }
       }
     },
-    "移動先 西暦%@年" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Destination: %@"
+    "赤い口": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Literally “red mouth”"
           }
         }
       }
     },
-    "符号を反転" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toggle sign"
+    "辛酉（かのととり）の年は変革が起きるとされ、その災いを避けるために改元されました。生麦事件と、その報復である薩英戦争が起きています。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A shin'yū year was believed to bring upheaval, and the era name was changed to ward off the associated calamities. The Namamugi incident occurred here, and with it the retaliatory Anglo-Satsuma War."
           }
         }
       }
     },
-    "自分" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Myself"
+    "追加": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
           }
         }
       }
     },
-    "自分の性別" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your gender"
+    "達人": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expert"
           }
         }
       }
     },
-    "自分の生年月日" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your date of birth"
+    "還暦をもう一度迎える年齢。60年周期を2度巡ったことを意味します。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The age at which kanreki comes round a second time — two complete turns of the sixty-year cycle."
           }
         }
       }
     },
-    "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows how old you are in each year, based on your date of birth. Tap a row to open that year's calendar."
+    "金の兄（か のえ）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elder metal (yang)"
           }
         }
       }
     },
-    "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows how old you are in each year, based on your date of birth. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+    "金の弟（か のと）": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Younger metal (yin)"
           }
         }
       }
     },
-    "自動" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auto"
+    "鎖国の体制が固まった時期です。全国の国絵図と城絵図が幕府へ提出されました。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The era in which the seclusion system took firm shape. Provincial and castle maps from across the country were submitted to the shogunate."
           }
         }
       }
     },
-    "表示モード" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Display Mode"
+    "長寿を祝う節目の年齢": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Milestone ages for celebrating long life"
           }
         }
       }
+    },
+    "長寿祝い": {
+      "extractionState": "manual",
+      "shouldTranslate": false
     },
-    "表示範囲外のため %@年へ移動します" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Outside the range — moving to %@"
+    "閉じる": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
           }
         }
       }
     },
-    "設定" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settings"
+    "関ヶ原の戦いと、徳川家康による江戸幕府の開府がありました。この一覧が始まる1600年は慶長5年にあたります。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The battle of Sekigahara was fought and Tokugawa Ieyasu founded the Edo shogunate. The year 1600, where this list begins, is Keichō 5."
           }
         }
       }
     },
-    "追加" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add"
+    "馬": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horse"
           }
         }
       }
     },
-    "達人" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Expert"
+    "鶏": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rooster"
           }
         }
       }
     },
-    "長寿祝い" : {
-      "extractionState" : "manual",
-      "shouldTranslate" : false
+    "黒船来航を受けた内裏炎上と地震により改元されました。日米修好通商条約の締結と、反対派を弾圧した安政の大獄が起きています。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The name was changed after a palace fire and an earthquake, in the wake of the arrival of the Black Ships. The Treaty of Amity and Commerce with the United States was signed in this era, as was the Ansei Purge of those who opposed it."
+          }
+        }
+      }
     },
-    "閉じる" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Close"
+    "龍": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dragon"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

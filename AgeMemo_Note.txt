@@ -39,3 +39,47 @@ fastlane upload_screenshots
 ------------------------------------------------
 
 
+----------------------------------------------------------
+【2026-09-02】ガイドライン 4.3（類似性・新規性）対策
+和暦アプリは既存の類似アプリが多く、審査で新規性なしと判断される懸念があるため、
+「和暦アプリとしては珍しい en 対応＝日本文化の発信」を差別化軸として主張した。
+
+主張の置き場所は Review Notes を最重視した。
+理由：4.3 の判断材料は審査員が直接読む Review Notes とアプリ実体であり、
+　　　description は審査員にはマーケ文として読まれ差別化主張としては効きにくい。
+　　　promotional_text は検索対象外・審査影響ほぼゼロ。
+
+変更したファイル
+- fastlane/metadata/review_information/notes.txt（新規・最重要）
+　　審査員向けに差別化5点を英語で列挙：
+　　　1. UI は英語だが暦データ（元号・干支・六曜）は日本語のまま＋かな/ローマ字読み
+　　　　 → 訳を見せるのではなく実際の書類を読めるようにする教育的意図
+　　　2. 1600-2100 の501年連続、明治以降だけでなく江戸期の元号も収録
+　　　3. 元号年・年齢・西暦の双方向引き（昭和100年など実在しない年も換算）
+　　　4. 六曜・月齢・九星・厄年・賀寿を日本の慣習の参照資料として提示
+　　　5. 各年400字メモ（家系調査・戸籍調査向け）
+　　位置づけ：日本語学習者・家系研究者・在日外国人向けの文化/教育リファレンス
+- fastlane/metadata/en-US/subtitle.txt
+　　Japanese Era Year Converter → Japanese eras, zodiac, rokuyo（29字）
+　　「converter」は競合と同じ土俵なので降り、rokuyo で文化寄りに差別化
+- fastlane/metadata/en-US/description.txt
+　　冒頭を「Read the years, zodiac and luck days of Japan — on one line」に変更
+　　Who it is for に「how Japanese culture marks time」の1行を追加
+- fastlane/metadata/en-US/keywords.txt
+　　zodiac, rokuyo を削除（subtitle と重複。Apple は name+subtitle+keywords を
+　　統合索引するため再掲しても順位は上がらない）
+　　空いた枠に genealogy, koseki, taian を追加（100字ちょうど）
+
+注意点
+- preview_metadata は Preview.html 生成直後に確認プロンプトを出すため、
+　非対話シェルで実行すると non-interactive mode でクラッシュする。
+　HTML 生成自体は完了しているのでこのクラッシュは無害。
+- review_information/notes.txt が deliver に載ることは Preview.html で確認済み
+　（末尾に Review Information → Notes として出力される）。
+- fastlane/README.md は自動生成（fastlane 実行のたび再生成）なので記録を書かない。
+
+審査結果
+- 提出日：
+- 結果　：
+- 4.3 の指摘有無：
+------------------------------------------------

@@ -13,6 +13,8 @@ struct YearDetailView: View {
 
     let row: YearRow
     @State private var memoText: String
+    /// 漢字語をタップしたときに開く解説
+    @State private var selectedTerm: CalendarTerm?
     let ageDisplayMode: AgeDisplayMode
     /// 名簿人物を同姓同日でも区別するためのID
     let selectedPersonID: UUID?
@@ -33,6 +35,15 @@ struct YearDetailView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+                    if isBeginner {
+                        // 漢字がタップできることは見た目では分からないため案内する
+                        Text("漢字（熟語）をタップすると解説を表示します")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                    }
+
                     summary
                     if showsMemo {
                         memoEditor
@@ -49,6 +60,9 @@ struct YearDetailView: View {
                     SheetCloseButton { dismiss() }
                 }
             }
+        }
+        .sheet(item: $selectedTerm) { term in
+            CalendarTermSheet(term: term)
         }
         .presentationDragIndicator(.visible)
         // iPadでは内容量に合わせた中間サイズで表示する
@@ -90,23 +104,54 @@ struct YearDetailView: View {
         return first.displayText
     }
 
+    /// 見出しに出す元号。改元年でない年は元号がひとつに定まるため、
+    /// 名の部分だけを切り出してタップできるようにする
+    private var headlineEraSpan: EraSpan? {
+        guard ganNenSpan == nil, row.eraSpans.count == 1 else { return nil }
+        return row.eraSpans.first
+    }
+
+    /// 「令和8年」から元号名を除いた「8年」の部分
+    private var headlineEraSuffix: String {
+        guard let span = headlineEraSpan else { return "" }
+        return String(span.displayText.dropFirst(span.eraName.count))
+    }
+
+    private var isBeginner: Bool {
+        settings.displayMode == .beginner
+    }
+
     private var ganNenSpan: EraSpan? {
         row.eraSpans.first { $0.isGanNen && !($0.startMonth == 1 && $0.startDay == 1) }
     }
 
     private var summary: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // 改元年は元号を並べず、年初の元号だけを見出しに置く
-            Text("\(String(row.gregorian))年  \(headlineEraText)")
-                .font(.title2.bold())
-                // 撮影時に開いた年を検証できるようにする
-                .accessibilityIdentifier("detail.year.\(row.gregorian)")
+            // 改元年は元号を並べず、年初の元号だけを見出しに置く。
+            // 元号の名だけを切り出してタップできるようにする
+            HStack(spacing: 0) {
+                Text(verbatim: "\(String(row.gregorian))年  ")
+                if let headlineEra = headlineEraSpan {
+                    Text(verbatim: headlineEra.eraName)
+                        .calendarTermTappable(EraGlossary.term(for: headlineEra.eraName), selection: $selectedTerm)
+                    Text(verbatim: headlineEraSuffix)
+                } else {
+                    Text(verbatim: headlineEraText)
+                }
+            }
+            .font(.title2.bold())
+            // 撮影時に開いた年を検証できるようにする
+            .accessibilityIdentifier("detail.year.\(row.gregorian)")
 
             if let ganNen = ganNenSpan {
                 // 改元があった年は、いつから元年になったのかを次の行に添える
-                Text("\(ganNen.eraName)元年（\(String(ganNen.startMonth))月\(String(ganNen.startDay))日〜）")
-                    .font(.title3.bold())
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                HStack(spacing: 0) {
+                    Text(verbatim: ganNen.eraName)
+                        .calendarTermTappable(EraGlossary.term(for: ganNen.eraName), selection: $selectedTerm)
+                    Text("元年（\(String(ganNen.startMonth))月\(String(ganNen.startDay))日〜）")
+                }
+                .font(.title3.bold())
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
             if let age = displayedAge {
@@ -115,29 +160,54 @@ struct YearDetailView: View {
             }
 
             if let longevity {
-                Text("🎉 \(longevity.name)（\(longevity.kana)）")
-                    .foregroundStyle(.tint)
+                HStack(spacing: 0) {
+                    Text(verbatim: "🎉 ")
+                    Text(verbatim: "\(longevity.name)（\(longevity.kana)）")
+                        .calendarTermTappable(longevity.term, selection: $selectedTerm)
+                }
+                .foregroundStyle(.tint)
             }
 
             if let unluckyYear {
-                Text(unluckyYear.isMajor ? "\(unluckyYear.name)（大厄）" : unluckyYear.name)
+                Text(verbatim: unluckyYear.isMajor ? "\(unluckyYear.name)（大厄）" : unluckyYear.name)
                     .foregroundStyle(.red)
+                    .calendarTermTappable(unluckyYear.term, selection: $selectedTerm)
             }
 
             if let schoolMilestone {
-                Text("🎓 \(schoolMilestone.name)")
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 0) {
+                    Text(verbatim: "🎓 ")
+                    Text(schoolMilestone.name)
+                        .calendarTermTappable(CalendarTermGlossary.schoolYear, selection: $selectedTerm)
+                }
+                .foregroundStyle(.secondary)
             }
 
             if let nineStar {
-                // 「九星」は暦の用語なので訳さない。読みだけ言語に合わせる
-                Text(verbatim: "九星 \(nineStar.name)\(reading(kana: nineStar.kana, romaji: nineStar.romaji))")
-                    .foregroundStyle(.secondary)
+                // 「九星」は暦の用語なので訳さない。読みだけ言語に合わせる。
+                // ラベルは制度の説明、星の名は星ごとの説明へ分けて開く
+                HStack(spacing: 0) {
+                    Text(verbatim: "九星 ")
+                        .calendarTermTappable(CalendarTermGlossary.nineStar, selection: $selectedTerm)
+                    Text(verbatim: "\(nineStar.name)\(reading(kana: nineStar.kana, romaji: nineStar.romaji))")
+                        .calendarTermTappable(nineStar.term, selection: $selectedTerm)
+                }
+                .foregroundStyle(.secondary)
             }
 
-            Text(verbatim: "\(row.stemBranch.branch.emoji) \(row.stemBranch.kanji)\(reading(kana: row.stemBranch.kana, romaji: row.stemBranch.romaji))")
-            Text(verbatim: "十二支 \(row.stemBranch.branch.kanji)\(reading(kana: row.stemBranch.branch.kana, romaji: row.stemBranch.branch.romaji))")
-                .foregroundStyle(.secondary)
+            HStack(spacing: 0) {
+                Text(verbatim: "\(row.stemBranch.branch.emoji) ")
+                Text(verbatim: "\(row.stemBranch.kanji)\(reading(kana: row.stemBranch.kana, romaji: row.stemBranch.romaji))")
+                    .calendarTermTappable(row.stemBranch.term, selection: $selectedTerm)
+            }
+
+            HStack(spacing: 0) {
+                Text(verbatim: "十二支 ")
+                    .calendarTermTappable(CalendarTermGlossary.earthlyBranch, selection: $selectedTerm)
+                Text(verbatim: "\(row.stemBranch.branch.kanji)\(reading(kana: row.stemBranch.branch.kana, romaji: row.stemBranch.branch.romaji))")
+                    .calendarTermTappable(row.stemBranch.branch.term, selection: $selectedTerm)
+            }
+            .foregroundStyle(.secondary)
         }
         // 改元年は元号が2つ並んで長くなるため、折り返さず縮小して1行に収める
         .lineLimit(1)

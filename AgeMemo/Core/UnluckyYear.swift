@@ -15,6 +15,40 @@ struct UnluckyYear: Sendable, Hashable {
             case .after: "後厄"
             }
         }
+
+        var kana: String {
+            switch self {
+            case .before: "まえやく"
+            case .main: "ほんやく"
+            case .after: "あとやく"
+            }
+        }
+
+        /// 日本語を読めない利用者向けの読み。ja では出さない
+        var romaji: String {
+            switch self {
+            case .before: "maeyaku"
+            case .main: "hon'yaku"
+            case .after: "atoyaku"
+            }
+        }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .before:
+                """
+                本厄の前の年です。厄の兆しが現れ始める年とされ、この年から慎重に過ごすよう勧められます。厄払いを受ける人も少なくありません。
+                """
+            case .main:
+                """
+                厄年の中心にあたる年で、もっとも災いに遭いやすいとされます。神社や寺で厄払いの祈祷を受ける人が多く、正月から節分にかけて社寺が賑わいます。新しい事を始めるのは避け、身を慎むのがよいとされます。
+                """
+            case .after:
+                """
+                本厄の次の年です。厄が薄らいでいく年とされますが、油断せずに過ごすのがよいとされます。この年をもって厄が明けます。
+                """
+            }
+        }
     }
 
     let phase: Phase
@@ -22,6 +56,18 @@ struct UnluckyYear: Sendable, Hashable {
     let isMajor: Bool
 
     var name: String { phase.name }
+
+    /// タップしたときに見せる解説
+    var term: CalendarTerm {
+        CalendarTerm(
+            kanji: name,
+            kana: phase.kana,
+            romaji: phase.romaji,
+            subtitle: isMajor ? "大厄（とくに重い年）" : nil,
+            detail: phase.detail,
+            footnote: CalendarTermGlossary.unluckyYear.detail
+        )
+    }
 
     /// 本厄の数え年。前後1年がそれぞれ前厄・後厄になる
     private static let mainAges: [Gender: [Int]] = [

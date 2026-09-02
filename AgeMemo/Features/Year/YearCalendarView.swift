@@ -12,7 +12,16 @@ struct YearCalendarView: View {
     private struct MonthOption: Hashable, Identifiable {
         let value: Int
         var id: Int { value }
-        var title: String { "\(value)月" }
+        /// ja は「9月」、en は「9月 Sep.」。月名は暦の表記なので漢数字表記を残し、
+        /// 読めない利用者のために英略号を添える
+        var title: String {
+            CalendarTermLocale.isJapanese ? "\(value)月" : "\(value)月 \(Self.englishAbbreviations[value - 1])"
+        }
+
+        private static let englishAbbreviations = [
+            "Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.",
+            "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."
+        ]
     }
 
     private static let monthOptions = (1...12).map { MonthOption(value: $0) }
@@ -130,10 +139,16 @@ private struct MonthCalendarView: View {
     @ScaledMetric(relativeTo: .caption2) private var scaledEraFontSize: CGFloat = 9
     @ScaledMetric(relativeTo: .caption2) private var scaledRokuyoFontSize: CGFloat = 9
     @ScaledMetric(relativeTo: .caption2) private var scaledMoonFontSize: CGFloat = 8
+    @ScaledMetric(relativeTo: .caption2) private var scaledWeekdayEnglishFontSize: CGFloat = 9
     // 1か月表示になり余裕ができたので日付を大きくする。六曜と月齢の行の分だけ高くする
     @ScaledMetric(relativeTo: .body) private var scaledDayHeight: CGFloat = 64
 
+    /// 漢字語をタップしたときに開く解説
+    @State private var selectedTerm: CalendarTerm?
+
     private let weekdaySymbols = ["日", "月", "火", "水", "木", "金", "土"]
+    /// en では曜日の漢字の下に英語の略号を添える
+    private let weekdayEnglishSymbols = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     private let dayColumns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
 
     private var calendar: Calendar {
@@ -158,9 +173,18 @@ private struct MonthCalendarView: View {
             // 月名は上部の切り替えUIに集約したのでここでは出さない
             LazyVGrid(columns: dayColumns, spacing: 1) {
                 ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
-                    Text(symbol)
-                        .font(.caption.bold())
-                        .foregroundStyle(index == 0 ? .red : (index == 6 ? .blue : .secondary))
+                    let weekdayStyle: Color = index == 0 ? .red : (index == 6 ? .blue : .secondary)
+                    VStack(spacing: 0) {
+                        Text(symbol)
+                            .font(.caption.bold())
+                        if !CalendarTermLocale.isJapanese {
+                            Text(weekdayEnglishSymbols[index])
+                                .font(.system(size: scaledWeekdayEnglishFontSize))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                        }
+                    }
+                    .foregroundStyle(weekdayStyle)
                 }
 
                 ForEach(Array(cells.enumerated()), id: \.offset) { _, day in
@@ -180,6 +204,9 @@ private struct MonthCalendarView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color(uiColor: .separator), lineWidth: 0.5)
         }
+        .sheet(item: $selectedTerm) { term in
+            CalendarTermSheet(term: term)
+        }
     }
 
     private func dayCell(_ day: Int) -> some View {
@@ -198,11 +225,14 @@ private struct MonthCalendarView: View {
             if let rokuyo {
                 // 大安は日取りを選ぶときに真っ先に探されるので赤系で目立たせる
                 let isTaian = rokuyo == .taian
+                // 漢字だけでは意味が分からないので、触れると解説を開けるようにする
                 Text(rokuyo.name)
                     .font(.system(size: scaledRokuyoFontSize, weight: isTaian ? .bold : .regular))
                     .foregroundStyle(isTaian ? AnyShapeStyle(Color(uiColor: .systemRed)) : AnyShapeStyle(.secondary))
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
+                    .calendarTermTappable(rokuyo.term, selection: $selectedTerm)
+                    .accessibilityLabel(Text(verbatim: rokuyo.name))
             }
             if let moon {
                 // 満月はライト時も読める濃さへ切り替える
@@ -267,3 +297,4 @@ private struct MonthCalendarView: View {
         return label
     }
 }
+
