@@ -26,7 +26,7 @@ fastlane/screenshots に次の画面を用意したい
 - 
 -----
 fastlane メタデータを更新して
-1.0.0 審査提出中、README.mdの開発メモ、公開アプリパネル、取扱説明を更新して
+1.0.0 審査中、README.mdの開発ガイド、公開アプリパネル、取扱説明を更新して
 -----
 cd /Users/sumpositive/GitLocal/AgeMemo
 fastlane preview_metadata
@@ -34,6 +34,8 @@ fastlane upload_metadata
 ---
 fastlane screenshots
 fastlane upload_screenshots
+-----
+本日　1.0.0 公開、README.mdの開発ガイド、公開アプリパネル、取扱説明を更新して
 ------------------------------------------------
 
 

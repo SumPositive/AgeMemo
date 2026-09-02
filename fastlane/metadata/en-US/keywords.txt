@@ -1,1 +1,1 @@
-nengo,wareki,reiwa,showa,heisei,zodiac,eto,age,calendar,rokuyo,kanreki,yakudoshi,kazoedoshi
+nengo,wareki,reiwa,showa,heisei,eto,age,calendar,kanreki,yakudoshi,kazoedoshi,genealogy,koseki,taian
