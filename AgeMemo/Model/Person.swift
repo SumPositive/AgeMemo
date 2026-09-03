@@ -34,6 +34,12 @@ struct Person: Identifiable, Codable, Equatable, Sendable {
     var birthYear: Int {
         Calendar(identifier: .gregorian).component(.year, from: birthDate)
     }
+
+    /// 生年月日の月と日。名簿シートの表示用
+    var birthMonthDay: (month: Int, day: Int) {
+        let components = Calendar(identifier: .gregorian).dateComponents([.month, .day], from: birthDate)
+        return (components.month ?? 1, components.day ?? 1)
+    }
 }
 
 private struct PersonDocument: Codable {

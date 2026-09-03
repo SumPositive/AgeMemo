@@ -73,4 +73,29 @@ enum AgeCalculator {
         guard let birthDate else { return nil }
         return calendar.component(.year, from: birthDate)
     }
+
+    /// 今日時点の正確な満年齢。年だけの引き算とは違い、月日まで見て
+    /// 誕生日をまだ迎えていない年は1つ引く
+    static func currentActualAge(
+        birthDate: Date,
+        today: Date = .now,
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> Int {
+        calendar.dateComponents([.year], from: birthDate, to: today).year ?? 0
+    }
+
+    /// 今日がまだ誕生日を迎えていないか。月日だけを比べる
+    static func isBeforeBirthday(
+        birthDate: Date,
+        today: Date = .now,
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> Bool {
+        let birthComponents = calendar.dateComponents([.month, .day], from: birthDate)
+        let todayComponents = calendar.dateComponents([.month, .day], from: today)
+        guard let birthMonth = birthComponents.month, let birthDay = birthComponents.day,
+              let todayMonth = todayComponents.month, let todayDay = todayComponents.day else {
+            return false
+        }
+        return (todayMonth, todayDay) < (birthMonth, birthDay)
+    }
 }

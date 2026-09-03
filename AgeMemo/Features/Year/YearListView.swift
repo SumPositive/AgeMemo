@@ -44,6 +44,10 @@ struct YearListView: View {
     @State private var selectedPersonID: UUID?
     /// シートから移動した年。その行を移動先として明示する
     @State private var selectedDestinationYear: Int?
+    /// selectedDestinationYear が年齢指定ジャンプによるものか。
+    /// 元号指定ジャンプや名簿選択でも同じ状態を使うため、区別しないと
+    /// それらの移動先にも「誕生日前なら」カプセルが出てしまう
+    @State private var isAgeJumpDestination = false
     /// 一覧でタップした年。次の一覧切り替えまたは移動まで明示する
     @State private var tappedYear: Int?
 
@@ -73,59 +77,96 @@ struct YearListView: View {
         }
     }
 
+    /// 年齢列の下に添える、もう一方の年齢の可能性。
+    /// 年齢一覧はジャンプ先の行に、自分／名簿一覧は当年の1つ前の行（＝当年行の直前）に付ける
+    /// 「1つ前の年」の行に付けるヒント。カプセルはその行の下＝次の年（選択行／当年行）の
+    /// 直前に表示され、上向き矢印でその行を指す
+    private func alternateAgeHint(for year: Int) -> AlternateAgeHint? {
+        switch ageDisplayMode {
+        case .age:
+            // 生年月日が分からないため、指定した年齢の人は「選択行の年に生まれた」
+            // 可能性と「その1年前に生まれ、まだ誕生日前」の可能性の両方がある
+            guard isAgeJumpDestination,
+                  let selectedDestinationYear,
+                  year == selectedDestinationYear - 1,
+                  AppConfig.yearRange.contains(selectedDestinationYear - 1) else { return nil }
+            return AlternateAgeHint(kind: .ageJump, value: selectedDestinationYear - 1)
+        case .personal, .person:
+            guard year == currentYear - 1,
+                  let birthDate = effectiveBirthDate,
+                  AgeCalculator.isBeforeBirthday(birthDate: birthDate),
+                  let currentAge = displayedAge(for: currentYear) else { return nil }
+            let alternateAge = currentAge - 1
+            // 今年生まれた人（数え年1歳・満年齢0歳）は「誕生日前」が生まれる前を
+            // 意味してしまうため、その手前の値は出さない
+            let lowerBound = settings.ageReckoning.age(fromActual: 0)
+            guard lowerBound <= alternateAge else { return nil }
+            return AlternateAgeHint(kind: .beforeBirthdayToday, value: alternateAge)
+        }
+    }
+
+    /// 1行分の表示。body 側に直接書くと式が大きくなりすぎて型チェックが
+    /// 破綻するため、独立した関数として切り出す
+    @ViewBuilder
+    private func rowView(for row: YearRow) -> some View {
+        let rowAge: Int? = displayedAge(for: row.gregorian)
+        let rowMemo: String? = showsMemo ? memoStore.text(for: row.gregorian) : nil
+        let rowIsCurrentYear: Bool = row.gregorian == currentYear
+        let rowIsBirthYear: Bool = row.gregorian == highlightedBirthYear
+        let rowIsSelected: Bool = row.gregorian == selectedDestinationYear
+        let rowIsTapped: Bool = row.gregorian == tappedYear
+        let rowShowsAgeFirst: Bool = ageDisplayMode == .age
+        let rowLongevity: Longevity? = longevity(for: row.gregorian)
+        let rowUnluckyYear: UnluckyYear? = unluckyYear(for: row.gregorian)
+        let rowSchoolMilestone: SchoolMilestone? = schoolMilestone(for: row.gregorian)
+        let rowNineStar: NineStar? = nineStar(for: row.gregorian)
+        let rowCompact: Bool = effectiveDisplayMode == .expert
+        let rowAlternateAgeHint: AlternateAgeHint? = alternateAgeHint(for: row.gregorian)
+        let rowAccessibilityID = "row.\(row.gregorian)"
+
+        VStack(spacing: 0) {
+            YearRowView(
+                row: row,
+                age: rowAge,
+                memo: rowMemo,
+                isCurrentYear: rowIsCurrentYear,
+                isBirthYear: rowIsBirthYear,
+                isSelected: rowIsSelected,
+                isTapped: rowIsTapped,
+                showsAgeFirst: rowShowsAgeFirst,
+                showsZodiac: settings.showsZodiac,
+                longevity: rowLongevity,
+                unluckyYear: rowUnluckyYear,
+                schoolMilestone: rowSchoolMilestone,
+                nineStar: rowNineStar,
+                reservesBadgeColumn: reservesBadgeColumn,
+                alternateAgeHint: rowAlternateAgeHint,
+                compact: rowCompact
+            )
+            .onTapGesture {
+                // 詳細を閉じた後も、どの行を開いたか分かるようにする
+                tappedYear = row.gregorian
+                presentedSheet = .detail(row.gregorian)
+            }
+            // 行の中身は個別の Text に分かれていて、そのままでは
+            // コンテナに付けた識別子が公開されない。1要素にまとめる
+            .accessibilityElement(children: .combine)
+            // fastlane snapshot から特定の年を開くため
+            .accessibilityIdentifier(rowAccessibilityID)
+
+            Divider()
+                .padding(.leading, 12)
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        if isBeginner {
-                            HStack(alignment: .center, spacing: 4) {
-                                Text(listHint)
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                                    // 文字が大きく折り返す時も中央に揃える
-                                    .multilineTextAlignment(.center)
-                                BeginnerHelpBanner(listHelp)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(12)
-                        }
-
                         ForEach(rows) { row in
-                            // 年ごとに単一のスクロール対象として識別する
-                            VStack(spacing: 0) {
-                                YearRowView(
-                                    row: row,
-                                    age: displayedAge(for: row.gregorian),
-                                    memo: showsMemo ? memoStore.text(for: row.gregorian) : nil,
-                                    isCurrentYear: row.gregorian == currentYear,
-                                    isBirthYear: row.gregorian == highlightedBirthYear,
-                                    isSelected: row.gregorian == selectedDestinationYear,
-                                    isTapped: row.gregorian == tappedYear,
-                                    showsAgeFirst: ageDisplayMode == .age,
-                                    showsZodiac: settings.showsZodiac,
-                                    longevity: longevity(for: row.gregorian),
-                                    unluckyYear: unluckyYear(for: row.gregorian),
-                                    schoolMilestone: schoolMilestone(for: row.gregorian),
-                                    nineStar: nineStar(for: row.gregorian),
-                                    reservesBadgeColumn: reservesBadgeColumn,
-                                    compact: effectiveDisplayMode == .expert
-                                )
-                                .onTapGesture {
-                                    // 詳細を閉じた後も、どの行を開いたか分かるようにする
-                                    tappedYear = row.gregorian
-                                    presentedSheet = .detail(row.gregorian)
-                                }
-                                // 行の中身は個別の Text に分かれていて、そのままでは
-                                // コンテナに付けた識別子が公開されない。1要素にまとめる
-                                .accessibilityElement(children: .combine)
-                                // fastlane snapshot から特定の年を開くため
-                                .accessibilityIdentifier("row.\(row.gregorian)")
-
-                                Divider()
-                                    .padding(.leading, 12)
-                            }
-                            .id(row.id)
+                            rowView(for: row)
+                                .id(row.id)
                         }
                     }
                 }
@@ -235,6 +276,7 @@ struct YearListView: View {
             ageDisplayMode = .age
             selectedToolbarAction = .age
             selectedDestinationYear = nil
+            isAgeJumpDestination = false
             tappedYear = nil
             // 名簿シートを閉じずに当年へ戻す
             scrollRequest = YearScrollRequest(year: currentYear)
@@ -258,11 +300,6 @@ struct YearListView: View {
 
     private var isBeginner: Bool {
         effectiveDisplayMode == .beginner
-    }
-
-    /// 一覧上のヒント。メモを表示しない設定のときはメモに触れない
-    private var listHint: String {
-        showsMemo ? "行をタップするとメモとカレンダーが現れます" : "行をタップするとカレンダーが現れます"
     }
 
     /// 一覧の使い方。モードごとに引く向きが違うので、それぞれに合わせて説明する
@@ -314,11 +351,15 @@ struct YearListView: View {
                 .frame(width: sideCaptionWidth)
         }
         .overlay {
-            Text(listSummary)
-                // 縮むのは中央だけにして、左右はボタンの真下から動かさない
-                .lineLimit(1)
-                .minimumScaleFactor(0.4)
-                .padding(.horizontal, sideCaptionWidth + 4)
+            // 中央の要約に (i) を添えて、一覧の読み方とタップ操作の説明を開けるようにする
+            HStack(spacing: 2) {
+                Text(listSummary)
+                    // 縮むのは中央だけにして、左右はボタンの真下から動かさない
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.4)
+                BeginnerHelpBanner(listHelp)
+            }
+            .padding(.horizontal, sideCaptionWidth + 4)
         }
         .font(.caption2)
         .foregroundStyle(.secondary)
@@ -365,10 +406,11 @@ struct YearListView: View {
                 // 次回のシート表示で前回の年齢を初期値にする
                 settings.lastEnteredAge = enteredAge
                 selectedDestinationYear = year
+                isAgeJumpDestination = true
                 scroll(to: year)
             }
         case .person:
-            PersonSheet(currentYear: currentYear) { person in
+            PersonSheet { person in
                 selectedPersonID = person.id
                 ageDisplayMode = .person
                 scroll(to: currentYear)
@@ -383,6 +425,7 @@ struct YearListView: View {
             ) { year in
                 // 年号指定でも移動先の行を明示する
                 selectedDestinationYear = year
+                isAgeJumpDestination = false
                 scroll(to: year)
             }
         case .settings(let requestsBirthDateRegistration):
@@ -402,6 +445,7 @@ struct YearListView: View {
         case .personal:
             ageDisplayMode = .personal
             selectedDestinationYear = nil
+            isAgeJumpDestination = false
             if birthYear != nil {
 #if DEBUG
                 // 撮影時は設定画面を経由せず、自分一覧の補助表示をすべて有効にする
@@ -414,6 +458,7 @@ struct YearListView: View {
             }
         case .person:
             selectedDestinationYear = nil
+            isAgeJumpDestination = false
             presentedSheet = .person
         }
     }

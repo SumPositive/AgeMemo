@@ -11,7 +11,6 @@ struct PersonSheet: View {
     @State private var editorTarget: PersonEditorTarget?
     @State private var pendingDeletion: Person?
 
-    let currentYear: Int
     let select: (Person) -> Void
 
     /// Listは常に画面いっぱいに広がるため、行数から必要最小限の高さを見積もる
@@ -148,12 +147,28 @@ struct PersonSheet: View {
         )
     }
 
+    /// 「誕生日：1995年3月15日・満30歳」のように、生年月日と今日時点の年齢を1行で示す
+    private func birthDateSummary(for person: Person) -> LocalizedStringKey {
+        let monthDay = person.birthMonthDay
+        let year = String(person.birthYear)
+        let month = String(monthDay.month)
+        let day = String(monthDay.day)
+        let age = String(settings.ageReckoning.age(fromActual: AgeCalculator.currentActualAge(birthDate: person.birthDate)))
+
+        switch settings.ageReckoning {
+        case .actual:
+            return "誕生日：\(year)年\(month)月\(day)日・満\(age)歳"
+        case .traditional:
+            return "誕生日：\(year)年\(month)月\(day)日・数え\(age)歳"
+        }
+    }
+
     private func row(for person: Person) -> some View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(person.name)
                     .font(.body)
-                Text("\(String(person.birthYear))年生まれ・\(String(settings.ageReckoning.age(fromActual: currentYear - person.birthYear)))歳")
+                Text(birthDateSummary(for: person))
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
             }

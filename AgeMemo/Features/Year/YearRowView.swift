@@ -2,6 +2,22 @@
 
 import SwiftUI
 
+/// 行の下に添えるカプセルの内容
+struct AlternateAgeHint: Equatable {
+    enum Kind: Equatable {
+        /// 年齢一覧のジャンプ先の1つ前の年（＝選択行の直前）に付ける。
+        /// 月日が分からないため常に「かもしれない」扱い
+        case ageJump
+        /// 自分／名簿一覧の当年の1つ前の年に付ける。
+        /// 実際の生年月日から「今日はまだ誕生日前」と判定できたときだけ出す
+        case beforeBirthdayToday
+    }
+
+    let kind: Kind
+    /// ageJump は生まれ年（西暦）、beforeBirthdayToday は誕生日前とみなした場合の年齢
+    let value: Int
+}
+
 struct YearRowView: View {
     let row: YearRow
     let age: Int?
@@ -27,6 +43,10 @@ struct YearRowView: View {
     /// 学齢・賀寿・厄年のいずれかが設定でONか。
     /// ONの間は該当しない年でも列幅を確保し、行ごとに列位置がずれないようにする
     var reservesBadgeColumn: Bool = false
+    /// もう一方の年齢の可能性を年齢列の下に添える。
+    /// 年齢一覧のジャンプ先には「まだ誕生日前ならこの歳」、自分／名簿一覧の当年には
+    /// 「今日はまだ誕生日前なのでこの歳」を表示する
+    var alternateAgeHint: AlternateAgeHint?
     let compact: Bool
     @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
 
@@ -52,6 +72,10 @@ struct YearRowView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+
+            if let alternateAgeHint {
+                alternateAgeHintCapsule(alternateAgeHint)
+            }
 
             if hasSecondaryLine {
                 HStack(spacing: 6) {
@@ -233,6 +257,52 @@ struct YearRowView: View {
             .foregroundStyle(.secondary)
             .lineLimit(1)
             .minimumScaleFactor(0.6)
+    }
+
+    /// 年齢列の真下、行の左端（edgeInset）に合わせてカプセルを置く
+    private func alternateAgeHintCapsule(_ hint: AlternateAgeHint) -> some View {
+        // カプセルは1つ前の年の行に付き、その直下＝選択行（または当年行）の直前に表示される。
+        // 指す先の行の背景色（移動先は緑、当年はアクセントカラー）に合わせる
+        let tintColor = alternateAgeHintColor(hint)
+
+        return HStack {
+            Spacer(minLength: 0)
+
+            Text(alternateAgeHintText(hint))
+                .font(.caption2.weight(.semibold))
+                // 背景の色は薄く保ちつつ、文字は本文と同じ濃さにしてコントラストを確保する
+                .foregroundStyle(Color.primary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 3)
+                .background(tintColor.opacity(0.28), in: Capsule())
+                .overlay {
+                    Capsule().strokeBorder(tintColor.opacity(0.6), lineWidth: 1)
+                }
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    /// 指す先の行の背景色に揃える。rowBackground の isSelected／isCurrentYear と対応させる
+    private func alternateAgeHintColor(_ hint: AlternateAgeHint) -> Color {
+        switch hint.kind {
+        case .ageJump:
+            Color(uiColor: .systemGreen)
+        case .beforeBirthdayToday:
+            Color.accentColor
+        }
+    }
+
+    private func alternateAgeHintText(_ hint: AlternateAgeHint) -> LocalizedStringKey {
+        switch hint.kind {
+        case .ageJump:
+            "誕生日前ならば \(String(hint.value))年生まれです"
+        case .beforeBirthdayToday:
+            "今日はまだ誕生日前なので\(String(hint.value))歳です"
+        }
     }
 
     @ViewBuilder

@@ -20,23 +20,6 @@
         }
       }
     },
-    "%@年生まれ・%@歳": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Born %@ · %@"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$@年生まれ・%2$@歳"
-          }
-        }
-      }
-    },
     "%@文字": {
       "extractionState": "manual",
       "localizations": {
@@ -1163,6 +1146,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Birth year of someone born this year"
+          }
+        }
+      }
+    },
+    "今日はまだ誕生日前なので%@歳です": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The birthday hasn't come yet this year, so that's %@"
           }
         }
       }
@@ -2823,6 +2817,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Settings"
+          }
+        }
+      }
+    },
+    "誕生日前ならば %@年生まれです": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If the birthday hasn't come yet, born in %@"
+          }
+        }
+      }
+    },
+    "誕生日：%@年%@月%@日・数え%@歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born %@/%@/%@ · %@ (traditional age)"
+          }
+        }
+      }
+    },
+    "誕生日：%@年%@月%@日・満%@歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born %@/%@/%@ · %@ (actual age)"
           }
         }
       }
