@@ -20,6 +20,17 @@
         }
       }
     },
+    "%@周年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@-year anniversary"
+          }
+        }
+      }
+    },
     "%@文字": {
       "extractionState": "manual",
       "localizations": {
@@ -706,6 +717,17 @@
         }
       }
     },
+    "「誕生日」は人の生年月日を登録し、一覧にその方の年齢を表示します。\n\n「記念日」は結婚記念日など、年ごとに区切りを数えたい日を登録します。一覧には年齢の代わりに、その年で何回目（何周年）にあたるかを表示します。月日は経過に関係なく、その年のうちは同じ周年数のままです。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“Birthday” registers a person's date of birth, and the list shows their age for each year.\n\n“Anniversary” registers a date you want to count in yearly milestones — a wedding anniversary, for example. Instead of an age, the list shows which anniversary falls in that year. The count doesn't depend on whether the date has passed yet — it stays the same for the whole year."
+          }
+        }
+      }
+    },
     "ここに自分の生年月日を登録すると、「自分」の一覧で各年に自分が何歳になるかが表示されます。生まれた年には目印が付きます。": {
       "extractionState": "manual",
       "localizations": {
@@ -713,6 +735,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Save your date of birth here and the Myself list will show how old you are in each year. Your birth year is marked."
+          }
+        }
+      }
+    },
+    "この年から数え始めます": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The count starts this year"
+          }
+        }
+      }
+    },
+    "この年で%lld周年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld years this year"
           }
         }
       }
@@ -1620,6 +1664,28 @@
         }
       }
     },
+    "名前": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "名称": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title"
+          }
+        }
+      }
+    },
     "名簿": {
       "extractionState": "manual",
       "localizations": {
@@ -1660,6 +1726,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Shows how old the person selected from the roster is in each year. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+          }
+        }
+      }
+    },
+    "名簿で選んだ記念日をもとに、各年で何周年になるかを表示します。行をタップすると、その年のカレンダーが開きます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows which anniversary falls in each year, based on the date selected from the roster. Tap a row to open that year's calendar."
+          }
+        }
+      }
+    },
+    "名簿で選んだ記念日をもとに、各年で何周年になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows which anniversary falls in each year, based on the date selected from the roster. Tap a row to open that year's calendar and note, where you can write down what happened that year."
           }
         }
       }
@@ -1807,6 +1895,17 @@
         }
       }
     },
+    "始まるまであと%lld年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld years until it begins"
+          }
+        }
+      }
+    },
     "存在しない日付です": {
       "extractionState": "manual",
       "localizations": {
@@ -1902,6 +2001,17 @@
     "年": {
       "extractionState": "manual",
       "shouldTranslate": false
+    },
+    "年と周年の早見表": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Years and anniversaries at a glance"
+          }
+        }
+      }
     },
     "年と年齢の早見表": {
       "extractionState": "manual",
@@ -2678,6 +2788,17 @@
         }
       }
     },
+    "種類": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type"
+          }
+        }
+      }
+    },
     "符号を反転": {
       "extractionState": "manual",
       "localizations": {
@@ -2810,6 +2931,28 @@
         }
       }
     },
+    "記念日": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anniversary"
+          }
+        }
+      }
+    },
+    "記念日：%@年%@月%@日・%@周年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anniversary: %@/%@/%@ · %@ years"
+          }
+        }
+      }
+    },
     "設定": {
       "extractionState": "manual",
       "localizations": {
@@ -2817,6 +2960,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Settings"
+          }
+        }
+      }
+    },
+    "誕生日": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birthday"
           }
         }
       }

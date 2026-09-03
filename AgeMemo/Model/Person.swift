@@ -10,16 +10,25 @@ struct Person: Identifiable, Codable, Equatable, Sendable {
     var birthDate: Date
     /// 厄年の判定に使う。既存データには無いので既定は未指定
     var gender: Gender
+    /// 誕生日の人か、結婚記念日などの記念日か。既存データには無いので既定は誕生日
+    var kind: PersonKind
 
-    init(id: UUID = UUID(), name: String, birthDate: Date, gender: Gender = .unspecified) {
+    init(
+        id: UUID = UUID(),
+        name: String,
+        birthDate: Date,
+        gender: Gender = .unspecified,
+        kind: PersonKind = .birthday
+    ) {
         self.id = id
         self.name = name
         self.birthDate = birthDate
         self.gender = gender
+        self.kind = kind
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, name, birthDate, gender
+        case id, name, birthDate, gender, kind
     }
 
     init(from decoder: Decoder) throws {
@@ -27,8 +36,9 @@ struct Person: Identifiable, Codable, Equatable, Sendable {
         id = try container.decode(UUID.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         birthDate = try container.decode(Date.self, forKey: .birthDate)
-        // 性別を持たない既存の名簿も読めるようにする
+        // 性別・種別を持たない既存の名簿も読めるようにする
         gender = try container.decodeIfPresent(Gender.self, forKey: .gender) ?? .unspecified
+        kind = try container.decodeIfPresent(PersonKind.self, forKey: .kind) ?? .birthday
     }
 
     var birthYear: Int {
@@ -60,7 +70,7 @@ final class PersonStore {
         load()
     }
 
-    func add(name: String, birthDate: Date, gender: Gender = .unspecified) {
+    func add(name: String, birthDate: Date, gender: Gender = .unspecified, kind: PersonKind = .birthday) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         // 並び順は利用者が決めるため、追加は末尾へ置くだけにする
@@ -68,19 +78,21 @@ final class PersonStore {
             Person(
                 name: String(trimmed.prefix(AppConfig.maximumPersonNameLength)),
                 birthDate: birthDate,
-                gender: gender
+                gender: gender,
+                kind: kind
             )
         )
         save()
     }
 
-    func update(id: UUID, name: String, birthDate: Date, gender: Gender = .unspecified) {
+    func update(id: UUID, name: String, birthDate: Date, gender: Gender = .unspecified, kind: PersonKind = .birthday) {
         guard let index = people.firstIndex(where: { $0.id == id }) else { return }
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         people[index].name = String(trimmed.prefix(AppConfig.maximumPersonNameLength))
         people[index].birthDate = birthDate
         people[index].gender = gender
+        people[index].kind = kind
         // 生年を変えても手で決めた並びは保つ
         save()
     }

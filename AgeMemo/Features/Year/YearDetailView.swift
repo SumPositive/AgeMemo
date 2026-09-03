@@ -31,6 +31,11 @@ struct YearDetailView: View {
         return personStore.people.first { $0.id == selectedPersonID }
     }
 
+    /// 名簿で選んだ方が記念日（結婚記念日など）か
+    private var isShowingAnniversary: Bool {
+        ageDisplayMode == .person && selectedPerson?.kind == .anniversary
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -159,6 +164,11 @@ struct YearDetailView: View {
                     .foregroundStyle(age < 0 ? .secondary : .primary)
             }
 
+            if let anniversaryCount {
+                Text(anniversaryDescription(anniversaryCount))
+                    .foregroundStyle(anniversaryCount < 0 ? .secondary : .primary)
+            }
+
             if let longevity {
                 HStack(spacing: 0) {
                     Text(verbatim: "🎉 ")
@@ -230,17 +240,19 @@ struct YearDetailView: View {
         }
     }
 
-    /// その年に在籍する学年
+    /// その年に在籍する学年。記念日には学齢の概念が無い
     private var schoolMilestone: SchoolMilestone? {
-        guard let birthDate = effectiveBirthDate else { return nil }
+        guard !isShowingAnniversary, let birthDate = effectiveBirthDate else { return nil }
         return SchoolAge.milestone(inYear: row.gregorian, birthDate: birthDate)
     }
 
     /// 本命星。生年月日が分かるときは立春の区切りを見て正確に求める
     /// 九星は年そのものの性質なので、どの年の行でも表示する。
-    /// 本人の生まれ年だけは、立春の区切りを見て正確な星に差し替える
+    /// 本人の生まれ年だけは、立春の区切りを見て正確な星に差し替える。
+    /// 記念日には生まれ年の概念が無いため、立春区切りの精密判定は行わない
     private var nineStar: NineStar? {
-        if let birthDate = effectiveBirthDate,
+        if !isShowingAnniversary,
+           let birthDate = effectiveBirthDate,
            let birthYear = AgeCalculator.birthYear(from: birthDate),
            birthYear == row.gregorian {
             return NineStar.forBirthDate(birthDate)
@@ -266,13 +278,22 @@ struct YearDetailView: View {
     }
 
     private var displayedAge: Int? {
-        AgeCalculator.displayedAge(
+        // 記念日には年齢の概念が無いため、賀寿・厄年・九星の判定にも使う
+        // この値は記念日選択時に nil になり、それらを自動的に非表示にする
+        guard !isShowingAnniversary else { return nil }
+        return AgeCalculator.displayedAge(
             for: row.gregorian,
             mode: ageDisplayMode,
             birthDate: effectiveBirthDate,
             currentYear: Calendar.current.component(.year, from: .now),
             reckoning: settings.ageReckoning
         )
+    }
+
+    /// 記念日を選んでいるときの周年数
+    private var anniversaryCount: Int? {
+        guard isShowingAnniversary, let startDate = effectiveBirthDate else { return nil }
+        return AgeCalculator.anniversaryCount(for: row.gregorian, startDate: startDate)
     }
 
     /// 日本語の読み。ja はかなのみ、en はかなとローマ字を併記する
@@ -309,6 +330,17 @@ struct YearDetailView: View {
             } else {
                 String(localized: "生まれるまであと\(-age)年")
             }
+        }
+    }
+
+    /// 記念日の周年を1行で説明する。操作の案内にあたるため訳す
+    private func anniversaryDescription(_ count: Int) -> String {
+        if count > 0 {
+            String(localized: "この年で\(count)周年")
+        } else if count == 0 {
+            String(localized: "この年から数え始めます")
+        } else {
+            String(localized: "始まるまであと\(-count)年")
         }
     }
 

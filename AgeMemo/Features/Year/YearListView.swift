@@ -59,6 +59,11 @@ struct YearListView: View {
         return personStore.people.first { $0.id == selectedPersonID }
     }
 
+    /// 名簿で選んだ方が記念日（結婚記念日など）か。年齢一覧・自分では常に false
+    private var isShowingAnniversary: Bool {
+        ageDisplayMode == .person && selectedPerson?.kind == .anniversary
+    }
+
     private var birthYear: Int? {
         AgeCalculator.birthYear(from: settings.birthDate)
     }
@@ -109,7 +114,9 @@ struct YearListView: View {
     /// 破綻するため、独立した関数として切り出す
     @ViewBuilder
     private func rowView(for row: YearRow) -> some View {
-        let rowAge: Int? = displayedAge(for: row.gregorian)
+        // 記念日を選んでいる間は年齢列に周年数を出す。displayedAge は
+        // 記念日選択時に nil を返すため、両者は互いに排他的
+        let rowAge: Int? = displayedAge(for: row.gregorian) ?? anniversaryCount(for: row.gregorian)
         let rowMemo: String? = showsMemo ? memoStore.text(for: row.gregorian) : nil
         let rowIsCurrentYear: Bool = row.gregorian == currentYear
         let rowIsBirthYear: Bool = row.gregorian == highlightedBirthYear
@@ -123,6 +130,7 @@ struct YearListView: View {
         let rowCompact: Bool = effectiveDisplayMode == .expert
         let rowAlternateAgeHint: AlternateAgeHint? = alternateAgeHint(for: row.gregorian)
         let rowAccessibilityID = "row.\(row.gregorian)"
+        let rowShowsAnniversaryUnit: Bool = isShowingAnniversary
 
         VStack(spacing: 0) {
             YearRowView(
@@ -141,6 +149,7 @@ struct YearListView: View {
                 nineStar: rowNineStar,
                 reservesBadgeColumn: reservesBadgeColumn,
                 alternateAgeHint: rowAlternateAgeHint,
+                showsAnniversaryUnit: rowShowsAnniversaryUnit,
                 compact: rowCompact
             )
             .onTapGesture {
@@ -316,9 +325,17 @@ struct YearListView: View {
         case (.personal, false):
             "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。"
         case (.person, true):
-            "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+            if isShowingAnniversary {
+                "名簿で選んだ記念日をもとに、各年で何周年になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+            } else {
+                "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+            }
         case (.person, false):
-            "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。"
+            if isShowingAnniversary {
+                "名簿で選んだ記念日をもとに、各年で何周年になるかを表示します。行をタップすると、その年のカレンダーが開きます。"
+            } else {
+                "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。"
+            }
         }
     }
 
@@ -326,7 +343,8 @@ struct YearListView: View {
     private var listSummary: LocalizedStringKey {
         switch ageDisplayMode {
         case .age: "年齢と生まれた年の早見表"
-        case .personal, .person: "年と年齢の早見表"
+        case .personal: "年と年齢の早見表"
+        case .person: isShowingAnniversary ? "年と周年の早見表" : "年と年齢の早見表"
         }
     }
 
@@ -497,7 +515,9 @@ struct YearListView: View {
     /// 本人の生まれ年だけは、立春の区切りを見て正確な星に差し替える
     private func nineStar(for year: Int) -> NineStar? {
         guard settings.showsNineStar else { return nil }
-        if let birthDate = effectiveBirthDate,
+        // 記念日には生まれ年の概念が無いため、立春区切りの精密判定は行わない
+        if !isShowingAnniversary,
+           let birthDate = effectiveBirthDate,
            let birthYear = AgeCalculator.birthYear(from: birthDate),
            birthYear == year {
             return NineStar.forBirthDate(birthDate)
@@ -526,7 +546,9 @@ struct YearListView: View {
 
     /// その年に在籍する学年
     private func schoolMilestone(for year: Int) -> SchoolMilestone? {
-        guard settings.showsSchoolAge, let birthDate = effectiveBirthDate else { return nil }
+        // 学齢は生年月日の人にだけ意味がある
+        guard settings.showsSchoolAge, !isShowingAnniversary,
+              let birthDate = effectiveBirthDate else { return nil }
         return SchoolAge.milestone(inYear: year, birthDate: birthDate)
     }
 
@@ -539,12 +561,21 @@ struct YearListView: View {
     }
 
     private func displayedAge(for year: Int) -> Int? {
-        AgeCalculator.displayedAge(
+        // 記念日には年齢の概念が無いため、賀寿・厄年・九星の判定にも使う
+        // この関数は記念日選択時に nil を返し、それらを自動的に非表示にする
+        guard !isShowingAnniversary else { return nil }
+        return AgeCalculator.displayedAge(
             for: year,
             mode: ageDisplayMode,
             birthDate: effectiveBirthDate,
             currentYear: currentYear,
             reckoning: settings.ageReckoning
         )
+    }
+
+    /// 年齢列に表示する値。記念日を選んでいるときだけ周年数を返す
+    private func anniversaryCount(for year: Int) -> Int? {
+        guard isShowingAnniversary, let startDate = effectiveBirthDate else { return nil }
+        return AgeCalculator.anniversaryCount(for: year, startDate: startDate)
     }
 }

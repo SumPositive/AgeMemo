@@ -33,6 +33,13 @@ enum AgeCalculator {
         return reckoning.age(fromActual: actualAge)
     }
 
+    /// 記念日の周年数。月日は見ず、その年のうちは同じ数のままとする
+    /// （結婚記念日が10月でも、1月時点で「今年で5周年」と数える慣習に合わせる）。
+    /// 登録した年自体は0周年（まだ迎えていない）で、翌年から1周年になる
+    static func anniversaryCount(for rowYear: Int, startDate: Date, calendar: Calendar = Calendar(identifier: .gregorian)) -> Int {
+        rowYear - calendar.component(.year, from: startDate)
+    }
+
     /// 指定した年齢の人が生まれた年を求める。displayedAge の逆算にあたる
     static func birthYear(forAge age: Int, currentYear: Int, reckoning: AgeReckoning = .actual) -> Int {
         // 数え年の0歳は1歳へ補正し、逆算結果のずれを防ぐ

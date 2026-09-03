@@ -47,6 +47,8 @@ struct YearRowView: View {
     /// 年齢一覧のジャンプ先には「まだ誕生日前ならこの歳」、自分／名簿一覧の当年には
     /// 「今日はまだ誕生日前なのでこの歳」を表示する
     var alternateAgeHint: AlternateAgeHint?
+    /// age 列の単位。記念日を選んでいるときは「歳」ではなく「周年」にする
+    var showsAnniversaryUnit: Bool = false
     let compact: Bool
     @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
 
@@ -308,7 +310,7 @@ struct YearRowView: View {
     @ViewBuilder
     private func ageColumn(fontSize: CGFloat) -> some View {
         if let age {
-            let ageText = Text("\(age)歳")
+            let ageText = (showsAnniversaryUnit ? Text("\(String(age))周年") : Text("\(String(age))歳"))
                 .font(.system(size: fontSize, design: .monospaced))
                 .foregroundStyle(age < 0 ? AnyShapeStyle(.secondary) : AnyShapeStyle(rowTextColor))
                 .lineLimit(1)

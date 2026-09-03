@@ -22,12 +22,13 @@ enum BirthDateField: Int, CaseIterable {
         }
     }
 
-    /// 欄に表示する単位。末尾を「日生」にして生年月日であることを示す
-    var unitText: String {
+    /// 欄に表示する単位。末尾を「日生」にして生年月日であることを示す。
+    /// 記念日など生年月日以外の日付では isBirthDate を false にして「日」だけにする
+    func unitText(isBirthDate: Bool = true) -> String {
         switch self {
         case .year: "年"
         case .month: "月"
-        case .day: "日生"
+        case .day: isBirthDate ? "日生" : "日"
         }
     }
 }
@@ -328,6 +329,8 @@ struct BirthDatePad: View {
     @Binding var entry: BirthDateEntry
     /// 名前入力などのキーボードを閉じるため、日付操作の開始を親へ通知する
     var onInteraction: () -> Void = {}
+    /// false のときは日欄の単位を「日生」ではなく「日」にする（記念日など）
+    var isBirthDate: Bool = true
     @State private var isCalendarPickerExpanded = false
 
     @ScaledMetric(relativeTo: .title2) private var scaledFieldHeight: CGFloat = 44
@@ -403,7 +406,7 @@ struct BirthDatePad: View {
                 .contentTransition(.numericText())
                 .animation(.snappy, value: entry.text(for: field))
 
-            Text(field.unitText)
+            Text(field.unitText(isBirthDate: isBirthDate))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -448,6 +451,8 @@ struct BirthDateInputSheet<Header: View>: View {
 
     private let title: String
     private let canSave: Bool
+    /// false のときは日欄の単位を「日生」ではなく「日」にする（記念日など）
+    private let isBirthDate: Bool
     private let onContentInteraction: () -> Void
     private let header: Header
     private let commit: (Date) -> Void
@@ -456,12 +461,14 @@ struct BirthDateInputSheet<Header: View>: View {
         title: String,
         birthDate: Date?,
         canSave: Bool = true,
+        isBirthDate: Bool = true,
         onContentInteraction: @escaping () -> Void = {},
         commit: @escaping (Date) -> Void,
         @ViewBuilder header: () -> Header = { EmptyView() }
     ) {
         self.title = title
         self.canSave = canSave
+        self.isBirthDate = isBirthDate
         self.onContentInteraction = onContentInteraction
         self.commit = commit
         self.header = header()
@@ -484,7 +491,7 @@ struct BirthDateInputSheet<Header: View>: View {
                 VStack(spacing: 14) {
                     header
 
-                    BirthDatePad(entry: $entry, onInteraction: onContentInteraction)
+                    BirthDatePad(entry: $entry, onInteraction: onContentInteraction, isBirthDate: isBirthDate)
                         // 直し始めたら警告は引っ込める
                         .onChange(of: entry) { _, _ in didAttemptSave = false }
 

@@ -153,13 +153,20 @@ struct PersonSheet: View {
         let year = String(person.birthYear)
         let month = String(monthDay.month)
         let day = String(monthDay.day)
-        let age = String(settings.ageReckoning.age(fromActual: AgeCalculator.currentActualAge(birthDate: person.birthDate)))
 
-        switch settings.ageReckoning {
-        case .actual:
-            return "誕生日：\(year)年\(month)月\(day)日・満\(age)歳"
-        case .traditional:
-            return "誕生日：\(year)年\(month)月\(day)日・数え\(age)歳"
+        switch person.kind {
+        case .birthday:
+            let age = String(settings.ageReckoning.age(fromActual: AgeCalculator.currentActualAge(birthDate: person.birthDate)))
+            switch settings.ageReckoning {
+            case .actual:
+                return "誕生日：\(year)年\(month)月\(day)日・満\(age)歳"
+            case .traditional:
+                return "誕生日：\(year)年\(month)月\(day)日・数え\(age)歳"
+            }
+        case .anniversary:
+            let currentYear = Calendar.current.component(.year, from: .now)
+            let count = String(AgeCalculator.anniversaryCount(for: currentYear, startDate: person.birthDate))
+            return "記念日：\(year)年\(month)月\(day)日・\(count)周年"
         }
     }
 
@@ -211,6 +218,7 @@ private struct PersonEditorSheet: View {
 
     @State private var name: String
     @State private var gender: Gender
+    @State private var kind: PersonKind
     /// 追加のときは名前が未入力なので、開いた直後に入力を始められるようにする
     @FocusState private var isNameFocused: Bool
 
@@ -222,10 +230,20 @@ private struct PersonEditorSheet: View {
         case .add:
             _name = State(initialValue: "")
             _gender = State(initialValue: .unspecified)
+            _kind = State(initialValue: .birthday)
         case .edit(let person):
             _name = State(initialValue: person.name)
             _gender = State(initialValue: person.gender)
+            _kind = State(initialValue: person.kind)
         }
+    }
+
+    private var personKindHelp: LocalizedStringKey {
+        """
+        「誕生日」は人の生年月日を登録し、一覧にその方の年齢を表示します。
+
+        「記念日」は結婚記念日など、年ごとに区切りを数えたい日を登録します。一覧には年齢の代わりに、その年で何回目（何周年）にあたるかを表示します。月日は経過に関係なく、その年のうちは同じ周年数のままです。
+        """
     }
 
     private var personGenderHelp: LocalizedStringKey {
@@ -263,17 +281,43 @@ private struct PersonEditorSheet: View {
             title: title,
             birthDate: existingBirthDate,
             canSave: !trimmedName.isEmpty,
+            isBirthDate: kind == .birthday,
             onContentInteraction: { isNameFocused = false }
         ) { birthDate in
             switch target {
             case .add:
-                personStore.add(name: trimmedName, birthDate: birthDate, gender: gender)
+                personStore.add(name: trimmedName, birthDate: birthDate, gender: gender, kind: kind)
             case .edit(let person):
-                personStore.update(id: person.id, name: trimmedName, birthDate: birthDate, gender: gender)
+                personStore.update(id: person.id, name: trimmedName, birthDate: birthDate, gender: gender, kind: kind)
             }
         } header: {
             VStack(alignment: .leading, spacing: 8) {
-                TextField("名前", text: $name)
+                // 種別で名前欄・性別欄・日付の単位が変わるため、名前より上に置く
+                AZAdaptiveRadioRow(
+                    options: PersonKind.allCases,
+                    selection: $kind,
+                    minOptionWidth: 0,
+                    maxOptionWidth: 120,
+                    horizontalPadding: 6,
+                    optionSpacing: 4,
+                    groupPadding: 5
+                ) {
+                    HStack(alignment: .center, spacing: 4) {
+                        Text("種類")
+                        BeginnerHelpBanner(personKindHelp)
+                    }
+                } label: { option in
+                    Text(option.title)
+                }
+                .simultaneousGesture(TapGesture().onEnded { _ in
+                    isNameFocused = false
+                })
+                // 記念日には厄年の概念が無いため、種類を切り替えたら未指定へ戻す
+                .onChange(of: kind) { _, newValue in
+                    if !newValue.showsGenderPicker { gender = .unspecified }
+                }
+
+                TextField(kind.nameFieldLabel, text: $name)
                     .textFieldStyle(.roundedBorder)
                     .submitLabel(.done)
                     .focused($isNameFocused)
@@ -292,27 +336,29 @@ private struct PersonEditorSheet: View {
                         }
                     }
 
-                // 厄年の判定に使う。生年月日の前に置く
-                AZAdaptiveRadioRow(
-                    options: Gender.allCases,
-                    selection: $gender,
-                    minOptionWidth: 0,
-                    maxOptionWidth: 120,
-                    horizontalPadding: 6,
-                    optionSpacing: 4,
-                    groupPadding: 5
-                ) {
-                    HStack(alignment: .center, spacing: 4) {
-                        Text("性別")
-                        BeginnerHelpBanner(personGenderHelp)
+                if kind.showsGenderPicker {
+                    // 厄年の判定に使う。生年月日の前に置く
+                    AZAdaptiveRadioRow(
+                        options: Gender.allCases,
+                        selection: $gender,
+                        minOptionWidth: 0,
+                        maxOptionWidth: 120,
+                        horizontalPadding: 6,
+                        optionSpacing: 4,
+                        groupPadding: 5
+                    ) {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("性別")
+                            BeginnerHelpBanner(personGenderHelp)
+                        }
+                    } label: { option in
+                        Text(option.title)
                     }
-                } label: { option in
-                    Text(option.title)
+                    .simultaneousGesture(TapGesture().onEnded { _ in
+                        // 同じ性別を選び直した場合もキーボードを閉じる
+                        isNameFocused = false
+                    })
                 }
-                .simultaneousGesture(TapGesture().onEnded { _ in
-                    // 同じ性別を選び直した場合もキーボードを閉じる
-                    isNameFocused = false
-                })
             }
         }
     }
