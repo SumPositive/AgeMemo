@@ -1,6 +1,5 @@
 // 表示方法と生年月日を変更する設定画面
 
-import StoreKit
 import SwiftUI
 
 struct SettingsView: View {
@@ -8,7 +7,6 @@ struct SettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
-    @Environment(\.requestReview) private var requestReview
 
     @State private var isEditingBirthDate: Bool
     @State private var showsBirthDateRegistrationPrompt: Bool
@@ -199,7 +197,11 @@ struct SettingsView: View {
                     }
 
                     Button("レビューする") {
-                        requestReview()
+                        // requestReview は表示可否を OS が決めるため、押しても
+                        // 何も起きないことがある。ボタンからは App Store を直接開く
+                        if let url = AppConfig.reviewURL {
+                            openURL(url)
+                        }
                     }
                 }
 
