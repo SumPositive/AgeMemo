@@ -2,6 +2,8 @@
 
 iOS 向けの和暦・年齢の早見表アプリです。SwiftUI で開発しています。
 
+**App Store** — [和暦年齢メモ / Nenrin](https://apps.apple.com/jp/app/id6805710017)
+
 **取扱説明 / User Guide**
 [日本語](https://docs.azukid.com/jp/sumpo/Nenrin/nenrin.html) / [English](https://docs.azukid.com/en/sumpo/Nenrin/nenrin.html)
 
@@ -165,7 +167,7 @@ AgeMemo/
 
 | バージョン | 公開日 | 内容 |
 |---|---|---|
-| 1.0.0 | 審査提出中 | 初版 |
+| 1.0.0 | 2026-09-03 | 初版 |
 
 ## ライセンス
 

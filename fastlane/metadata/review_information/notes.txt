@@ -5,6 +5,7 @@ What is different:
 - 501 continuous years (1600-2100) on one scrollable list, including Edo-period eras, not only Meiji onward.
 - Bidirectional lookup: era year, age and Western year, from any direction. Non-existent era years such as Showa 100 are also converted.
 - Cultural context layers: rokuyo (six-day luck cycle), moon phase, kyusei nine-star astrology, yakudoshi unlucky years, gaju longevity celebrations - presented as a reference for understanding Japanese customs.
+- Tapping any Japanese term in the app (era name, stem-branch, rokuyo, nine-star sign, yakudoshi, gaju) opens a written explanation of its meaning, reading and cultural background, in the user's language. This is the core of the app's educational intent and is not offered by the existing wareki converters.
 - Per-year notes (up to 400 characters), for genealogy and family-register research.
 
 The app is intended as an educational and cultural reference for Japanese-language learners, genealogy researchers, and foreign residents in Japan filling in official forms.
