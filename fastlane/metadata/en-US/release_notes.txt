@@ -1,1 +1,2 @@
-First release
+・Tap any Japanese term on the year detail screen to read what it means, how it is pronounced and where it came from. Era names, stem-branch signs, rokuyo, nine-star signs, yakudoshi and gaju are all covered
+・The explanations are written for readers interested in Japanese culture. Calendar terms stay in Japanese, with kana and romaji readings alongside

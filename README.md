@@ -137,6 +137,16 @@ fastlane screenshots        # 3カット × 2言語 × 2機種
 
 賀寿と厄年は本来**数え年**で数えます。表示中の年齢が満年齢のときは、数え年へ直してから判定してください。設定の「年齢の数え方」を変えると判定位置もずれます。
 
+### 用語解説（1.1.0〜）
+
+年詳細の漢字をタップすると `CalendarTermSheet` が開きます。各型が `var term: CalendarTerm` を返し、シート側はそれを表示するだけです。新しい語を足すときも、既存の型に `term` を生やせば `.calendarTermTappable(_:selection:)` で拾えます。
+
+**解説文は `LocalizedStringResource` で持ちます。** ここに落とし穴があり、この型は `Equatable` ですが **`Hashable` ではありません**。格納プロパティに持たせると `Hashable` の自動合成が止まるため、`CalendarTerm` と `Longevity` は `==` と `hash(into:)` を手書きしています。解説文は識別子（漢字・名前）に従属するので、比較からは外して構いません。
+
+**干支60通りに個別の解説は持たせません。** 「十干＋十二支の組み合わせ」として説明し、丙午だけは社会的影響が大きいため専用文を返します。元号は `EraGlossary` が名前で引く辞書で、1600〜2100年に現れる41件を収めています。
+
+**内容には出典がありません。** 数値と改元理由は Web で裏を取りましたが（丙午1966年の出生数25%減、明治の改暦日など）、江戸期の出来事は未検証のものが残ります。断定を避け、解説シートには「諸説あります」の注記を常時表示しています。**事実を追記するときは必ず裏を取ってください。**
+
 ## 構成
 
 ```text
@@ -144,8 +154,10 @@ AgeMemo/
 ├── App/           — AppMain、AppSettings、Config
 ├── Core/          — JapaneseEra、Zodiac、AgeCalculator、
 │                    Longevity、UnluckyYear、SchoolAge、NineStar、Rokuyo、MoonPhase
+│                    CalendarTerm、CalendarTermGlossary、EraGlossary（用語解説）
 ├── Model/         — YearRow、MemoStore、Person、Gender、StoreError
-├── Components/    — AZPicker、NumericKeypad、BirthDateInput、BeginnerHelpBanner ほか
+├── Components/    — AZPicker、NumericKeypad、BirthDateInput、BeginnerHelpBanner、
+│                    CalendarTermSheet ほか
 ├── Features/
 │   ├── Year/      — 主画面（一覧、行、詳細、カレンダー、下部タブ）
 │   ├── Jump/      — 年齢／移動／名簿の各シート
@@ -168,6 +180,7 @@ AgeMemo/
 | バージョン | 公開日 | 内容 |
 |---|---|---|
 | 1.0.0 | 2026-09-03 | 初版 |
+| 1.1.0 | 準備中 | 年詳細の漢字タップで解説を表示、en は日本文化の解説として整備 |
 
 ## ライセンス
 
