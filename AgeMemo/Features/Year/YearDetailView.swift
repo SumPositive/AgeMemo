@@ -126,6 +126,9 @@ struct YearDetailView: View {
         settings.displayMode == .beginner
     }
 
+    /// 暦の属性ラベルの幅。「十二支」の3文字が収まる幅を文字サイズに追従させる
+    @ScaledMetric(relativeTo: .caption) private var attributeLabelWidth: CGFloat = 42
+
     private var ganNenSpan: EraSpan? {
         row.eraSpans.first { $0.isGanNen && !($0.startMonth == 1 && $0.startDay == 1) }
     }
@@ -159,19 +162,31 @@ struct YearDetailView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
-            if let age = displayedAge {
-                // 数え年は元日に増えるので、満年齢の行より上に置いて先に読ませる
-                if let traditional = traditionalAgeDescription(age) {
-                    Text(traditional)
-                        .foregroundStyle(age < 0 ? .secondary : .primary)
-                }
-                Text(ageDescription(age))
-                    .foregroundStyle(age < 0 ? .secondary : .primary)
-            }
+            // 年齢（または周年）の説明は暦の属性と性格が違うので、
+            // 薄い背景でひとまとまりにして読み分けやすくする
+            if displayedAge != nil || anniversaryCount != nil {
+                VStack(alignment: .leading, spacing: 4) {
+                    if let age = displayedAge {
+                        Text(ageDescription(age))
+                            .foregroundStyle(age < 0 ? .secondary : .primary)
+                    }
 
-            if let anniversaryCount {
-                Text(anniversaryDescription(anniversaryCount))
-                    .foregroundStyle(anniversaryCount < 0 ? .secondary : .primary)
+                    if let anniversaryCount {
+                        Text(anniversaryDescription(anniversaryCount))
+                            .foregroundStyle(anniversaryCount < 0 ? .secondary : .primary)
+                    }
+                }
+                // 文が長いので、外側の1行制限を外して折り返しを許す
+                .lineLimit(nil)
+                .minimumScaleFactor(1)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    Color(.secondarySystemFill),
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                )
             }
 
             if let longevity {
@@ -198,36 +213,56 @@ struct YearDetailView: View {
                 .foregroundStyle(.secondary)
             }
 
-            if let nineStar {
-                // 「九星」は暦の用語なので訳さない。読みだけ言語に合わせる。
-                // ラベルは制度の説明、星の名は星ごとの説明へ分けて開く
-                HStack(spacing: 0) {
-                    Text(verbatim: "九星 ")
-                        .calendarTermTappable(CalendarTermGlossary.nineStar, selection: $selectedTerm)
-                    Text(verbatim: "\(nineStar.name)\(reading(kana: nineStar.kana, romaji: nineStar.romaji))")
-                        .calendarTermTappable(nineStar.term, selection: $selectedTerm)
-                }
-                .foregroundStyle(.secondary)
-            }
-
-            HStack(spacing: 0) {
-                Text(verbatim: "\(row.stemBranch.branch.emoji) ")
-                Text(verbatim: "\(row.stemBranch.kanji)\(reading(kana: row.stemBranch.kana, romaji: row.stemBranch.romaji))")
+            // 暦の属性はラベルの幅を揃えて、値の先頭を縦にそろえる。
+            // 干支・十二支は関わりが深いので隣に並べ、九星はその後に置く
+            attributeRow(
+                label: Text(verbatim: "干支")
+                    .calendarTermTappable(CalendarTermGlossary.stemBranch, selection: $selectedTerm)
+            ) {
+                Text(verbatim: "\(row.stemBranch.branch.emoji) \(row.stemBranch.kanji)\(reading(kana: row.stemBranch.kana, romaji: row.stemBranch.romaji))")
                     .calendarTermTappable(row.stemBranch.term, selection: $selectedTerm)
             }
 
-            HStack(spacing: 0) {
-                Text(verbatim: "十二支 ")
+            attributeRow(
+                label: Text(verbatim: "十二支")
                     .calendarTermTappable(CalendarTermGlossary.earthlyBranch, selection: $selectedTerm)
+            ) {
                 Text(verbatim: "\(row.stemBranch.branch.kanji)\(reading(kana: row.stemBranch.branch.kana, romaji: row.stemBranch.branch.romaji))")
                     .calendarTermTappable(row.stemBranch.branch.term, selection: $selectedTerm)
             }
-            .foregroundStyle(.secondary)
+
+            if let nineStar {
+                // 「九星」は暦の用語なので訳さない。読みだけ言語に合わせる。
+                // ラベルは制度の説明、星の名は星ごとの説明へ分けて開く
+                attributeRow(
+                    label: Text(verbatim: "九星")
+                        .calendarTermTappable(CalendarTermGlossary.nineStar, selection: $selectedTerm)
+                ) {
+                    Text(verbatim: "\(nineStar.name)\(reading(kana: nineStar.kana, romaji: nineStar.romaji))")
+                        .calendarTermTappable(nineStar.term, selection: $selectedTerm)
+                }
+            }
         }
         // 改元年は元号が2つ並んで長くなるため、折り返さず縮小して1行に収める
         .lineLimit(1)
         .minimumScaleFactor(0.5)
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// 暦の属性（九星・干支・十二支）を「ラベル＋値」で1行に並べる。
+    /// ラベルは幅を固定して薄く小さくし、値の先頭を縦にそろえて読みやすくする
+    private func attributeRow<Value: View>(
+        label: some View,
+        @ViewBuilder value: () -> Value
+    ) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            label
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(width: attributeLabelWidth, alignment: .leading)
+            value()
+                .foregroundStyle(.secondary)
+        }
     }
 
     /// その年に迎える賀寿。生まれる前の年には出さない
@@ -311,38 +346,34 @@ struct YearDetailView: View {
 
     /// 年の意味を1行で説明する。操作の案内にあたるため訳す
     private func ageDescription(_ age: Int) -> String {
+        // 数え年は元日に1つ増えるので、その年の満年齢より1つ多い
+        let showsTraditional = settings.showsTraditionalAge && 0 < age
+        let traditional = AgeCalculator.traditionalAge(fromActual: age)
+
         switch ageDisplayMode {
         case .age:
             // 年齢が負の年はまだ生まれていないため、経過年数で表す
             if age > 0 {
-                String(localized: "今年の誕生日で満\(age)歳になる方の誕生年")
+                // 数え年と満年齢をひと続きの文にまとめ、最後で「誕生年です」と結ぶ
+                return showsTraditional
+                    ? String(localized: "今年の元日で数え\(traditional)歳\n今年の誕生日で満\(age)歳\nになる方の誕生年です")
+                    : String(localized: "今年の誕生日で満\(age)歳になる方の誕生年です")
             } else if age == 0 {
-                String(localized: "今年生まれた方の誕生年")
+                return String(localized: "今年生まれた方の誕生年")
             } else {
-                String(localized: "\(-age)年後に生まれる方の誕生年")
+                return String(localized: "\(-age)年後に生まれる方の誕生年")
             }
         case .personal, .person:
             // 生年より前の年は、生まれるまでの残り年数で表す
             if age > 0 {
-                String(localized: "この年の誕生日で満\(age)歳")
+                return showsTraditional
+                    ? String(localized: "この年の元日で数え\(traditional)歳\nこの年の誕生日で満\(age)歳")
+                    : String(localized: "この年の誕生日で満\(age)歳")
             } else if age == 0 {
-                String(localized: "この年に生まれました")
+                return String(localized: "この年に生まれました")
             } else {
-                String(localized: "生まれるまであと\(-age)年")
+                return String(localized: "生まれるまであと\(-age)年")
             }
-        }
-    }
-
-    /// 設定がONのときだけ、満年齢の行の上に添える数え年の説明。
-    /// 数え年は元日に1つ増えるので、その年の満年齢より1つ多い
-    private func traditionalAgeDescription(_ age: Int) -> String? {
-        guard settings.showsTraditionalAge, 0 < age else { return nil }
-        let traditional = AgeCalculator.traditionalAge(fromActual: age)
-        switch ageDisplayMode {
-        case .age:
-            return String(localized: "今年の元日で数え\(traditional)歳の方の誕生年")
-        case .personal, .person:
-            return String(localized: "この年の元日で数え\(traditional)歳")
         }
     }
 

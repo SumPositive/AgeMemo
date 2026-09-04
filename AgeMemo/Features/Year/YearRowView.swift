@@ -283,7 +283,8 @@ struct YearRowView: View {
                 .font(.caption2.weight(.semibold))
                 // 背景の色は薄く保ちつつ、文字は本文と同じ濃さにしてコントラストを確保する
                 .foregroundStyle(Color.primary)
-                .multilineTextAlignment(.center)
+                // 行ごとに長さが違うので、行頭をそろえて読みやすくする
+                .multilineTextAlignment(.leading)
                 // 文中の改行で2〜3行に分け、縮小せずに読める大きさを保つ
                 .lineLimit(3)
                 .minimumScaleFactor(0.9)

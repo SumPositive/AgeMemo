@@ -772,13 +772,13 @@
         }
       }
     },
-    "この年の元日で数え%lld歳": {
+    "この年の元日で数え%lld歳\nこの年の誕生日で満%lld歳": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld by the traditional count from New Year's Day"
+            "value": "%lld by the traditional count from New Year's Day\n%lld on the birthday that year"
           }
         }
       }
@@ -1216,13 +1216,13 @@
         }
       }
     },
-    "今年の元日で数え%lld歳の方の誕生年": {
+    "今年の元日で数え%lld歳\n今年の誕生日で満%lld歳\nになる方の誕生年です": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Birth year of someone who became %lld by the traditional count this New Year"
+            "value": "Birth year of someone who became %lld by the traditional count this New Year\nand turns %lld on their birthday this year"
           }
         }
       }
@@ -1260,7 +1260,7 @@
         }
       }
     },
-    "今年の誕生日で満%lld歳になる方の誕生年": {
+    "今年の誕生日で満%lld歳になる方の誕生年です": {
       "extractionState": "manual",
       "localizations": {
         "en": {
