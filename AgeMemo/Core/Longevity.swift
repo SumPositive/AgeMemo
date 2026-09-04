@@ -53,14 +53,9 @@ struct Longevity: Sendable, Hashable {
         Longevity(name: "大還暦", kana: "だいかんれき", traditionalAge: 121, romaji: "daikanreki", origin: "還暦をもう一度迎える年齢。60年周期を2度巡ったことを意味します。")
     ]
 
-    /// 画面に出ている年齢から賀寿を探す。
-    /// 還暦は数え61歳＝満60歳なので、設定した数え方に合わせて引き当てる
-    static func forDisplayedAge(_ age: Int, reckoning: AgeReckoning) -> Longevity? {
-        all.first { longevity in
-            switch reckoning {
-            case .actual: longevity.actualAge == age
-            case .traditional: longevity.traditionalAge == age
-            }
-        }
+    /// 満年齢から賀寿を探す。賀寿はもともと数え年で祝うものなので、
+    /// 還暦は数え61歳＝満60歳の行に出す
+    static func forActualAge(_ age: Int) -> Longevity? {
+        all.first { $0.actualAge == age }
     }
 }

@@ -69,43 +69,6 @@ enum AppearanceMode: Int, CaseIterable, Identifiable {
     }
 }
 
-enum AgeReckoning: Int, CaseIterable, Identifiable {
-    case actual
-    case traditional
-
-    var id: Int { rawValue }
-
-    var title: LocalizedStringKey {
-        switch self {
-        case .actual: "満年齢"
-        case .traditional: "数え年"
-        }
-    }
-
-    /// 満年齢からこの数え方の年齢へ変換する。
-    /// 数え年は生まれた時点で1歳、以後元日ごとに1つ増えるため、年内では満年齢＋1になる
-    func age(fromActual actualAge: Int) -> Int {
-        switch self {
-        case .actual: actualAge
-        case .traditional: actualAge + 1
-        }
-    }
-
-    /// この数え方の年齢から満年齢へ戻す
-    func actualAge(from age: Int) -> Int {
-        switch self {
-        case .actual: age
-        case .traditional: age - 1
-        }
-    }
-
-    /// 数え年では0歳を使わず、負数だけは生まれる前の年として保つ
-    func clampedInputAge(_ inputAge: Int) -> Int {
-        guard 0 <= inputAge else { return inputAge }
-        return max(inputAge, age(fromActual: 0))
-    }
-}
-
 @MainActor
 @Observable
 final class AppSettings {
@@ -123,9 +86,9 @@ final class AppSettings {
         didSet { defaults.set(appearanceMode.rawValue, forKey: Key.appearanceMode) }
     }
 
-    /// 年齢を満年齢と数え年のどちらで数えるか
-    var ageReckoning: AgeReckoning {
-        didSet { defaults.set(ageReckoning.rawValue, forKey: Key.ageReckoning) }
+    /// 数え年を補足として表示するか。一覧の年齢列は常に満年齢
+    var showsTraditionalAge: Bool {
+        didSet { defaults.set(showsTraditionalAge, forKey: Key.showsTraditionalAge) }
     }
 
     /// 厄年の判定に使う性別。未指定なら厄年を表示しない
@@ -210,7 +173,7 @@ final class AppSettings {
         static let lastJumpSelectionID = "lastJumpSelectionID"
         static let lastJumpInput = "lastJumpInput"
         static let showsMemoOnlyForSelf = "showsMemoOnlyForSelf"
-        static let ageReckoning = "ageReckoning"
+        static let showsTraditionalAge = "showsTraditionalAge"
         static let gender = "gender"
         static let showsZodiac = "showsZodiac"
         static let showsLongevity = "showsLongevity"
@@ -224,7 +187,6 @@ final class AppSettings {
         displayMode = DisplayMode(rawValue: defaults.integer(forKey: Key.displayMode)) ?? .beginner
         fontScale = AppFontScale(rawValue: defaults.integer(forKey: Key.fontScale)) ?? .system
         appearanceMode = AppearanceMode(rawValue: defaults.integer(forKey: Key.appearanceMode)) ?? .system
-        ageReckoning = AgeReckoning(rawValue: defaults.integer(forKey: Key.ageReckoning)) ?? .actual
         gender = Gender(rawValue: defaults.integer(forKey: Key.gender)) ?? .unspecified
         // 補助表示はすべて既定OFF。未設定なら false を返す読み出しを使う
         showsZodiac = defaults.bool(forKey: Key.showsZodiac)
@@ -238,5 +200,6 @@ final class AppSettings {
         lastJumpInput = defaults.object(forKey: Key.lastJumpInput) as? Int
         // 未設定時はONを既定とするため、値の有無を見てから読み出す
         showsMemoOnlyForSelf = defaults.object(forKey: Key.showsMemoOnlyForSelf) as? Bool ?? true
+        showsTraditionalAge = defaults.object(forKey: Key.showsTraditionalAge) as? Bool ?? true
     }
 }

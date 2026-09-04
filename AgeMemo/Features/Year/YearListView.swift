@@ -91,9 +91,7 @@ struct YearListView: View {
         case .age:
             // 生年月日が分からないため、指定した年齢の人は「選択行の年に生まれた」
             // 可能性と「その1年前に生まれ、まだ誕生日前」の可能性の両方がある
-            // 数え年は元日に一斉に増えるため、誕生日を持ち出す説明は成り立たない
-            guard settings.ageReckoning == .actual,
-                  isAgeJumpDestination,
+            guard isAgeJumpDestination,
                   let selectedDestinationYear,
                   year == selectedDestinationYear - 1,
                   AppConfig.yearRange.contains(selectedDestinationYear - 1),
@@ -114,20 +112,25 @@ struct YearListView: View {
                 return AlternateAgeHint(kind: .anniversaryThisYear, value: count)
             }
 
-            // 数え年は元日に増えるので、誕生日の前後で年齢が変わらない。
-            // 誕生日を持ち出すカプセルは満年齢のときだけ出す
-            guard settings.ageReckoning == .actual,
-                  let currentAge = displayedAge(for: currentYear) else { return nil }
+            guard let currentAge = displayedAge(for: currentYear) else { return nil }
             if AgeCalculator.isBeforeBirthday(birthDate: baseDate) {
                 // 今年生まれた人（満年齢0歳）は「誕生日前」が生まれる前を
                 // 意味してしまうため、その手前の値は出さない
                 let alternateAge = currentAge - 1
                 guard 0 <= alternateAge else { return nil }
-                return AlternateAgeHint(kind: .beforeBirthdayToday, value: alternateAge)
+                return AlternateAgeHint(
+                    kind: .beforeBirthdayToday,
+                    value: alternateAge,
+                    showsTraditionalAge: settings.showsTraditionalAge
+                )
             } else {
                 // すでに今年の誕生日を迎えている
                 guard 0 <= currentAge else { return nil }
-                return AlternateAgeHint(kind: .afterBirthdayToday, value: currentAge)
+                return AlternateAgeHint(
+                    kind: .afterBirthdayToday,
+                    value: currentAge,
+                    showsTraditionalAge: settings.showsTraditionalAge
+                )
             }
         }
     }
@@ -530,7 +533,7 @@ struct YearListView: View {
     private func longevity(for year: Int) -> Longevity? {
         guard settings.showsLongevity,
               let age = displayedAge(for: year), 0 <= age else { return nil }
-        return Longevity.forDisplayedAge(age, reckoning: settings.ageReckoning)
+        return Longevity.forActualAge(age)
     }
 
     /// 九星は年そのものの性質なので、どの年の行でも出す。
@@ -579,7 +582,7 @@ struct YearListView: View {
         guard settings.showsUnluckyYear,
               effectiveGender != .unspecified,
               let age = displayedAge(for: year), 0 <= age else { return nil }
-        return UnluckyYear.forDisplayedAge(age, gender: effectiveGender, reckoning: settings.ageReckoning)
+        return UnluckyYear.forActualAge(age, gender: effectiveGender)
     }
 
     private func displayedAge(for year: Int) -> Int? {
@@ -590,8 +593,7 @@ struct YearListView: View {
             for: year,
             mode: ageDisplayMode,
             birthDate: effectiveBirthDate,
-            currentYear: currentYear,
-            reckoning: settings.ageReckoning
+            currentYear: currentYear
         )
     }
 

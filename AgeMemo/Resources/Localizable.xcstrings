@@ -772,6 +772,17 @@
         }
       }
     },
+    "この年の元日で数え%lld歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld by the traditional count from New Year's Day"
+          }
+        }
+      }
+    },
     "この年の誕生日で満%lld歳": {
       "extractionState": "manual",
       "localizations": {
@@ -779,17 +790,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Turns %lld on the birthday this year"
-          }
-        }
-      }
-    },
-    "この年は数え%lld歳": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kazoedoshi age %lld this year"
           }
         }
       }
@@ -1003,6 +1003,17 @@
         }
       }
     },
+    "一覧の年齢は満年齢（誕生日ごとに1つ増える、現在ふつうに使われている数え方）で表示します。オンにすると、年の詳細などに数え年も添えます。数え年は生まれた時点で1歳とし、以後は元日ごとに1つ増える昔ながらの数え方で、年内では満年齢より1つ多くなります。還暦や喜寿などの長寿祝い、厄年は、もともと数え年で見るものです。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ages in the list are counted the modern way, increasing on each birthday. Turn this on to also show kazoedoshi, the traditional count, in the year detail and elsewhere. Kazoedoshi treats a newborn as one year old and adds a year every New Year's Day, so within a year it is one more than the modern count. Longevity celebrations such as kanreki and kiju, and the unlucky yakudoshi years, are traditionally reckoned this way."
+          }
+        }
+      }
+    },
     "三越の前身である越後屋が江戸に開店し、現金正価販売という新しい商法を始めました。": {
       "extractionState": "manual",
       "localizations": {
@@ -1183,6 +1194,39 @@
         }
       }
     },
+    "今年の元日で数え%@歳です\n今年の誕生日で満%@歳になりました": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ by the traditional count since New Year's Day\nTurned %@ on this year's birthday"
+          }
+        }
+      }
+    },
+    "今年の元日で数え%@歳です\n今年の誕生日で満%@歳になります\n今日は誕生日前なので満%@歳です": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ by the traditional count since New Year's Day\nTurning %@ on this year's birthday\nStill %@ until then"
+          }
+        }
+      }
+    },
+    "今年の元日で数え%lld歳の方の誕生年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth year of someone who became %lld by the traditional count this New Year"
+          }
+        }
+      }
+    },
     "今年の記念日で%@周年です": {
       "extractionState": "manual",
       "localizations": {
@@ -1194,7 +1238,7 @@
         }
       }
     },
-    "今年の誕生日で%@歳になりました": {
+    "今年の誕生日で満%@歳になりました": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1205,13 +1249,24 @@
         }
       }
     },
-    "今年の誕生日で%@歳になります\n今日は誕生日前なので%@歳です": {
+    "今年の誕生日で満%@歳になります\n今日は誕生日前なので満%@歳です": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Turning %@ on this year's birthday\nStill %@ until then"
+          }
+        }
+      }
+    },
+    "今年の誕生日で満%lld歳になる方の誕生年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth year of someone turning %lld on their birthday this year"
           }
         }
       }
@@ -2079,17 +2134,6 @@
         }
       }
     },
-    "年齢の数え方": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Age reckoning"
-          }
-        }
-      }
-    },
     "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーが開きます。": {
       "extractionState": "manual",
       "localizations": {
@@ -2174,6 +2218,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Celebrated at %lld by the traditional count (%lld by actual age)"
+          }
+        }
+      }
+    },
+    "数え年を表示する": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show traditional age"
           }
         }
       }
@@ -2535,17 +2590,6 @@
         }
       }
     },
-    "満年齢は誕生日ごとに1つ増える、現在ふつうに使われている数え方です。数え年は生まれた時点で1歳とし、以後は元日ごとに1つ増える昔ながらの数え方で、年内では満年齢より1つ多くなります。還暦や喜寿などの長寿祝いは、もともと数え年で祝うものでした。": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "満年齢 (man-nenrei) is the count used today: it goes up on each birthday, the same as in the West. 数え年 (kazoedoshi) is the traditional count: you are 1 at birth and everyone gains a year on New Year's Day, so it runs one ahead within the year. Longevity celebrations such as 還暦 (kanreki) and 喜寿 (kiju) were originally reckoned this way."
-          }
-        }
-      }
-    },
     "漢字（熟語）をタップすると解説を表示します": {
       "extractionState": "manual",
       "localizations": {
@@ -2652,17 +2696,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Someone who is %@ now and turns %@\non their birthday this year was born in %@"
-          }
-        }
-      }
-    },
-    "現在%lld歳の方の誕生年": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Birth year of someone now %lld"
           }
         }
       }
@@ -3008,24 +3041,24 @@
         }
       }
     },
-    "誕生日：%@年%@月%@日・数え%@歳": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Born %@/%@/%@ · %@ (traditional age)"
-          }
-        }
-      }
-    },
     "誕生日：%@年%@月%@日・満%@歳": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Born %@/%@/%@ · %@ (actual age)"
+            "value": "Born %@/%@/%@ · %@"
+          }
+        }
+      }
+    },
+    "誕生日：%@年%@月%@日・満%@歳／数え%@歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born %@/%@/%@ · %@ (traditional: %@)"
           }
         }
       }

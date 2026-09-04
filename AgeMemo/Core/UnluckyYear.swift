@@ -80,11 +80,11 @@ struct UnluckyYear: Sendable, Hashable {
         .female: 33
     ]
 
-    /// 画面に出ている年齢から厄年を探す。厄年は数え年で見るのが基本のため、
-    /// 満年齢表示のときは数え年へ直してから判定する
-    static func forDisplayedAge(_ age: Int, gender: Gender, reckoning: AgeReckoning) -> UnluckyYear? {
+    /// 満年齢から厄年を探す。厄年は数え年で見るのが基本のため、
+    /// 数え年へ直してから判定する
+    static func forActualAge(_ age: Int, gender: Gender) -> UnluckyYear? {
         guard let mains = mainAges[gender] else { return nil }
-        let traditionalAge = reckoning == .traditional ? age : age + 1
+        let traditionalAge = AgeCalculator.traditionalAge(fromActual: age)
         for main in mains {
             let phase: Phase?
             switch traditionalAge {

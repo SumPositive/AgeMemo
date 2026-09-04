@@ -90,13 +90,13 @@ struct SettingsView: View {
                         Text(mode.title)
                     }
 
-                    radioRow(
-                        "年齢の数え方",
-                        help: "満年齢は誕生日ごとに1つ増える、現在ふつうに使われている数え方です。数え年は生まれた時点で1歳とし、以後は元日ごとに1つ増える昔ながらの数え方で、年内では満年齢より1つ多くなります。還暦や喜寿などの長寿祝いは、もともと数え年で祝うものでした。",
-                        selection: $settings.ageReckoning
-                    ) { reckoning in
-                        Text(reckoning.title)
+                    Toggle(isOn: $settings.showsTraditionalAge) {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("数え年を表示する")
+                            BeginnerHelpBanner("一覧の年齢は満年齢（誕生日ごとに1つ増える、現在ふつうに使われている数え方）で表示します。オンにすると、年の詳細などに数え年も添えます。数え年は生まれた時点で1歳とし、以後は元日ごとに1つ増える昔ながらの数え方で、年内では満年齢より1つ多くなります。還暦や喜寿などの長寿祝い、厄年は、もともと数え年で見るものです。")
+                        }
                     }
+                    .accessibilityIdentifier("toggle.traditionalAge")
                 }
 
                 Section {

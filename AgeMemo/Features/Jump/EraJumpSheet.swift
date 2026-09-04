@@ -110,9 +110,8 @@ struct EraJumpSheet: View {
                 for: currentYear,
                 mode: ageDisplayMode,
                 birthDate: birthDate,
-                currentYear: currentYear,
-                reckoning: settings.ageReckoning
-            ) ?? settings.ageReckoning.age(fromActual: 0)
+                currentYear: currentYear
+            ) ?? 0
         case .gregorian:
             currentYear
         case .era(let choice):
@@ -168,9 +167,8 @@ struct EraJumpSheet: View {
                 for: destinationYear,
                 mode: ageDisplayMode,
                 birthDate: birthDate,
-                currentYear: currentYear,
-                reckoning: settings.ageReckoning
-            ) ?? settings.ageReckoning.age(fromActual: 0)
+                currentYear: currentYear
+            ) ?? 0
         case .gregorian:
             return destinationYear
         case .era(let choice):
@@ -180,9 +178,7 @@ struct EraJumpSheet: View {
 
     private func boundedInput(_ input: Int, for selection: EraJumpSelection) -> Int {
         let magnitude = min(abs(input), Self.maximumInput(for: selection))
-        let bounded = input < 0 ? -magnitude : magnitude
-        guard selection == .age else { return bounded }
-        return settings.ageReckoning.clampedInputAge(bounded)
+        return input < 0 ? -magnitude : magnitude
     }
 
     private var boundedYear: Int {
@@ -192,29 +188,17 @@ struct EraJumpSheet: View {
     private func destinationYear(forAge age: Int) -> Int {
         switch ageDisplayMode {
         case .age:
-            return AgeCalculator.birthYear(
-                forAge: age,
-                currentYear: currentYear,
-                reckoning: settings.ageReckoning
-            )
+            return AgeCalculator.birthYear(forAge: age, currentYear: currentYear)
         case .personal:
             guard let birthDate else {
                 return currentYear
             }
-            return AgeCalculator.year(
-                forAge: age,
-                birthDate: birthDate,
-                reckoning: settings.ageReckoning
-            )
+            return AgeCalculator.year(forAge: age, birthDate: birthDate)
         case .person:
             guard let birthDate else {
                 return currentYear
             }
-            return AgeCalculator.year(
-                forAge: age,
-                birthDate: birthDate,
-                reckoning: settings.ageReckoning
-            )
+            return AgeCalculator.year(forAge: age, birthDate: birthDate)
         }
     }
 

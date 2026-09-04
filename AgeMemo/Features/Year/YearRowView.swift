@@ -19,10 +19,12 @@ struct AlternateAgeHint: Equatable {
     }
 
     let kind: Kind
-    /// beforeBirthdayToday は誕生日前とみなした場合の年齢、
+    /// beforeBirthdayToday は誕生日前とみなした場合の満年齢、
     /// afterBirthdayToday と anniversaryThisYear は当年の値、
     /// ageJump は生まれ年（西暦）
     let value: Int
+    /// 数え年の行を先頭に添えるか。設定「数え年を表示する」に従う
+    var showsTraditionalAge: Bool = false
 }
 
 struct YearRowView: View {
@@ -282,8 +284,8 @@ struct YearRowView: View {
                 // 背景の色は薄く保ちつつ、文字は本文と同じ濃さにしてコントラストを確保する
                 .foregroundStyle(Color.primary)
                 .multilineTextAlignment(.center)
-                // 文中の改行で2行に分け、縮小せずに読める大きさを保つ
-                .lineLimit(2)
+                // 文中の改行で2〜3行に分け、縮小せずに読める大きさを保つ
+                .lineLimit(3)
                 .minimumScaleFactor(0.9)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 10)
@@ -318,12 +320,20 @@ struct YearRowView: View {
             // 「この行に該当するのはどういう人か」を分かるようにする
             "現在\(String(selectedAge))歳、今年の誕生日で\(String(selectedAge + 1))歳に\nなる方は\(String(hint.value))年生まれです"
         case .beforeBirthdayToday:
-            // 1行目で今年迎える年齢、2行目で今日時点の年齢を示す。
-            // value は誕生日前の年齢なので、誕生日後は +1 になる
-            "今年の誕生日で\(String(hint.value + 1))歳になります\n今日は誕生日前なので\(String(hint.value))歳です"
+            // value は誕生日前の満年齢。誕生日を迎えると +1 になり、
+            // 数え年は元日にその値へ達しているので +2 にあたる
+            if hint.showsTraditionalAge {
+                "今年の元日で数え\(String(hint.value + 2))歳です\n今年の誕生日で満\(String(hint.value + 1))歳になります\n今日は誕生日前なので満\(String(hint.value))歳です"
+            } else {
+                "今年の誕生日で満\(String(hint.value + 1))歳になります\n今日は誕生日前なので満\(String(hint.value))歳です"
+            }
         case .afterBirthdayToday:
-            // すでに今年の誕生日を迎えているので、当年の年齢がそのまま今の年齢
-            "今年の誕生日で\(String(hint.value))歳になりました"
+            // すでに今年の誕生日を迎えているので、当年の満年齢がそのまま今の年齢
+            if hint.showsTraditionalAge {
+                "今年の元日で数え\(String(hint.value + 1))歳です\n今年の誕生日で満\(String(hint.value))歳になりました"
+            } else {
+                "今年の誕生日で満\(String(hint.value))歳になりました"
+            }
         case .anniversaryThisYear:
             "今年の記念日で\(String(hint.value))周年です"
         }

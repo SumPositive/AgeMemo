@@ -32,7 +32,7 @@ enum SnapshotSetup {
             year: 1963, month: 9, day: 1
         ).date
         settings.gender = .male
-        settings.ageReckoning = .actual
+        settings.showsTraditionalAge = false
         settings.displayMode = .expert
         settings.showsMemoOnlyForSelf = false
 

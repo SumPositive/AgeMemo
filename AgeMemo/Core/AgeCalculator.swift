@@ -12,25 +12,32 @@ enum AgeDisplayMode: Equatable {
 }
 
 enum AgeCalculator {
+    /// 一覧や詳細に出す年齢。常に満年齢で数える
     static func displayedAge(
         for rowYear: Int,
         mode: AgeDisplayMode,
         birthDate: Date?,
-        currentYear: Int,
-        reckoning: AgeReckoning = .actual
+        currentYear: Int
     ) -> Int? {
-        let actualAge: Int?
         switch mode {
         case .age:
             // その年に生まれた人の当年時点の年齢を求める
-            actualAge = currentYear - rowYear
+            return currentYear - rowYear
         case .personal, .person:
-            actualAge = age(in: rowYear, birthDate: birthDate)
+            return age(in: rowYear, birthDate: birthDate)
         }
-        guard let actualAge else { return nil }
-        // 生まれる前は数え年の考え方が当てはまらないので、そのまま負の値を返す
-        guard 0 <= actualAge else { return actualAge }
-        return reckoning.age(fromActual: actualAge)
+    }
+
+    /// 満年齢から数え年へ直す。数え年は生まれた時点で1歳、以後元日ごとに増えるため、
+    /// その年の誕生日を迎えた後の満年齢に1を足した値になる。
+    /// 生まれる前の負の値は数え年の考え方が当てはまらないのでそのまま返す
+    static func traditionalAge(fromActual actualAge: Int) -> Int {
+        0 <= actualAge ? actualAge + 1 : actualAge
+    }
+
+    /// 数え年から満年齢へ戻す
+    static func actualAge(fromTraditional age: Int) -> Int {
+        0 < age ? age - 1 : age
     }
 
     /// 記念日の周年数。月日は見ず、その年のうちは同じ数のままとする
@@ -40,28 +47,18 @@ enum AgeCalculator {
         rowYear - calendar.component(.year, from: startDate)
     }
 
-    /// 指定した年齢の人が生まれた年を求める。displayedAge の逆算にあたる
-    static func birthYear(forAge age: Int, currentYear: Int, reckoning: AgeReckoning = .actual) -> Int {
-        // 数え年の0歳は1歳へ補正し、逆算結果のずれを防ぐ
-        let normalizedAge = reckoning.clampedInputAge(age)
-        // 生まれる前は数え年の変換をしないため、逆算でも戻さない
-        let actualAge = 0 <= normalizedAge ? reckoning.actualAge(from: normalizedAge) : normalizedAge
-        return currentYear - actualAge
+    /// 指定した満年齢の人が生まれた年を求める。displayedAge の逆算にあたる
+    static func birthYear(forAge age: Int, currentYear: Int) -> Int {
+        currentYear - age
     }
 
-    /// 指定した人がその年齢になる西暦年を求める
+    /// 指定した人がその満年齢になる西暦年を求める
     static func year(
         forAge age: Int,
         birthDate: Date,
-        reckoning: AgeReckoning = .actual,
         calendar: Calendar = Calendar(identifier: .gregorian)
     ) -> Int {
-        let birthYear = calendar.component(.year, from: birthDate)
-        // 数え年の0歳は1歳へ補正し、逆算結果のずれを防ぐ
-        let normalizedAge = reckoning.clampedInputAge(age)
-        // 生まれる前の負数はそのまま生年から逆方向へ足す
-        let actualAge = 0 <= normalizedAge ? reckoning.actualAge(from: normalizedAge) : normalizedAge
-        return birthYear + actualAge
+        calendar.component(.year, from: birthDate) + age
     }
 
     static func age(

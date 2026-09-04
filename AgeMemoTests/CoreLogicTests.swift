@@ -81,9 +81,7 @@ final class CoreLogicTests: XCTestCase {
     func testBirthYearForAge() {
         XCTAssertEqual(AgeCalculator.birthYear(forAge: 38, currentYear: 2026), 1988)
         XCTAssertEqual(AgeCalculator.birthYear(forAge: 0, currentYear: 2026), 2026)
-        // 数え年に存在しない0歳は1歳として扱う
-        XCTAssertEqual(AgeCalculator.birthYear(forAge: 0, currentYear: 2026, reckoning: .traditional), 2026)
-        XCTAssertEqual(AgeCalculator.birthYear(forAge: -1, currentYear: 2026, reckoning: .traditional), 2027)
+        XCTAssertEqual(AgeCalculator.birthYear(forAge: -1, currentYear: 2026), 2027)
     }
 
     func testYearForPersonalAge() throws {
@@ -92,18 +90,27 @@ final class CoreLogicTests: XCTestCase {
                 .date(from: DateComponents(year: 1988, month: 6, day: 1))
         )
         XCTAssertEqual(AgeCalculator.year(forAge: 10, birthDate: birthDate), 1998)
-        XCTAssertEqual(
-            AgeCalculator.year(forAge: 11, birthDate: birthDate, reckoning: .traditional),
-            1998
-        )
-        XCTAssertEqual(AgeCalculator.year(forAge: 0, birthDate: birthDate, reckoning: .traditional), 1988)
+        XCTAssertEqual(AgeCalculator.year(forAge: 0, birthDate: birthDate), 1988)
         XCTAssertEqual(AgeCalculator.year(forAge: -2, birthDate: birthDate), 1986)
     }
 
-    func testAgeInputLowerBoundMatchesReckoning() {
-        XCTAssertEqual(AgeReckoning.actual.clampedInputAge(0), 0)
-        XCTAssertEqual(AgeReckoning.traditional.clampedInputAge(0), 1)
-        XCTAssertEqual(AgeReckoning.traditional.clampedInputAge(-1), -1)
+    /// 数え年は生まれた時点で1歳、以後元日ごとに1つ増える
+    func testTraditionalAgeConversion() {
+        XCTAssertEqual(AgeCalculator.traditionalAge(fromActual: 0), 1)
+        XCTAssertEqual(AgeCalculator.traditionalAge(fromActual: 60), 61)
+        // 生まれる前は数え年の考え方が当てはまらないのでそのまま返す
+        XCTAssertEqual(AgeCalculator.traditionalAge(fromActual: -1), -1)
+        XCTAssertEqual(AgeCalculator.actualAge(fromTraditional: 61), 60)
+        XCTAssertEqual(AgeCalculator.actualAge(fromTraditional: 1), 0)
+    }
+
+    /// 賀寿と厄年はもともと数え年で見るため、満年齢から1つずらして判定する
+    func testLongevityAndUnluckyYearUseTraditionalAge() {
+        XCTAssertEqual(Longevity.forActualAge(60)?.name, "還暦")
+        XCTAssertNil(Longevity.forActualAge(61))
+        // 男性の本厄42歳（数え）は満41歳の行に出る
+        XCTAssertEqual(UnluckyYear.forActualAge(41, gender: .male)?.phase, .main)
+        XCTAssertEqual(UnluckyYear.forActualAge(41, gender: .male)?.isMajor, true)
     }
 
     func testEraChoiceUsesActualFirstYear() throws {

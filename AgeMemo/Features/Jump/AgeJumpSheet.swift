@@ -3,7 +3,6 @@
 import SwiftUI
 
 struct AgeJumpSheet: View {
-    @Environment(AppSettings.self) private var settings
     @Environment(\.dismiss) private var dismiss
     @State private var digits = ""
     /// マイナス年齢＝これから生まれる方の年を指す
@@ -19,19 +18,13 @@ struct AgeJumpSheet: View {
     private var isEmpty: Bool { digits.isEmpty }
 
     private var age: Int {
-        guard let value = Int(digits) else { return clamped(placeholderAge) }
+        guard let value = Int(digits) else { return placeholderAge }
         let magnitude = min(value, AppConfig.maximumAgeInput)
-        return clamped(isNegative ? -magnitude : magnitude)
-    }
-
-    /// 数え年には0歳がなく1歳から始まるため、下限を数え方に合わせる
-    /// マイナスはまだ生まれていない年を指すので、そのまま通す
-    private func clamped(_ age: Int) -> Int {
-        settings.ageReckoning.clampedInputAge(age)
+        return isNegative ? -magnitude : magnitude
     }
 
     private var destinationYear: Int {
-        AgeCalculator.birthYear(forAge: age, currentYear: currentYear, reckoning: settings.ageReckoning)
+        AgeCalculator.birthYear(forAge: age, currentYear: currentYear)
     }
 
     private var boundedDestinationYear: Int {
@@ -120,7 +113,7 @@ struct AgeJumpSheet: View {
         // 空または "0" のときは置き換えて先頭ゼロを防ぐ
         let next = (digits.isEmpty || digits == "0") ? String(digit) : digits + String(digit)
         guard let value = Int(next), value <= AppConfig.maximumAgeInput else { return }
-        let normalizedAge = clamped(isNegative ? -value : value)
+        let normalizedAge = isNegative ? -value : value
         isNegative = normalizedAge < 0
         digits = String(abs(normalizedAge))
     }

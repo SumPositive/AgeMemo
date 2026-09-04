@@ -160,6 +160,11 @@ struct YearDetailView: View {
             }
 
             if let age = displayedAge {
+                // 数え年は元日に増えるので、満年齢の行より上に置いて先に読ませる
+                if let traditional = traditionalAgeDescription(age) {
+                    Text(traditional)
+                        .foregroundStyle(age < 0 ? .secondary : .primary)
+                }
                 Text(ageDescription(age))
                     .foregroundStyle(age < 0 ? .secondary : .primary)
             }
@@ -228,7 +233,7 @@ struct YearDetailView: View {
     /// その年に迎える賀寿。生まれる前の年には出さない
     private var longevity: Longevity? {
         guard let age = displayedAge, 0 <= age else { return nil }
-        return Longevity.forDisplayedAge(age, reckoning: settings.ageReckoning)
+        return Longevity.forActualAge(age)
     }
 
     /// 学齢の判定に使う生年月日。年齢一覧は特定の人ではないので対象外
@@ -274,7 +279,7 @@ struct YearDetailView: View {
     private var unluckyYear: UnluckyYear? {
         guard effectiveGender != .unspecified,
               let age = displayedAge, 0 <= age else { return nil }
-        return UnluckyYear.forDisplayedAge(age, gender: effectiveGender, reckoning: settings.ageReckoning)
+        return UnluckyYear.forActualAge(age, gender: effectiveGender)
     }
 
     private var displayedAge: Int? {
@@ -285,8 +290,7 @@ struct YearDetailView: View {
             for: row.gregorian,
             mode: ageDisplayMode,
             birthDate: effectiveBirthDate,
-            currentYear: Calendar.current.component(.year, from: .now),
-            reckoning: settings.ageReckoning
+            currentYear: Calendar.current.component(.year, from: .now)
         )
     }
 
@@ -311,7 +315,7 @@ struct YearDetailView: View {
         case .age:
             // 年齢が負の年はまだ生まれていないため、経過年数で表す
             if age > 0 {
-                String(localized: "現在\(age)歳の方の誕生年")
+                String(localized: "今年の誕生日で満\(age)歳になる方の誕生年")
             } else if age == 0 {
                 String(localized: "今年生まれた方の誕生年")
             } else {
@@ -320,16 +324,25 @@ struct YearDetailView: View {
         case .personal, .person:
             // 生年より前の年は、生まれるまでの残り年数で表す
             if age > 0 {
-                switch settings.ageReckoning {
-                // 数え年は元日に増えるので、誕生日を持ち出さない
-                case .actual: String(localized: "この年の誕生日で満\(age)歳")
-                case .traditional: String(localized: "この年は数え\(age)歳")
-                }
+                String(localized: "この年の誕生日で満\(age)歳")
             } else if age == 0 {
                 String(localized: "この年に生まれました")
             } else {
                 String(localized: "生まれるまであと\(-age)年")
             }
+        }
+    }
+
+    /// 設定がONのときだけ、満年齢の行の上に添える数え年の説明。
+    /// 数え年は元日に1つ増えるので、その年の満年齢より1つ多い
+    private func traditionalAgeDescription(_ age: Int) -> String? {
+        guard settings.showsTraditionalAge, 0 < age else { return nil }
+        let traditional = AgeCalculator.traditionalAge(fromActual: age)
+        switch ageDisplayMode {
+        case .age:
+            return String(localized: "今年の元日で数え\(traditional)歳の方の誕生年")
+        case .personal, .person:
+            return String(localized: "この年の元日で数え\(traditional)歳")
         }
     }
 
