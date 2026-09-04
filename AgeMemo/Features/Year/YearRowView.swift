@@ -60,6 +60,7 @@ struct YearRowView: View {
     var showsAnniversaryUnit: Bool = false
     let compact: Bool
     @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
+    @ScaledMetric(relativeTo: .caption2) private var preferredHintFontSize: CGFloat = 11
 
     /// 基本3列（年齢・西暦・和暦）の列間。常にこの幅で詰めて並べる
     private let baseColumnSpacing: CGFloat = 10
@@ -75,9 +76,15 @@ struct YearRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 2 : 5) {
-            // カプセルはこの行を説明するものなので、行の背景に含まれるよう先頭へ置く
+            // カプセルはこの行を説明するものなので、行の背景に含まれるよう先頭へ置く。
+            // 親は leading 揃えなので、行の中央へ寄せ直す
             if let alternateAgeHint {
                 alternateAgeHintCapsule(alternateAgeHint)
+                    // 行の自然幅ではなくスクロール領域の実幅からカプセル幅を決める
+                    .containerRelativeFrame(.horizontal) { length, _ in
+                        length - edgeInset * 2
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
 
             // 補助表示は固定幅の列にしたので、行ごとに形が変わらない。
@@ -105,6 +112,8 @@ struct YearRowView: View {
         }
         .foregroundStyle(rowTextColor)
         .padding(.vertical, compact ? 6 : 10)
+        // VStack は中身の自然幅で決まるため、先に親の幅いっぱいへ広げてから
+        // 背景を敷く。こうしないとカプセルなど長い中身が行からはみ出す
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(rowBackground)
         .contentShape(Rectangle())
@@ -112,7 +121,14 @@ struct YearRowView: View {
     }
 
     /// 収まる倍率を上から順に試す
-    private var primaryScales: [CGFloat] { [1.0, 0.9, 0.8, 0.7, 0.6, 0.55] }
+    private var primaryScales: [CGFloat] {
+        [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5]
+    }
+
+    /// 説明文の各行が折り返さない倍率を上から順に試す
+    private var hintScales: [CGFloat] {
+        primaryScales + [0.45, 0.4]
+    }
 
     /// ダークモードの純白は一覧が明滅して見えるため、少し落ち着かせる
     private var rowTextColor: Color {
@@ -141,10 +157,9 @@ struct YearRowView: View {
     }
 
     private func primaryLine(scale: CGFloat) -> some View {
-        // 基本3列は設定した文字サイズのまま出す。縮めると行ごとに大きさが
-        // 変わって読みにくいので、狭いときに縮むのは補助項目だけにする
-        let baseFontSize = preferredFontSize
-        let auxiliaryFontSize = preferredFontSize * scale
+        // 余白を保って収まらない場合だけ、すべての列を同じ倍率で縮小する
+        let baseFontSize = preferredFontSize * scale
+        let auxiliaryFontSize = baseFontSize
 
         // 補助列は常に縦積みで最小幅なので、すべての余白を可変にして
         // 均等に配れる。3列なら4か所、5列なら6か所へ同じ幅で分かれる
@@ -277,37 +292,32 @@ struct YearRowView: View {
         // （移動先は緑、当年はアクセントカラー）
         let tintColor = alternateAgeHintColor(hint)
 
-        return HStack {
-            // 特大の文字サイズで折り返したときも、行の左右端に接しないようにする
-            Spacer(minLength: edgeInset)
-
-            Text(alternateAgeHintText(hint))
-                .font(.caption2.weight(.semibold))
-                // 背景の色は薄く保ちつつ、文字は本文と同じ濃さにしてコントラストを確保する
-                .foregroundStyle(Color.primary)
-                // 行ごとに長さが違うので、行頭をそろえて読みやすくする
-                .multilineTextAlignment(.leading)
-                // 文中の改行で最大3行。特大の文字サイズではさらに折り返してよいので
-                // 行数を固定せず、縮小もほとんどさせない
-                .lineLimit(nil)
-                .minimumScaleFactor(0.9)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                // 行そのものが色付きの背景なので、カプセルは地の色で抜いて
-                // 枠線だけを行の色に合わせる。同系色を重ねると境界が消えてしまう
-                .background(
-                    Color(.systemBackground).opacity(0.75),
-                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                )
-                .overlay {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(tintColor.opacity(0.7), lineWidth: 1)
-                }
-
-            Spacer(minLength: edgeInset)
+        // 明示した改行だけを残し、各行が収まる倍率まで全体を縮小する
+        return ViewThatFits(in: .horizontal) {
+            ForEach(hintScales, id: \.self) { scale in
+                Text(alternateAgeHintText(hint))
+                    .font(.system(size: preferredHintFontSize * scale, weight: .semibold))
+                    .lineLimit(3)
+                    .fixedSize(horizontal: true, vertical: true)
+            }
         }
-        .frame(maxWidth: .infinity)
+            // 背景の色は薄く保ちつつ、文字は本文と同じ濃さにしてコントラストを確保する
+            .foregroundStyle(Color.primary)
+            // 行ごとに長さが違うので、行頭をそろえて読みやすくする
+            .multilineTextAlignment(.leading)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            // 背景と枠線は最も長い行に必要な幅だけ確保する
+            // 行そのものが色付きの背景なので、カプセルは地の色で抜いて
+            // 枠線だけを行の色に合わせる。同系色を重ねると境界が消えてしまう
+            .background(
+                Color(.systemBackground).opacity(0.75),
+                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(tintColor.opacity(0.7), lineWidth: 1)
+            }
     }
 
     /// 指す先の行の背景色に揃える。rowBackground の isSelected／isCurrentYear と対応させる

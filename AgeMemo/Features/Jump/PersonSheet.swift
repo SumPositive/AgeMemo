@@ -16,6 +16,7 @@ struct PersonSheet: View {
     /// Listは常に画面いっぱいに広がるため、行数から必要最小限の高さを見積もる
     @ScaledMetric(relativeTo: .body) private var estimatedRowHeight: CGFloat = 58
     @ScaledMetric(relativeTo: .body) private var estimatedChromeHeight: CGFloat = 140
+    @ScaledMetric(relativeTo: .caption) private var summaryFontSize: CGFloat = 12
 
     /// 登録が増えても伸ばし続けず、この高さで止めてスクロールさせる
     @ScaledMetric(relativeTo: .body) private var maximumFittedHeight: CGFloat = 480
@@ -152,8 +153,13 @@ struct PersonSheet: View {
         )
     }
 
-    /// 「誕生日：1995年3月15日・満30歳」のように、生年月日と今日時点の年齢を1行で示す
-    private func birthDateSummary(for person: Person) -> LocalizedStringKey {
+    /// 1行表示と日付後で改行する2行表示を用意する
+    private struct PersonDateSummary {
+        let singleLine: String
+        let twoLines: String
+    }
+
+    private func birthDateSummary(for person: Person) -> PersonDateSummary {
         let monthDay = person.birthMonthDay
         let year = String(person.birthYear)
         let month = String(monthDay.month)
@@ -167,14 +173,47 @@ struct PersonSheet: View {
                 // 数え年は元日ごとに増えるため、誕生日は見ずに年の差へ1を足す
                 let currentYear = Calendar.current.component(.year, from: .now)
                 let traditional = String(currentYear - person.birthYear + 1)
-                return "誕生日：\(year)年\(month)月\(day)日・満\(actual)歳／数え\(traditional)歳"
+                return PersonDateSummary(
+                    singleLine: String(localized: "誕生日：\(year)年\(month)月\(day)日・満\(actual)歳・数え\(traditional)歳"),
+                    twoLines: String(localized: "誕生日：\(year)年\(month)月\(day)日\n・満\(actual)歳・数え\(traditional)歳")
+                )
             }
-            return "誕生日：\(year)年\(month)月\(day)日・満\(actual)歳"
+            return PersonDateSummary(
+                singleLine: String(localized: "誕生日：\(year)年\(month)月\(day)日・満\(actual)歳"),
+                twoLines: String(localized: "誕生日：\(year)年\(month)月\(day)日\n・満\(actual)歳")
+            )
         case .anniversary:
             let currentYear = Calendar.current.component(.year, from: .now)
             let count = String(AgeCalculator.anniversaryCount(for: currentYear, startDate: person.birthDate))
-            return "記念日：\(year)年\(month)月\(day)日・\(count)周年"
+            return PersonDateSummary(
+                singleLine: String(localized: "記念日：\(year)年\(month)月\(day)日・\(count)周年"),
+                twoLines: String(localized: "記念日：\(year)年\(month)月\(day)日\n・\(count)周年")
+            )
         }
+    }
+
+    /// 1行、2行、2行縮小の順で収まる表示を選ぶ
+    private func fittedSummary(_ summary: PersonDateSummary) -> some View {
+        ViewThatFits(in: .horizontal) {
+            summaryText(summary.singleLine, lineLimit: 1, scale: 1)
+
+            ForEach(summaryScales, id: \.self) { scale in
+                summaryText(summary.twoLines, lineLimit: 2, scale: scale)
+            }
+        }
+    }
+
+    private func summaryText(_ text: String, lineLimit: Int, scale: CGFloat) -> some View {
+        Text(verbatim: text)
+            .font(.system(size: summaryFontSize * scale))
+            .monospacedDigit()
+            .lineLimit(lineLimit)
+            .fixedSize(horizontal: true, vertical: true)
+    }
+
+    /// 2行でも収まらない場合の縮小倍率
+    private var summaryScales: [CGFloat] {
+        [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]
     }
 
     private func row(for person: Person) -> some View {
@@ -182,10 +221,12 @@ struct PersonSheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(person.name)
                     .font(.body)
-                Text(birthDateSummary(for: person))
-                    .font(.caption.monospacedDigit())
+                fittedSummary(birthDateSummary(for: person))
                     .foregroundStyle(.secondary)
             }
+            // 編集ボタンを除いた残り幅を表示判定へ渡す
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .layoutPriority(1)
 
             Spacer(minLength: 8)
 

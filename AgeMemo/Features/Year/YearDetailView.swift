@@ -128,6 +128,8 @@ struct YearDetailView: View {
 
     /// 暦の属性ラベルの幅。「十二支」の3文字が収まる幅を文字サイズに追従させる
     @ScaledMetric(relativeTo: .caption) private var attributeLabelWidth: CGFloat = 42
+    /// 年齢説明を設定文字サイズから段階的に縮小する基準
+    @ScaledMetric(relativeTo: .body) private var descriptionFontSize: CGFloat = 17
 
     private var ganNenSpan: EraSpan? {
         row.eraSpans.first { $0.isGanNen && !($0.startMonth == 1 && $0.startDay == 1) }
@@ -167,19 +169,16 @@ struct YearDetailView: View {
             if displayedAge != nil || anniversaryCount != nil {
                 VStack(alignment: .leading, spacing: 4) {
                     if let age = displayedAge {
-                        Text(ageDescription(age))
-                            .foregroundStyle(age < 0 ? .secondary : .primary)
+                        fittedDescription(ageDescription(age), isSecondary: age < 0)
                     }
 
                     if let anniversaryCount {
-                        Text(anniversaryDescription(anniversaryCount))
-                            .foregroundStyle(anniversaryCount < 0 ? .secondary : .primary)
+                        fittedDescription(
+                            anniversaryDescription(anniversaryCount),
+                            isSecondary: anniversaryCount < 0
+                        )
                     }
                 }
-                // 文が長いので、外側の1行制限を外して折り返しを許す
-                .lineLimit(nil)
-                .minimumScaleFactor(1)
-                .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -263,6 +262,24 @@ struct YearDetailView: View {
             value()
                 .foregroundStyle(.secondary)
         }
+    }
+
+    /// 明示した改行だけを残し、各行が収まるまで全体を縮小する
+    private func fittedDescription(_ text: String, isSecondary: Bool) -> some View {
+        ViewThatFits(in: .horizontal) {
+            ForEach(descriptionScales, id: \.self) { scale in
+                Text(verbatim: text)
+                    .font(.system(size: descriptionFontSize * scale))
+                    .foregroundStyle(isSecondary ? AnyShapeStyle(.secondary) : AnyShapeStyle(.primary))
+                    .lineLimit(3)
+                    .fixedSize(horizontal: true, vertical: true)
+            }
+        }
+    }
+
+    /// 説明文が収まる倍率を上から順に試す
+    private var descriptionScales: [CGFloat] {
+        [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]
     }
 
     /// その年に迎える賀寿。生まれる前の年には出さない

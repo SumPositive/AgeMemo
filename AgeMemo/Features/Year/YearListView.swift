@@ -202,6 +202,9 @@ struct YearListView: View {
                                 .id(row.id)
                         }
                     }
+                    // 中身の自然幅で横に広がらないよう、スクロール領域の幅に合わせる。
+                    // 付けないとカプセルなど長い行が画面外へはみ出す
+                    .containerRelativeFrame(.horizontal)
                 }
                 .scrollIndicators(.hidden)
                 .task {

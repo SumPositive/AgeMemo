@@ -3041,6 +3041,17 @@
         }
       }
     },
+    "記念日：%@年%@月%@日\n・%@周年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anniversary: %@/%@/%@\n· %@ years"
+          }
+        }
+      }
+    },
     "設定": {
       "extractionState": "manual",
       "localizations": {
@@ -3070,6 +3081,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Born %@/%@/%@ · %@"
+          }
+        }
+      }
+    },
+    "誕生日：%@年%@月%@日\n・満%@歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born %@/%@/%@\n· %@"
+          }
+        }
+      }
+    },
+    "誕生日：%@年%@月%@日・満%@歳・数え%@歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born %@/%@/%@ · %@ · traditional %@"
+          }
+        }
+      }
+    },
+    "誕生日：%@年%@月%@日\n・満%@歳・数え%@歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born %@/%@/%@\n· %@ · traditional %@"
           }
         }
       }
