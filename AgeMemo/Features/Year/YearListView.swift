@@ -4,7 +4,6 @@ import SwiftUI
 
 private enum PresentedSheet: Identifiable {
     case detail(Int)
-    case age
     case person
     case era
     case settings(requestsBirthDateRegistration: Bool)
@@ -12,7 +11,6 @@ private enum PresentedSheet: Identifiable {
     var id: String {
         switch self {
         case .detail(let year): "detail-\(year)"
-        case .age: "age"
         case .person: "person"
         case .era: "era"
         case .settings(let requestsBirthDateRegistration):
@@ -445,14 +443,6 @@ struct YearListView: View {
                     selectedPersonID: selectedPersonID
                 )
             }
-        case .age:
-            AgeJumpSheet(placeholderAge: settings.lastEnteredAge, currentYear: currentYear) { enteredAge, year in
-                // 次回のシート表示で前回の年齢を初期値にする
-                settings.lastEnteredAge = enteredAge
-                selectedDestinationYear = year
-                isAgeJumpDestination = true
-                scroll(to: year)
-            }
         case .person:
             PersonSheet { person in
                 selectedPersonID = person.id
@@ -469,7 +459,9 @@ struct YearListView: View {
             ) { year in
                 // 年号指定でも移動先の行を明示する
                 selectedDestinationYear = year
-                isAgeJumpDestination = false
+                // 年齢一覧では、どの種別で移動しても「その年に生まれた方の年齢」を
+                // 補足するカプセルを出す
+                isAgeJumpDestination = ageDisplayMode == .age
                 scroll(to: year)
             }
         case .settings(let requestsBirthDateRegistration):
@@ -485,7 +477,8 @@ struct YearListView: View {
         switch action {
         case .age:
             ageDisplayMode = .age
-            presentedSheet = .age
+            // 年齢だけでなく西暦・元号でも移動できるよう、共通の移動シートを開く
+            presentedSheet = .era
         case .personal:
             ageDisplayMode = .personal
             selectedDestinationYear = nil

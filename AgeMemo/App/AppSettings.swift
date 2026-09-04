@@ -121,10 +121,6 @@ final class AppSettings {
         didSet { defaults.set(showsNineStar, forKey: Key.showsNineStar) }
     }
 
-    var lastEnteredAge: Int {
-        didSet { defaults.set(lastEnteredAge, forKey: Key.lastEnteredAge) }
-    }
-
     /// 移動シートで最後に選んだ入力種別
     var lastJumpSelectionID: String? {
         didSet {
@@ -145,6 +141,16 @@ final class AppSettings {
                 defaults.removeObject(forKey: Key.lastJumpInput)
             }
         }
+    }
+
+    /// 移動シートの入力種別ごとの実行回数。よく使う種別をすぐ選べるようにするために数える
+    private(set) var jumpSelectionUseCounts: [String: Int] {
+        didSet { defaults.set(jumpSelectionUseCounts, forKey: Key.jumpSelectionUseCounts) }
+    }
+
+    /// 移動を実行したときに、その入力種別の回数を1つ増やす
+    func recordJumpSelectionUse(id: String) {
+        jumpSelectionUseCounts[id, default: 0] += 1
     }
 
     /// メモを「自分」モードのときだけ一覧と詳細に表示する
@@ -169,9 +175,9 @@ final class AppSettings {
         static let fontScale = "fontScale"
         static let appearanceMode = "appearanceMode"
         static let birthDate = "birthDate"
-        static let lastEnteredAge = "lastEnteredAge"
         static let lastJumpSelectionID = "lastJumpSelectionID"
         static let lastJumpInput = "lastJumpInput"
+        static let jumpSelectionUseCounts = "jumpSelectionUseCounts"
         static let showsMemoOnlyForSelf = "showsMemoOnlyForSelf"
         static let showsTraditionalAge = "showsTraditionalAge"
         static let gender = "gender"
@@ -195,9 +201,9 @@ final class AppSettings {
         showsSchoolAge = defaults.bool(forKey: Key.showsSchoolAge)
         showsNineStar = defaults.bool(forKey: Key.showsNineStar)
         birthDate = defaults.object(forKey: Key.birthDate) as? Date
-        lastEnteredAge = defaults.object(forKey: Key.lastEnteredAge) as? Int ?? 0
         lastJumpSelectionID = defaults.string(forKey: Key.lastJumpSelectionID)
         lastJumpInput = defaults.object(forKey: Key.lastJumpInput) as? Int
+        jumpSelectionUseCounts = defaults.dictionary(forKey: Key.jumpSelectionUseCounts) as? [String: Int] ?? [:]
         // 未設定時はONを既定とするため、値の有無を見てから読み出す
         showsMemoOnlyForSelf = defaults.object(forKey: Key.showsMemoOnlyForSelf) as? Bool ?? true
         showsTraditionalAge = defaults.object(forKey: Key.showsTraditionalAge) as? Bool ?? true

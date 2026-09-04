@@ -3,13 +3,17 @@
 import SwiftUI
 
 private enum EraJumpSelection: Hashable, Identifiable {
-    case age
+    case actualAge
+    /// 数え年で指定する。設定「数え年を表示する」がONのときだけ選べる
+    case traditionalAge
     case gregorian
     case era(EraChoice)
 
     var id: String {
         switch self {
-        case .age: "age"
+        // 以前の "age" を引き継ぎ、保存済みの選択が満年齢のまま復元されるようにする
+        case .actualAge: "age"
+        case .traditionalAge: "traditionalAge"
         case .gregorian: "gregorian"
         case .era(let choice): "era-\(choice.id)"
         }
@@ -17,11 +21,13 @@ private enum EraJumpSelection: Hashable, Identifiable {
 
     var title: String {
         switch self {
-        case .age: "年齢"
+        case .actualAge: "満年齢"
+        case .traditionalAge: "数え年齢"
         case .gregorian: "西暦"
         case .era(let choice): choice.name
         }
     }
+
 }
 
 struct EraJumpSheet: View {
@@ -41,6 +47,8 @@ struct EraJumpSheet: View {
     let jump: (Int) -> Void
 
     private let currentYear = Calendar.current.component(.year, from: .now)
+    /// よく使う種別タグの文字サイズ。小さめのタグにして入力欄の邪魔をしない
+    @ScaledMetric(relativeTo: .caption2) private var frequentSelectionFontSize: CGFloat = 11
 
     init(
         rows: [YearRow],
@@ -77,7 +85,7 @@ struct EraJumpSheet: View {
 
     private static func maximumInput(for selection: EraJumpSelection) -> Int {
         switch selection {
-        case .age: AppConfig.maximumAgeInput
+        case .actualAge, .traditionalAge: AppConfig.maximumAgeInput
         case .gregorian: 9999
         case .era: 999
         }
@@ -87,8 +95,11 @@ struct EraJumpSheet: View {
         id: String?,
         eraChoices: [EraChoice]
     ) -> EraJumpSelection {
-        if id == EraJumpSelection.age.id {
-            return .age
+        if id == EraJumpSelection.actualAge.id {
+            return .actualAge
+        }
+        if id == EraJumpSelection.traditionalAge.id {
+            return .traditionalAge
         }
         if id == EraJumpSelection.gregorian.id {
             return .gregorian
@@ -105,13 +116,22 @@ struct EraJumpSheet: View {
 
     private func placeholderInputYear(for selection: EraJumpSelection) -> Int {
         switch selection {
-        case .age:
+        case .actualAge:
             AgeCalculator.displayedAge(
                 for: currentYear,
                 mode: ageDisplayMode,
                 birthDate: birthDate,
                 currentYear: currentYear
             ) ?? 0
+        case .traditionalAge:
+            AgeCalculator.traditionalAge(
+                fromActual: AgeCalculator.displayedAge(
+                    for: currentYear,
+                    mode: ageDisplayMode,
+                    birthDate: birthDate,
+                    currentYear: currentYear
+                ) ?? 0
+            )
         case .gregorian:
             currentYear
         case .era(let choice):
@@ -132,13 +152,37 @@ struct EraJumpSheet: View {
     }
 
     private var pickerOptions: [EraJumpSelection] {
-        [.age, .gregorian] + eraChoices.reversed().map(EraJumpSelection.era)
+        // 数え年での指定は、設定「数え年を表示する」がONのときだけ選べるようにする
+        let ageOptions: [EraJumpSelection] = settings.showsTraditionalAge
+            ? [.traditionalAge, .actualAge]
+            : [.actualAge]
+        return ageOptions + [.gregorian] + eraChoices.reversed().map(EraJumpSelection.era)
     }
+
+    /// よく使う入力種別の上位5件。実行回数の多い順に並べ、
+    /// 同数のときは選択肢の並び順を保って安定させる
+    private var frequentSelections: [EraJumpSelection] {
+        let counts = settings.jumpSelectionUseCounts
+        let used = pickerOptions.enumerated()
+            .compactMap { index, option -> (option: EraJumpSelection, count: Int, index: Int)? in
+                guard let count = counts[option.id], 0 < count else { return nil }
+                return (option, count, index)
+            }
+        return used
+            .sorted { ($0.count, $1.index) > ($1.count, $0.index) }
+            .prefix(Self.frequentSelectionLimit)
+            .map(\.option)
+    }
+
+    /// 1行に収める上限
+    private static let frequentSelectionLimit = 5
 
     private var pickerStyle: AZPickerStyle {
         var style = AZPickerStyle.form
         style.optionFont = .title2
-        style.dropdownIndicator = .chevron
+        // 「数え年齢」のような長い選択肢が省略されないよう、
+        // インジケータの分の幅を文字へ回す
+        style.dropdownIndicator = .none
         style.dropdownTextFitMode = .scale(minimumScaleFactor: 0.6)
         style.dropdownOptionHorizontalPadding = 12
         return style
@@ -150,8 +194,11 @@ struct EraJumpSheet: View {
 
     private func convertedYear(for selection: EraJumpSelection, input: Int) -> Int {
         switch selection {
-        case .age:
+        case .actualAge:
             destinationYear(forAge: input)
+        case .traditionalAge:
+            // 数え年は満年齢へ直してから、満年齢と同じ計算に載せる
+            destinationYear(forAge: AgeCalculator.actualAge(fromTraditional: input))
         case .gregorian:
             input
         case .era(let choice):
@@ -162,13 +209,22 @@ struct EraJumpSheet: View {
     /// 同じ西暦年を新しい入力種別の値へ換算する
     private func input(for selection: EraJumpSelection, destinationYear: Int) -> Int {
         switch selection {
-        case .age:
+        case .actualAge:
             return AgeCalculator.displayedAge(
                 for: destinationYear,
                 mode: ageDisplayMode,
                 birthDate: birthDate,
                 currentYear: currentYear
             ) ?? 0
+        case .traditionalAge:
+            return AgeCalculator.traditionalAge(
+                fromActual: AgeCalculator.displayedAge(
+                    for: destinationYear,
+                    mode: ageDisplayMode,
+                    birthDate: birthDate,
+                    currentYear: currentYear
+                ) ?? 0
+            )
         case .gregorian:
             return destinationYear
         case .era(let choice):
@@ -206,6 +262,10 @@ struct EraJumpSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 12) {
+                    if !frequentSelections.isEmpty {
+                        frequentSelectionRow
+                    }
+
                     inputRow
 
                     if convertedYear != boundedYear {
@@ -219,6 +279,8 @@ struct EraJumpSheet: View {
                     }
 
                     Button {
+                        // よく使う種別をすぐ選べるよう、実行したものだけ数える
+                        settings.recordJumpSelectionUse(id: selection.id)
                         jump(boundedYear)
                         dismiss()
                     } label: {
@@ -246,6 +308,62 @@ struct EraJumpSheet: View {
         }
         .fittedSheetHeight()
         .presentationDragIndicator(.visible)
+        .onAppear {
+            // 数え年で保存されたまま設定がOFFになっていると、選べない値が
+            // 選択されたままになるため満年齢へ戻す
+            if selection == .traditionalAge, !settings.showsTraditionalAge {
+                selection = .actualAge
+            }
+        }
+    }
+
+    /// よく使う入力種別をすぐ選べるタブ。押すと種別だけを切り替える
+    private var frequentSelectionRow: some View {
+        // 収まる倍率を上から順に試し、入らないときだけ全体を均等に縮める。
+        // 候補は自然幅で測らせ、右寄せは外側で行う
+        ViewThatFits(in: .horizontal) {
+            ForEach(Self.frequentSelectionScales, id: \.self) { scale in
+                frequentSelectionRow(scale: scale)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+    }
+
+    /// 幅が足りないときに試す文字の倍率
+    private static let frequentSelectionScales: [CGFloat] = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5]
+
+    private func frequentSelectionRow(scale: CGFloat) -> some View {
+        HStack(spacing: 4) {
+            ForEach(frequentSelections) { option in
+                let isSelected = option == selection
+                Button {
+                    // selection を変えれば onChange で換算と保存が走る
+                    guard option != selection else { return }
+                    selection = option
+                } label: {
+                    Text(option.title)
+                        .font(.system(size: frequentSelectionFontSize * scale, weight: isSelected ? .semibold : .regular))
+                        .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
+                        .lineLimit(1)
+                        .padding(.horizontal, 8 * scale)
+                        .padding(.vertical, 3.5 * scale)
+                        .background(
+                            Capsule().fill(isSelected
+                                           ? Color.accentColor.opacity(0.14)
+                                           : Color(.secondarySystemGroupedBackground))
+                        )
+                        .overlay(
+                            Capsule().strokeBorder(
+                                isSelected
+                                    ? Color.accentColor.opacity(0.55)
+                                    : Color.secondary.opacity(0.30),
+                                lineWidth: 1
+                            )
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
     }
 
     private var inputRow: some View {

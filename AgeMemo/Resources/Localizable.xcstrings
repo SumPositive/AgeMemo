@@ -2244,6 +2244,17 @@
         }
       }
     },
+    "数え年齢": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traditional age"
+          }
+        }
+      }
+    },
     "文字どおり百歳。紀寿（きじゅ）とも呼ばれ、一世紀を生きたことを意味します。": {
       "extractionState": "manual",
       "localizations": {
@@ -2597,6 +2608,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Shibukawa Harumi produced the Jōkyō calendar, the first calendrical system devised by a Japanese astronomer, replacing the Chinese calendar used until then."
+          }
+        }
+      }
+    },
+    "満年齢": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual age"
           }
         }
       }
