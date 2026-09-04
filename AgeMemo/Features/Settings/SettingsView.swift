@@ -45,10 +45,11 @@ struct SettingsView: View {
             options: Option.allCases,
             selection: selection,
             minOptionWidth: 0,
-            maxOptionWidth: 120,
+            maxOptionWidth: 200,
             horizontalPadding: 6,
             optionSpacing: 4,
-            groupPadding: 5
+            groupPadding: 5,
+            keepsLabelOnOneLine: true
         ) {
             // 設定項目の説明は見出しの右に集約する
             HStack(alignment: .center, spacing: 4) {

@@ -90,10 +90,11 @@ struct YearListView: View {
         switch ageDisplayMode {
         case .age:
             // 生年月日が分からないため、指定した年齢の人は「選択行の年に生まれた」
-            // 可能性と「その1年前に生まれ、まだ誕生日前」の可能性の両方がある
+            // 可能性と「その1年前に生まれ、まだ誕生日前」の可能性の両方がある。
+            // カプセルは説明対象である選択行そのものに付ける
             guard isAgeJumpDestination,
                   let selectedDestinationYear,
-                  year == selectedDestinationYear - 1,
+                  year == selectedDestinationYear,
                   AppConfig.yearRange.contains(selectedDestinationYear - 1),
                   let selectedAge = displayedAge(for: selectedDestinationYear) else { return nil }
             return AlternateAgeHint(
@@ -101,8 +102,8 @@ struct YearListView: View {
                 value: selectedDestinationYear - 1
             )
         case .personal, .person:
-            // カプセルは当年行の直前（1つ前の年の行）に付ける
-            guard year == currentYear - 1, let baseDate = effectiveBirthDate else { return nil }
+            // カプセルは説明対象である当年の行そのものに付ける
+            guard year == currentYear, let baseDate = effectiveBirthDate else { return nil }
 
             // 記念日は月日を見ないため、その年のうちは常に同じ周年数を示す
             if isShowingAnniversary {

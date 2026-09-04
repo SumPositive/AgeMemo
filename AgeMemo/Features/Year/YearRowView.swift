@@ -5,11 +5,11 @@ import SwiftUI
 /// 行の下に添えるカプセルの内容
 struct AlternateAgeHint: Equatable {
     enum Kind: Equatable {
-        /// 年齢一覧のジャンプ先の1つ前の年（＝選択行の直前）に付ける。
+        /// 年齢一覧のジャンプ先の行に付ける。
         /// 月日が分からないため常に「かもしれない」扱い。
-        /// selectedAge は選択行（ジャンプ先）に表示されている年齢
+        /// selectedAge はその行に表示されている年齢
         case ageJump(selectedAge: Int)
-        /// 自分／名簿一覧の当年の1つ前の年に付ける。
+        /// 自分／名簿一覧の当年の行に付ける。
         /// 実際の生年月日から「今日はまだ誕生日前」と判定できたときだけ出す
         case beforeBirthdayToday
         /// 同じ位置で、今年の誕生日をすでに迎えているときに出す
@@ -75,6 +75,11 @@ struct YearRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 2 : 5) {
+            // カプセルはこの行を説明するものなので、行の背景に含まれるよう先頭へ置く
+            if let alternateAgeHint {
+                alternateAgeHintCapsule(alternateAgeHint)
+            }
+
             // 補助表示は固定幅の列にしたので、行ごとに形が変わらない。
             // 倍率だけを ViewThatFits で決める
             ViewThatFits(in: .horizontal) {
@@ -83,10 +88,6 @@ struct YearRowView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-
-            if let alternateAgeHint {
-                alternateAgeHintCapsule(alternateAgeHint)
-            }
 
             if hasSecondaryLine {
                 HStack(spacing: 6) {
@@ -270,14 +271,15 @@ struct YearRowView: View {
             .minimumScaleFactor(0.6)
     }
 
-    /// 年齢列の真下、行の左端（edgeInset）に合わせてカプセルを置く
+    /// 行の先頭に置く説明カプセル
     private func alternateAgeHintCapsule(_ hint: AlternateAgeHint) -> some View {
-        // カプセルは1つ前の年の行に付き、その直下＝選択行（または当年行）の直前に表示される。
-        // 指す先の行の背景色（移動先は緑、当年はアクセントカラー）に合わせる
+        // カプセルは説明対象の行そのものに付くので、その行の背景色に合わせる
+        // （移動先は緑、当年はアクセントカラー）
         let tintColor = alternateAgeHintColor(hint)
 
         return HStack {
-            Spacer(minLength: 0)
+            // 特大の文字サイズで折り返したときも、行の左右端に接しないようにする
+            Spacer(minLength: edgeInset)
 
             Text(alternateAgeHintText(hint))
                 .font(.caption2.weight(.semibold))
@@ -285,20 +287,25 @@ struct YearRowView: View {
                 .foregroundStyle(Color.primary)
                 // 行ごとに長さが違うので、行頭をそろえて読みやすくする
                 .multilineTextAlignment(.leading)
-                // 文中の改行で2〜3行に分け、縮小せずに読める大きさを保つ
-                .lineLimit(3)
+                // 文中の改行で最大3行。特大の文字サイズではさらに折り返してよいので
+                // 行数を固定せず、縮小もほとんどさせない
+                .lineLimit(nil)
                 .minimumScaleFactor(0.9)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
-                // 2行になると Capsule では角が丸すぎるため角丸長方形にする
-                .background(tintColor.opacity(0.28), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                // 行そのものが色付きの背景なので、カプセルは地の色で抜いて
+                // 枠線だけを行の色に合わせる。同系色を重ねると境界が消えてしまう
+                .background(
+                    Color(.systemBackground).opacity(0.75),
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                )
                 .overlay {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(tintColor.opacity(0.6), lineWidth: 1)
+                        .strokeBorder(tintColor.opacity(0.7), lineWidth: 1)
                 }
 
-            Spacer(minLength: 0)
+            Spacer(minLength: edgeInset)
         }
         .frame(maxWidth: .infinity)
     }
@@ -317,9 +324,8 @@ struct YearRowView: View {
     private func alternateAgeHintText(_ hint: AlternateAgeHint) -> LocalizedStringKey {
         switch hint.kind {
         case .ageJump(let selectedAge):
-            // 選択行の年齢と、誕生日を迎えた後の年齢の両方を示して
-            // 「この行に該当するのはどういう人か」を分かるようにする
-            "現在\(String(selectedAge))歳、今年の誕生日で\(String(selectedAge + 1))歳に\nなる方は\(String(hint.value))年生まれです"
+            // この行そのものが何の年かを1文で説明する
+            "今年の誕生日で満\(String(selectedAge))歳になる方の誕生年です"
         case .beforeBirthdayToday:
             // value は誕生日前の満年齢。誕生日を迎えると +1 になり、
             // 数え年は元日にその値へ達しているので +2 にあたる

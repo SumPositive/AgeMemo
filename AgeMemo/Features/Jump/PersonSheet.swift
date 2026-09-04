@@ -30,20 +30,25 @@ struct PersonSheet: View {
         """
         家族・親戚・友人など、年齢を調べたい方を登録しておく名簿です。登録すると一覧がその方の生年月日を基準になり、各年に何歳になるかを確認できます。
 
+        結婚記念日や開店日など、年ごとの区切りを数えたい日も「記念日」として登録できます。記念日を選ぶと、一覧の年齢の代わりに、その年で何周年にあたるかを表示します。
+
         【選ぶ】
         名前の行をタップすると、その方を基準にした一覧へ切り替わります。
 
         【追加】
-        右上の＋を押し、名前と生年月日を入力して保存します。
+        右上の＋を押し、「誕生日」か「記念日」を選んでから、名前（記念日は名称）と日付を入力して保存します。
 
         【変更】
-        行の右端にある変更ボタンを押すと、名前と生年月日を編集できます。行を左へスワイプして「変更」を選ぶこともできます。
+        行の右端にある変更ボタンを押すと、内容を編集できます。行を左へスワイプして「変更」を選ぶこともできます。
 
         【削除】
         行を左へスワイプして「削除」を選びます。確認の後に削除され、取り消しはできません。
 
         【並べ替え】
         行を長押ししたまま上下へドラッグすると、好きな順序に並べ替えられます。並び順は保存され、追加や変更をしても崩れません。
+
+        【周年の数え方】
+        周年は月日を見ず、その年のうちは同じ数のままです。登録した年が0周年で、翌年から1周年になります。
         """
     }
 
@@ -299,10 +304,11 @@ private struct PersonEditorSheet: View {
                     options: PersonKind.allCases,
                     selection: $kind,
                     minOptionWidth: 0,
-                    maxOptionWidth: 120,
+                    maxOptionWidth: 200,
                     horizontalPadding: 6,
                     optionSpacing: 4,
-                    groupPadding: 5
+                    groupPadding: 5,
+                    keepsLabelOnOneLine: true
                 ) {
                     HStack(alignment: .center, spacing: 4) {
                         Text("種類")
@@ -344,10 +350,11 @@ private struct PersonEditorSheet: View {
                         options: Gender.allCases,
                         selection: $gender,
                         minOptionWidth: 0,
-                        maxOptionWidth: 120,
+                        maxOptionWidth: 200,
                         horizontalPadding: 6,
                         optionSpacing: 4,
-                        groupPadding: 5
+                        groupPadding: 5,
+                        keepsLabelOnOneLine: true
                     ) {
                         HStack(alignment: .center, spacing: 4) {
                             Text("性別")

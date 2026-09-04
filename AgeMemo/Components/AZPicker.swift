@@ -450,6 +450,8 @@ struct AZRadioPicker<Option: Hashable & Identifiable, Label: View>: View {
     var wrapsOptions: Bool = true
     /// 折り返さない時に各候補を均等幅で横いっぱいに広げる
     var fillsWidth: Bool = false
+    /// ラベルを必ず1行に収める。en の長い語が語中で折り返すのを防ぐ
+    var keepsLabelOnOneLine: Bool = false
     var style: AZPickerStyle = .form
     @ViewBuilder let label: (Option) -> Label
 
@@ -504,11 +506,11 @@ struct AZRadioPicker<Option: Hashable & Identifiable, Label: View>: View {
                 .font(style.optionFont)
                 .fontWeight(weight)
                 .foregroundStyle(isSelected ? selectedFg : unselectedFg)
-                .lineLimit(fillsWidth ? 1 : nil)
-                .minimumScaleFactor(fillsWidth ? 0.50 : 1)
-                .allowsTightening(fillsWidth)
+                .lineLimit(fillsWidth || keepsLabelOnOneLine ? 1 : nil)
+                .minimumScaleFactor(fillsWidth || keepsLabelOnOneLine ? 0.50 : 1)
+                .allowsTightening(fillsWidth || keepsLabelOnOneLine)
                 .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: !fillsWidth)
+                .fixedSize(horizontal: false, vertical: !fillsWidth && !keepsLabelOnOneLine)
                 .padding(.horizontal, horizontalPadding)
                 .padding(.vertical, 8)
                 .frame(
@@ -570,6 +572,8 @@ struct AZAdaptiveRadioRow<Option: Hashable & Identifiable, Title: View, Label: V
     var horizontalPadding: CGFloat = 10
     var optionSpacing: CGFloat = 6
     var groupPadding: CGFloat = 6
+    /// ラベルを必ず1行に収める。en の長い語が語中で折り返すのを防ぐ
+    var keepsLabelOnOneLine: Bool = false
     var style: AZPickerStyle = .form
     @ViewBuilder let title: () -> Title
     @ViewBuilder let label: (Option) -> Label
@@ -606,6 +610,7 @@ struct AZAdaptiveRadioRow<Option: Hashable & Identifiable, Title: View, Label: V
             optionSpacing: optionSpacing,
             groupPadding: groupPadding,
             wrapsOptions: wrapsOptions,
+            keepsLabelOnOneLine: keepsLabelOnOneLine,
             style: style
         ) { option in
             label(option)
