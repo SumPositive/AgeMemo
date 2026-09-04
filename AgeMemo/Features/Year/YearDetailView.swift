@@ -335,7 +335,7 @@ struct YearDetailView: View {
     }
 
     private var displayedAge: Int? {
-        // 記念日には年齢の概念が無いため、賀寿・厄年・九星の判定にも使う
+        // 記念日には年齢の概念が無いため、賀寿・厄年の判定にも使う
         // この値は記念日選択時に nil になり、それらを自動的に非表示にする
         guard !isShowingAnniversary else { return nil }
         return AgeCalculator.displayedAge(

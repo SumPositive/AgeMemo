@@ -44,6 +44,8 @@ struct EraJumpSheet: View {
     let ageDisplayMode: AgeDisplayMode
     /// 自分または名簿人物の年齢換算に使う生年月日
     let birthDate: Date?
+    /// 名簿で記念日を選んでいる場合は、年齢ではなく周年として扱う
+    let isAnniversary: Bool
     let jump: (Int) -> Void
 
     private let currentYear = Calendar.current.component(.year, from: .now)
@@ -54,6 +56,7 @@ struct EraJumpSheet: View {
         rows: [YearRow],
         ageDisplayMode: AgeDisplayMode,
         birthDate: Date?,
+        isAnniversary: Bool = false,
         initialSelectionID: String?,
         initialInput: Int?,
         jump: @escaping (Int) -> Void
@@ -61,10 +64,15 @@ struct EraJumpSheet: View {
         self.rows = rows
         self.ageDisplayMode = ageDisplayMode
         self.birthDate = birthDate
+        self.isAnniversary = isAnniversary
         self.jump = jump
         let eraChoices = JapaneseEra.eraChoices(from: rows)
         // 保存値がなければ対象範囲の最新元号を初期表示にする
-        let restoredSelection = Self.restoredSelection(id: initialSelectionID, eraChoices: eraChoices)
+        let savedSelection = Self.restoredSelection(id: initialSelectionID, eraChoices: eraChoices)
+        // 記念日に数え年は存在しないため、保存値が数え年なら周年へ戻す
+        let restoredSelection = isAnniversary && savedSelection == .traditionalAge
+            ? EraJumpSelection.actualAge
+            : savedSelection
         _selection = State(initialValue: restoredSelection)
 
         if let initialInput {
@@ -152,6 +160,10 @@ struct EraJumpSheet: View {
     }
 
     private var pickerOptions: [EraJumpSelection] {
+        // 記念日は満年齢に相当する入力を周年として使い、数え年は表示しない
+        if isAnniversary {
+            return [.actualAge, .gregorian] + eraChoices.reversed().map(EraJumpSelection.era)
+        }
         // 数え年での指定は、設定「数え年を表示する」がONのときだけ選べるようにする
         let ageOptions: [EraJumpSelection] = settings.showsTraditionalAge
             ? [.traditionalAge, .actualAge]
@@ -195,14 +207,18 @@ struct EraJumpSheet: View {
     private func convertedYear(for selection: EraJumpSelection, input: Int) -> Int {
         switch selection {
         case .actualAge:
-            destinationYear(forAge: input)
+            // 記念日一覧では入力値を周年として登録年から逆算する
+            if isAnniversary, let birthDate {
+                return AgeCalculator.year(forAnniversary: input, startDate: birthDate)
+            }
+            return destinationYear(forAge: input)
         case .traditionalAge:
             // 数え年は満年齢へ直してから、満年齢と同じ計算に載せる
-            destinationYear(forAge: AgeCalculator.actualAge(fromTraditional: input))
+            return destinationYear(forAge: AgeCalculator.actualAge(fromTraditional: input))
         case .gregorian:
-            input
+            return input
         case .era(let choice):
-            choice.firstGregorianYear + input - 1
+            return choice.firstGregorianYear + input - 1
         }
     }
 
@@ -210,6 +226,10 @@ struct EraJumpSheet: View {
     private func input(for selection: EraJumpSelection, destinationYear: Int) -> Int {
         switch selection {
         case .actualAge:
+            // 記念日一覧では移動先の西暦年を周年へ換算する
+            if isAnniversary, let birthDate {
+                return AgeCalculator.anniversaryCount(for: destinationYear, startDate: birthDate)
+            }
             return AgeCalculator.displayedAge(
                 for: destinationYear,
                 mode: ageDisplayMode,
@@ -341,7 +361,7 @@ struct EraJumpSheet: View {
                     guard option != selection else { return }
                     selection = option
                 } label: {
-                    Text(option.title)
+                    Text(selectionTitle(option))
                         .font(.system(size: frequentSelectionFontSize * scale, weight: isSelected ? .semibold : .regular))
                         .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
                         .lineLimit(1)
@@ -376,7 +396,7 @@ struct EraJumpSheet: View {
                 fillsWidth: true,
                 style: pickerStyle
             ) { option in
-                Text(option.title)
+                Text(selectionTitle(option))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -414,6 +434,14 @@ struct EraJumpSheet: View {
             settings.lastJumpSelectionID = newSelection.id
             settings.lastJumpInput = retainedInput
         }
+    }
+
+    /// 記念日一覧では満年齢の計算枠を「周年」として表示する
+    private func selectionTitle(_ option: EraJumpSelection) -> String {
+        if isAnniversary, option == .actualAge {
+            return "周年"
+        }
+        return option.title
     }
 
     private var inputDisplayText: String {

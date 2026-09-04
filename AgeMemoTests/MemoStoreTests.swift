@@ -79,4 +79,41 @@ final class PersonStoreTests: XCTestCase {
         loaded.delete(id: personID)
         XCTAssertTrue(PersonStore(fileURL: fileURL).people.isEmpty)
     }
+
+    /// 記念日の種別が保存後の再読込でも維持される
+    func testAnniversaryKindRoundTrip() throws {
+        let date = try XCTUnwrap(
+            Calendar(identifier: .gregorian)
+                .date(from: DateComponents(year: 1995, month: 3, day: 2))
+        )
+        let store = PersonStore(fileURL: fileURL)
+        store.add(name: "創立記念日", birthDate: date, kind: .anniversary)
+
+        let loaded = PersonStore(fileURL: fileURL)
+        XCTAssertEqual(loaded.people.first?.kind, .anniversary)
+        XCTAssertEqual(loaded.people.first?.birthDate, date)
+    }
+
+    /// 1.0.0形式のkindがない名簿は誕生日として読み込む
+    func testLegacyDocumentWithoutKindDefaultsToBirthday() throws {
+        let date = try XCTUnwrap(
+            Calendar(identifier: .gregorian)
+                .date(from: DateComponents(year: 1963, month: 9, day: 1))
+        )
+        let store = PersonStore(fileURL: fileURL)
+        store.add(name: "本人", birthDate: date, gender: .male)
+
+        let savedData = try Data(contentsOf: fileURL)
+        var document = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: savedData) as? [String: Any]
+        )
+        var people = try XCTUnwrap(document["people"] as? [[String: Any]])
+        people[0].removeValue(forKey: "kind")
+        document["people"] = people
+        try JSONSerialization.data(withJSONObject: document).write(to: fileURL, options: .atomic)
+
+        let loaded = PersonStore(fileURL: fileURL)
+        XCTAssertEqual(loaded.people.first?.kind, .birthday)
+        XCTAssertEqual(loaded.people.first?.gender, .male)
+    }
 }

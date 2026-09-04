@@ -1,2 +1,4 @@
-・Tap any Japanese term on the year detail screen to read what it means, how it is pronounced and where it came from. Era names, stem-branch signs, rokuyo, nine-star signs, yakudoshi and gaju are all covered
-・The explanations are written for readers interested in Japanese culture. Calendar terms stay in Japanese, with kana and romaji readings alongside
+• Tap era names, zodiac signs, nine-star signs, yakudoshi and other terms in a year's detail view to read an explanation
+• English explanations now include more cultural context for readers interested in Japan
+• Age displays now clearly explain the difference before and after the birthday
+• Save anniversaries in the roster and track yearly milestones such as wedding anniversaries and company founding dates

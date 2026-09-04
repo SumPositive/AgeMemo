@@ -9,11 +9,12 @@ Note: the app's interface is available in English, but the calendar data it show
 ・Opens centred on the current year
 ・Transition years show both era names, e.g. Keio 4 / Meiji 1
 ・Covers the Edo period eras, not just the modern ones
+・For Myself and birthday entries, the current year clearly distinguishes the age reached on the birthday from the age today
 
 ■ Three ways to read it
 ・Age — how old someone born in each year is today. No birth date needed
 ・Myself — how old you are in each year, from your date of birth
-・Roster — the same, for family and friends you save
+・Roster — ages for saved birthdays, or year-by-year counts for wedding anniversaries, company founding dates and other milestones
 
 ■ Jump
 ・Jump by age, Western year, or era year
@@ -37,7 +38,7 @@ Note: the app's interface is available in English, but the calendar data it show
 ・厄年 yakudoshi — the unlucky years people visit a shrine for
 
 ■ Made to be readable
-・Switch between the Western age count and 数え年 kazoedoshi
+・Ages use the modern birthday-based count, with optional 数え年 kazoedoshi guidance
 ・Beginner mode explains each screen
 ・Four text sizes
 ・Light and dark appearance

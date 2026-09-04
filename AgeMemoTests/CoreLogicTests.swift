@@ -94,6 +94,57 @@ final class CoreLogicTests: XCTestCase {
         XCTAssertEqual(AgeCalculator.year(forAge: -2, birthDate: birthDate), 1986)
     }
 
+    /// 記念日は登録年を0周年として前年・登録年・翌年を数える
+    func testAnniversaryCount() throws {
+        let startDate = try XCTUnwrap(
+            Calendar(identifier: .gregorian)
+                .date(from: DateComponents(year: 1995, month: 3, day: 2))
+        )
+        XCTAssertEqual(AgeCalculator.anniversaryCount(for: 1994, startDate: startDate), -1)
+        XCTAssertEqual(AgeCalculator.anniversaryCount(for: 1995, startDate: startDate), 0)
+        XCTAssertEqual(AgeCalculator.anniversaryCount(for: 1996, startDate: startDate), 1)
+    }
+
+    /// 記念日一覧の周年指定を登録年から西暦年へ逆算する
+    func testYearForAnniversaryJump() throws {
+        let startDate = try XCTUnwrap(
+            Calendar(identifier: .gregorian)
+                .date(from: DateComponents(year: 1995, month: 3, day: 2))
+        )
+        XCTAssertEqual(AgeCalculator.year(forAnniversary: 0, startDate: startDate), 1995)
+        XCTAssertEqual(AgeCalculator.year(forAnniversary: 31, startDate: startDate), 2026)
+        XCTAssertEqual(AgeCalculator.year(forAnniversary: -1, startDate: startDate), 1994)
+    }
+
+    /// 誕生日前・当日・誕生日後で今日時点の満年齢が切り替わる
+    func testCurrentActualAgeAroundBirthday() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let birthDate = try XCTUnwrap(calendar.date(from: DateComponents(year: 1995, month: 3, day: 2)))
+        let before = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 3, day: 1)))
+        let birthday = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 3, day: 2)))
+        let after = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 3, day: 3)))
+
+        XCTAssertEqual(AgeCalculator.currentActualAge(birthDate: birthDate, today: before), 30)
+        XCTAssertEqual(AgeCalculator.currentActualAge(birthDate: birthDate, today: birthday), 31)
+        XCTAssertEqual(AgeCalculator.currentActualAge(birthDate: birthDate, today: after), 31)
+        XCTAssertTrue(AgeCalculator.isBeforeBirthday(birthDate: birthDate, today: before))
+        XCTAssertFalse(AgeCalculator.isBeforeBirthday(birthDate: birthDate, today: birthday))
+        XCTAssertFalse(AgeCalculator.isBeforeBirthday(birthDate: birthDate, today: after))
+    }
+
+    /// 2月29日生まれはうるう年の誕生日当日に満年齢が切り替わる
+    func testLeapDayBirthday() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let birthDate = try XCTUnwrap(calendar.date(from: DateComponents(year: 2000, month: 2, day: 29)))
+        let before = try XCTUnwrap(calendar.date(from: DateComponents(year: 2024, month: 2, day: 28)))
+        let birthday = try XCTUnwrap(calendar.date(from: DateComponents(year: 2024, month: 2, day: 29)))
+
+        XCTAssertEqual(AgeCalculator.currentActualAge(birthDate: birthDate, today: before), 23)
+        XCTAssertEqual(AgeCalculator.currentActualAge(birthDate: birthDate, today: birthday), 24)
+        XCTAssertTrue(AgeCalculator.isBeforeBirthday(birthDate: birthDate, today: before))
+        XCTAssertFalse(AgeCalculator.isBeforeBirthday(birthDate: birthDate, today: birthday))
+    }
+
     /// 数え年は生まれた時点で1歳、以後元日ごとに1つ増える
     func testTraditionalAgeConversion() {
         XCTAssertEqual(AgeCalculator.traditionalAge(fromActual: 0), 1)

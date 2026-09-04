@@ -47,6 +47,15 @@ enum AgeCalculator {
         rowYear - calendar.component(.year, from: startDate)
     }
 
+    /// 指定した周年を迎える西暦年を求める
+    static func year(
+        forAnniversary count: Int,
+        startDate: Date,
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> Int {
+        calendar.component(.year, from: startDate) + count
+    }
+
     /// 指定した満年齢の人が生まれた年を求める。displayedAge の逆算にあたる
     static func birthYear(forAge age: Int, currentYear: Int) -> Int {
         currentYear - age

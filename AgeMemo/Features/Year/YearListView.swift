@@ -289,6 +289,8 @@ struct YearListView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("1963年詳細を開く")
                 .accessibilityIdentifier("snapshot.open1963Detail")
+                // 選択色だけでなく実際の一覧基準をUIテストから確認できるようにする
+                .accessibilityValue(Text(verbatim: snapshotAgeDisplayModeIdentifier))
             }
 #endif
         }
@@ -322,6 +324,17 @@ struct YearListView: View {
                 .appAppearance(colorScheme: sheetColorScheme)
         }
     }
+
+#if DEBUG
+    /// スクリーンショットテストが実際の一覧基準を確認するための値
+    private var snapshotAgeDisplayModeIdentifier: String {
+        switch ageDisplayMode {
+        case .age: "age"
+        case .personal: "personal"
+        case .person: "person"
+        }
+    }
+#endif
 
     /// 横向きは縦の余白が乏しい。ヒントや広告に高さを使うと一覧が数行しか
     /// 見えなくなるため、設定が初心者でも達人として扱う
@@ -457,6 +470,7 @@ struct YearListView: View {
                 rows: rows,
                 ageDisplayMode: ageDisplayMode,
                 birthDate: effectiveBirthDate,
+                isAnniversary: isShowingAnniversary,
                 initialSelectionID: settings.lastJumpSelectionID,
                 initialInput: settings.lastJumpInput
             ) { year in
@@ -583,7 +597,7 @@ struct YearListView: View {
     }
 
     private func displayedAge(for year: Int) -> Int? {
-        // 記念日には年齢の概念が無いため、賀寿・厄年・九星の判定にも使う
+        // 記念日には年齢の概念が無いため、賀寿・厄年の判定にも使う
         // この関数は記念日選択時に nil を返し、それらを自動的に非表示にする
         guard !isShowingAnniversary else { return nil }
         return AgeCalculator.displayedAge(
