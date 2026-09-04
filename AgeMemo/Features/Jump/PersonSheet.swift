@@ -156,11 +156,15 @@ struct PersonSheet: View {
 
         switch person.kind {
         case .birthday:
-            let age = String(settings.ageReckoning.age(fromActual: AgeCalculator.currentActualAge(birthDate: person.birthDate)))
             switch settings.ageReckoning {
             case .actual:
+                // 満年齢は誕生日を迎えたかどうかで変わるので、月日まで見て求める
+                let age = String(AgeCalculator.currentActualAge(birthDate: person.birthDate))
                 return "誕生日：\(year)年\(month)月\(day)日・満\(age)歳"
             case .traditional:
+                // 数え年は元日ごとに増えるため、誕生日は見ずに年の差へ1を足す
+                let currentYear = Calendar.current.component(.year, from: .now)
+                let age = String(currentYear - person.birthYear + 1)
                 return "誕生日：\(year)年\(month)月\(day)日・数え\(age)歳"
             }
         case .anniversary:

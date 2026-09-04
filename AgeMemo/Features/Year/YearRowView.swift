@@ -6,15 +6,22 @@ import SwiftUI
 struct AlternateAgeHint: Equatable {
     enum Kind: Equatable {
         /// 年齢一覧のジャンプ先の1つ前の年（＝選択行の直前）に付ける。
-        /// 月日が分からないため常に「かもしれない」扱い
-        case ageJump
+        /// 月日が分からないため常に「かもしれない」扱い。
+        /// selectedAge は選択行（ジャンプ先）に表示されている年齢
+        case ageJump(selectedAge: Int)
         /// 自分／名簿一覧の当年の1つ前の年に付ける。
         /// 実際の生年月日から「今日はまだ誕生日前」と判定できたときだけ出す
         case beforeBirthdayToday
+        /// 同じ位置で、今年の誕生日をすでに迎えているときに出す
+        case afterBirthdayToday
+        /// 記念日を選んでいるとき。月日を見ないため、その年のうちは常に同じ周年数
+        case anniversaryThisYear
     }
 
     let kind: Kind
-    /// ageJump は生まれ年（西暦）、beforeBirthdayToday は誕生日前とみなした場合の年齢
+    /// beforeBirthdayToday は誕生日前とみなした場合の年齢、
+    /// afterBirthdayToday と anniversaryThisYear は当年の値、
+    /// ageJump は生まれ年（西暦）
     let value: Int
 }
 
@@ -274,14 +281,19 @@ struct YearRowView: View {
                 .font(.caption2.weight(.semibold))
                 // 背景の色は薄く保ちつつ、文字は本文と同じ濃さにしてコントラストを確保する
                 .foregroundStyle(Color.primary)
+                .multilineTextAlignment(.center)
+                // 文中の改行で2行に分け、縮小せずに読める大きさを保つ
+                .lineLimit(2)
+                .minimumScaleFactor(0.9)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 10)
-                .padding(.vertical, 3)
-                .background(tintColor.opacity(0.28), in: Capsule())
+                .padding(.vertical, 4)
+                // 2行になると Capsule では角が丸すぎるため角丸長方形にする
+                .background(tintColor.opacity(0.28), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .overlay {
-                    Capsule().strokeBorder(tintColor.opacity(0.6), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(tintColor.opacity(0.6), lineWidth: 1)
                 }
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
 
             Spacer(minLength: 0)
         }
@@ -293,17 +305,27 @@ struct YearRowView: View {
         switch hint.kind {
         case .ageJump:
             Color(uiColor: .systemGreen)
-        case .beforeBirthdayToday:
+        case .beforeBirthdayToday, .afterBirthdayToday, .anniversaryThisYear:
+            // いずれも当年行を指すので、当年行の背景と同じ色にする
             Color.accentColor
         }
     }
 
     private func alternateAgeHintText(_ hint: AlternateAgeHint) -> LocalizedStringKey {
         switch hint.kind {
-        case .ageJump:
-            "誕生日前ならば \(String(hint.value))年生まれです"
+        case .ageJump(let selectedAge):
+            // 選択行の年齢と、誕生日を迎えた後の年齢の両方を示して
+            // 「この行に該当するのはどういう人か」を分かるようにする
+            "現在\(String(selectedAge))歳、今年の誕生日で\(String(selectedAge + 1))歳に\nなる方は\(String(hint.value))年生まれです"
         case .beforeBirthdayToday:
-            "今日はまだ誕生日前なので\(String(hint.value))歳です"
+            // 1行目で今年迎える年齢、2行目で今日時点の年齢を示す。
+            // value は誕生日前の年齢なので、誕生日後は +1 になる
+            "今年の誕生日で\(String(hint.value + 1))歳になります\n今日は誕生日前なので\(String(hint.value))歳です"
+        case .afterBirthdayToday:
+            // すでに今年の誕生日を迎えているので、当年の年齢がそのまま今の年齢
+            "今年の誕生日で\(String(hint.value))歳になりました"
+        case .anniversaryThisYear:
+            "今年の記念日で\(String(hint.value))周年です"
         }
     }
 

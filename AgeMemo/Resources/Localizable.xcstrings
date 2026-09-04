@@ -1183,6 +1183,39 @@
         }
       }
     },
+    "今年の記念日で%@周年です": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ years as of this year's anniversary"
+          }
+        }
+      }
+    },
+    "今年の誕生日で%@歳になりました": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turned %@ on this year's birthday"
+          }
+        }
+      }
+    },
+    "今年の誕生日で%@歳になります\n今日は誕生日前なので%@歳です": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turning %@ on this year's birthday\nStill %@ until then"
+          }
+        }
+      }
+    },
     "今年生まれた方の誕生年": {
       "extractionState": "manual",
       "localizations": {
@@ -1190,17 +1223,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Birth year of someone born this year"
-          }
-        }
-      }
-    },
-    "今日はまだ誕生日前なので%@歳です": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The birthday hasn't come yet this year, so that's %@"
           }
         }
       }
@@ -2623,6 +2645,17 @@
         }
       }
     },
+    "現在%@歳、今年の誕生日で%@歳に\nなる方は%@年生まれです": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone who is %@ now and turns %@\non their birthday this year was born in %@"
+          }
+        }
+      }
+    },
     "現在%lld歳の方の誕生年": {
       "extractionState": "manual",
       "localizations": {
@@ -2971,17 +3004,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Birthday"
-          }
-        }
-      }
-    },
-    "誕生日前ならば %@年生まれです": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "If the birthday hasn't come yet, born in %@"
           }
         }
       }

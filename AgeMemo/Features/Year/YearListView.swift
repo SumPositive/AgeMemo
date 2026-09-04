@@ -91,22 +91,44 @@ struct YearListView: View {
         case .age:
             // 生年月日が分からないため、指定した年齢の人は「選択行の年に生まれた」
             // 可能性と「その1年前に生まれ、まだ誕生日前」の可能性の両方がある
-            guard isAgeJumpDestination,
+            // 数え年は元日に一斉に増えるため、誕生日を持ち出す説明は成り立たない
+            guard settings.ageReckoning == .actual,
+                  isAgeJumpDestination,
                   let selectedDestinationYear,
                   year == selectedDestinationYear - 1,
-                  AppConfig.yearRange.contains(selectedDestinationYear - 1) else { return nil }
-            return AlternateAgeHint(kind: .ageJump, value: selectedDestinationYear - 1)
+                  AppConfig.yearRange.contains(selectedDestinationYear - 1),
+                  let selectedAge = displayedAge(for: selectedDestinationYear) else { return nil }
+            return AlternateAgeHint(
+                kind: .ageJump(selectedAge: selectedAge),
+                value: selectedDestinationYear - 1
+            )
         case .personal, .person:
-            guard year == currentYear - 1,
-                  let birthDate = effectiveBirthDate,
-                  AgeCalculator.isBeforeBirthday(birthDate: birthDate),
+            // カプセルは当年行の直前（1つ前の年の行）に付ける
+            guard year == currentYear - 1, let baseDate = effectiveBirthDate else { return nil }
+
+            // 記念日は月日を見ないため、その年のうちは常に同じ周年数を示す
+            if isShowingAnniversary {
+                let count = AgeCalculator.anniversaryCount(for: currentYear, startDate: baseDate)
+                // 始まる前の年には出さない
+                guard 0 < count else { return nil }
+                return AlternateAgeHint(kind: .anniversaryThisYear, value: count)
+            }
+
+            // 数え年は元日に増えるので、誕生日の前後で年齢が変わらない。
+            // 誕生日を持ち出すカプセルは満年齢のときだけ出す
+            guard settings.ageReckoning == .actual,
                   let currentAge = displayedAge(for: currentYear) else { return nil }
-            let alternateAge = currentAge - 1
-            // 今年生まれた人（数え年1歳・満年齢0歳）は「誕生日前」が生まれる前を
-            // 意味してしまうため、その手前の値は出さない
-            let lowerBound = settings.ageReckoning.age(fromActual: 0)
-            guard lowerBound <= alternateAge else { return nil }
-            return AlternateAgeHint(kind: .beforeBirthdayToday, value: alternateAge)
+            if AgeCalculator.isBeforeBirthday(birthDate: baseDate) {
+                // 今年生まれた人（満年齢0歳）は「誕生日前」が生まれる前を
+                // 意味してしまうため、その手前の値は出さない
+                let alternateAge = currentAge - 1
+                guard 0 <= alternateAge else { return nil }
+                return AlternateAgeHint(kind: .beforeBirthdayToday, value: alternateAge)
+            } else {
+                // すでに今年の誕生日を迎えている
+                guard 0 <= currentAge else { return nil }
+                return AlternateAgeHint(kind: .afterBirthdayToday, value: currentAge)
+            }
         }
     }
 
