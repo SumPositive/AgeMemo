@@ -78,17 +78,18 @@ struct YearDetailView: View {
             )
         )
         .onAppear {
-            memoText = memoStore.text(for: row.gregorian) ?? ""
+            guard let memoOwner else { return }
+            memoText = memoStore.text(for: row.gregorian, owner: memoOwner) ?? ""
         }
         .onChange(of: memoText) { _, newValue in
             // メモ欄を出していないときは空文字で既存メモを消さないようにする
-            guard showsMemo else { return }
+            guard showsMemo, let memoOwner else { return }
             let limitedText = String(newValue.prefix(AppConfig.maximumMemoLength))
             if limitedText != newValue {
                 memoText = limitedText
                 return
             }
-            memoStore.update(year: row.gregorian, text: limitedText)
+            memoStore.update(year: row.gregorian, text: limitedText, owner: memoOwner)
         }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active {
@@ -405,25 +406,29 @@ struct YearDetailView: View {
         }
     }
 
-    /// 設定がONのあいだは「自分」のときだけメモを表示する
+    /// メモの持ち主。「年齢」タブは特定の人を指していないので持たない
+    private var memoOwner: MemoOwner? {
+        switch ageDisplayMode {
+        case .personal: .myself
+        case .person: selectedPersonID.map { .person($0) }
+        case .age: nil
+        }
+    }
+
     private var showsMemo: Bool {
-        settings.showsMemoOnlyForSelf ? ageDisplayMode == .personal : true
+        settings.showsMemo && memoOwner != nil
     }
 
     private var memoEditor: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("メモ")
-                    .font(.headline)
-                Spacer()
-                Text("\(AppConfig.maximumMemoLength - memoText.count)文字")
-                    .font(.caption.monospacedDigit())
-                    .foregroundStyle(.secondary)
-            }
+            Text("メモ")
+                .font(.headline)
 
-            TextEditor(text: $memoText)
-                .frame(minHeight: 140)
-                .padding(6)
+            // TextEditor は空でも決め打ちの高さを取るため、1行から伸びる
+            // TextField を使う。100字なので数行で収まる
+            TextField("この年の出来事", text: $memoText, axis: .vertical)
+                .lineLimit(1...)
+                .padding(8)
                 .background(.background, in: RoundedRectangle(cornerRadius: 10))
                 .overlay {
                     RoundedRectangle(cornerRadius: 10)
@@ -460,6 +465,7 @@ private struct YearDetailBalancedSizing: PresentationSizing {
     let includesMemo: Bool
 
     func proposedSize(for root: PresentationSizingRoot, context: PresentationSizingContext) -> ProposedViewSize {
-        ProposedViewSize(width: 720, height: includesMemo ? 1_040 : 820)
+        // メモ欄は1行から始まるため、見出しと1行ぶんだけを足す
+        ProposedViewSize(width: 720, height: includesMemo ? 900 : 820)
     }
 }

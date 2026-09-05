@@ -4,6 +4,7 @@ import SwiftUI
 
 struct PersonSheet: View {
     @Environment(PersonStore.self) private var personStore
+    @Environment(MemoStore.self) private var memoStore
     @Environment(AppSettings.self) private var settings
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
@@ -134,11 +135,17 @@ struct PersonSheet: View {
             }
             .alert("削除しますか？", isPresented: deletionBinding, presenting: pendingDeletion) { person in
                 Button("削除", role: .destructive) {
+                    // 名簿から消えた人のメモは引く手立てが無くなるため一緒に消す
+                    memoStore.removeAll(for: .person(person.id))
                     personStore.delete(id: person.id)
                 }
                 Button("キャンセル", role: .cancel) {}
             } message: { person in
-                Text("「\(person.name)」を削除します。この操作は取り消せません。")
+                if memoStore.hasMemos(for: .person(person.id)) {
+                    Text("「\(person.name)」を、書き留めたメモごと削除します。この操作は取り消せません。")
+                } else {
+                    Text("「\(person.name)」を削除します。この操作は取り消せません。")
+                }
             }
         }
         // 行数に応じた高さから始め、ハンドルで最大化もできるようにする

@@ -563,6 +563,17 @@
         }
       }
     },
+    "「%@」を、書き留めたメモごと削除します。この操作は取り消せません。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This deletes “%@” along with the notes you saved for them. This cannot be undone."
+          }
+        }
+      }
+    },
     "「%@」を削除します。この操作は取り消せません。": {
       "extractionState": "manual",
       "localizations": {
@@ -783,6 +794,17 @@
         }
       }
     },
+    "この年の出来事": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What happened this year"
+          }
+        }
+      }
+    },
     "この年の誕生日で満%lld歳": {
       "extractionState": "manual",
       "localizations": {
@@ -838,13 +860,13 @@
         }
       }
     },
-    "オンにすると、年に書いたメモは「自分」の一覧でだけ表示されます。年齢や名簿の一覧ではメモが隠れるため、他の人に画面を見せるときに便利です。オフにするとどの一覧でもメモが表示されます。": {
+    "オンにすると、一覧と年の詳細にメモが表示されます。メモは「自分」と名簿の方それぞれに分かれて保存され、選んでいる方のメモだけが表示されます。オフにするとどの一覧でもメモが隠れます。": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "When on, the notes you write on a year appear only in the Myself list. They stay hidden in the Age and Roster lists, which is useful when showing your screen to someone else. When off, notes appear in every list."
+            "value": "When on, notes appear in the list and in the year detail view. Notes are kept separately for yourself and for each person in the roster, and only the notes of the one you have selected are shown. When off, notes are hidden in every list."
           }
         }
       }
@@ -893,17 +915,6 @@
         }
       }
     },
-    "メモは自分だけに表示": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Show notes only in Myself"
-          }
-        }
-      }
-    },
     "メモを保存できませんでした": {
       "extractionState": "manual",
       "localizations": {
@@ -911,6 +922,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Could not save notes"
+          }
+        }
+      }
+    },
+    "メモを表示": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show notes"
           }
         }
       }
@@ -1807,13 +1829,13 @@
         }
       }
     },
-    "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。": {
+    "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモはその方ごとに分かれて保存されます。": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shows how old the person selected from the roster is in each year. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+            "value": "Shows how old the person selected in the roster is in each year, based on their date of birth. Tap a row to open that year's calendar and note. Notes are saved separately for each person."
           }
         }
       }
@@ -1829,13 +1851,13 @@
         }
       }
     },
-    "名簿で選んだ記念日をもとに、各年で何周年になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。": {
+    "名簿で選んだ記念日をもとに、各年で何周年になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモはその記念日ごとに分かれて保存されます。": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shows which anniversary falls in each year, based on the date selected from the roster. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+            "value": "Shows which anniversary each year marks, based on the anniversary selected in the roster. Tap a row to open that year's calendar and note. Notes are saved separately for each anniversary."
           }
         }
       }
@@ -2152,17 +2174,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Enter an age to jump to the year someone of that age was born. Tap a row to open that year's calendar."
-          }
-        }
-      }
-    },
-    "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter an age to jump to the year someone of that age was born. Tap a row to open that year's calendar and note, where you can write down what happened that year."
           }
         }
       }
@@ -2953,13 +2964,13 @@
         }
       }
     },
-    "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。": {
+    "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモは自分のぶんとして保存されます。": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shows how old you are in each year, based on your date of birth. Tap a row to open that year's calendar and note, where you can write down what happened that year."
+            "value": "Shows how old you are in each year, based on your date of birth. Tap a row to open that year's calendar and note. Notes are saved as your own."
           }
         }
       }
@@ -3030,17 +3041,6 @@
         }
       }
     },
-    "記念日：%@年%@月%@日・%@周年": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anniversary: %@/%@/%@ · %@ years"
-          }
-        }
-      }
-    },
     "記念日：%@年%@月%@日\n・%@周年": {
       "extractionState": "manual",
       "localizations": {
@@ -3048,6 +3048,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Anniversary: %@/%@/%@\n· %@ years"
+          }
+        }
+      }
+    },
+    "記念日：%@年%@月%@日・%@周年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anniversary: %@/%@/%@ · %@ years"
           }
         }
       }
@@ -3074,17 +3085,6 @@
         }
       }
     },
-    "誕生日：%@年%@月%@日・満%@歳": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Born %@/%@/%@ · %@"
-          }
-        }
-      }
-    },
     "誕生日：%@年%@月%@日\n・満%@歳": {
       "extractionState": "manual",
       "localizations": {
@@ -3096,17 +3096,6 @@
         }
       }
     },
-    "誕生日：%@年%@月%@日・満%@歳・数え%@歳": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Born %@/%@/%@ · %@ · traditional %@"
-          }
-        }
-      }
-    },
     "誕生日：%@年%@月%@日\n・満%@歳・数え%@歳": {
       "extractionState": "manual",
       "localizations": {
@@ -3114,6 +3103,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Born %@/%@/%@\n· %@ · traditional %@"
+          }
+        }
+      }
+    },
+    "誕生日：%@年%@月%@日・満%@歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born %@/%@/%@ · %@"
+          }
+        }
+      }
+    },
+    "誕生日：%@年%@月%@日・満%@歳・数え%@歳": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Born %@/%@/%@ · %@ · traditional %@"
           }
         }
       }

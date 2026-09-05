@@ -23,21 +23,78 @@ final class MemoStoreTests: XCTestCase {
 
     func testRoundTripAndDelete() {
         let store = MemoStore(fileURL: fileURL)
-        store.update(year: 2026, text: "テスト")
+        store.update(year: 2026, text: "テスト", owner: .myself)
         store.flushPendingSave()
 
         let loaded = MemoStore(fileURL: fileURL)
-        XCTAssertEqual(loaded.text(for: 2026), "テスト")
+        XCTAssertEqual(loaded.text(for: 2026, owner: .myself), "テスト")
 
-        loaded.update(year: 2026, text: "")
+        loaded.update(year: 2026, text: "", owner: .myself)
         loaded.flushPendingSave()
-        XCTAssertNil(MemoStore(fileURL: fileURL).text(for: 2026))
+        XCTAssertNil(MemoStore(fileURL: fileURL).text(for: 2026, owner: .myself))
     }
 
     func testMaximumLength() {
         let store = MemoStore(fileURL: fileURL)
-        store.update(year: 2026, text: String(repeating: "あ", count: 401))
-        XCTAssertEqual(store.text(for: 2026)?.count, AppConfig.maximumMemoLength)
+        store.update(year: 2026, text: String(repeating: "あ", count: AppConfig.maximumMemoLength + 1), owner: .myself)
+        XCTAssertEqual(store.text(for: 2026, owner: .myself)?.count, AppConfig.maximumMemoLength)
+    }
+
+    /// 同じ年でも持ち主が違えば別のメモとして保存される
+    func testMemosAreSeparatePerOwner() {
+        let first = UUID()
+        let second = UUID()
+        let store = MemoStore(fileURL: fileURL)
+        store.update(year: 2026, text: "自分のメモ", owner: .myself)
+        store.update(year: 2026, text: "1人目のメモ", owner: .person(first))
+        store.update(year: 2026, text: "2人目のメモ", owner: .person(second))
+        store.flushPendingSave()
+
+        let loaded = MemoStore(fileURL: fileURL)
+        XCTAssertEqual(loaded.text(for: 2026, owner: .myself), "自分のメモ")
+        XCTAssertEqual(loaded.text(for: 2026, owner: .person(first)), "1人目のメモ")
+        XCTAssertEqual(loaded.text(for: 2026, owner: .person(second)), "2人目のメモ")
+    }
+
+    /// 名簿から人を消しても、他の持ち主のメモは残る
+    func testRemoveAllForOwner() {
+        let personID = UUID()
+        let store = MemoStore(fileURL: fileURL)
+        store.update(year: 2026, text: "自分のメモ", owner: .myself)
+        store.update(year: 2026, text: "この人のメモ", owner: .person(personID))
+        XCTAssertTrue(store.hasMemos(for: .person(personID)))
+
+        store.removeAll(for: .person(personID))
+        store.flushPendingSave()
+        XCTAssertFalse(store.hasMemos(for: .person(personID)))
+
+        let loaded = MemoStore(fileURL: fileURL)
+        XCTAssertNil(loaded.text(for: 2026, owner: .person(personID)))
+        XCTAssertEqual(loaded.text(for: 2026, owner: .myself), "自分のメモ")
+    }
+
+    /// 1.0.0形式（持ち主の区別がない）のメモは自分のメモとして読み込む
+    func testLegacyDocumentMigratesToMyself() throws {
+        let legacy = """
+        {
+          "version": 1,
+          "memos": { "1989": { "text": "平成に改元", "updatedAt": "2026-09-05T00:00:00Z" } }
+        }
+        """
+        try FileManager.default.createDirectory(
+            at: fileURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try Data(legacy.utf8).write(to: fileURL, options: .atomic)
+
+        let store = MemoStore(fileURL: fileURL)
+        XCTAssertEqual(store.text(for: 1989, owner: .myself), "平成に改元")
+
+        // 書き戻すと version 2 の形になり、次回以降もそのまま読める
+        store.flushPendingSave()
+        let reloaded = MemoStore(fileURL: fileURL)
+        XCTAssertEqual(reloaded.text(for: 1989, owner: .myself), "平成に改元")
+        XCTAssertNil(reloaded.lastError)
     }
 }
 

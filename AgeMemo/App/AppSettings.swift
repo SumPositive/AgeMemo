@@ -153,9 +153,9 @@ final class AppSettings {
         jumpSelectionUseCounts[id, default: 0] += 1
     }
 
-    /// メモを「自分」モードのときだけ一覧と詳細に表示する
-    var showsMemoOnlyForSelf: Bool {
-        didSet { defaults.set(showsMemoOnlyForSelf, forKey: Key.showsMemoOnlyForSelf) }
+    /// メモ欄を一覧と詳細に表示する。持ち主は「自分」と名簿の各人で分かれる
+    var showsMemo: Bool {
+        didSet { defaults.set(showsMemo, forKey: Key.showsMemo) }
     }
 
     var birthDate: Date? {
@@ -178,7 +178,7 @@ final class AppSettings {
         static let lastJumpSelectionID = "lastJumpSelectionID"
         static let lastJumpInput = "lastJumpInput"
         static let jumpSelectionUseCounts = "jumpSelectionUseCounts"
-        static let showsMemoOnlyForSelf = "showsMemoOnlyForSelf"
+        static let showsMemo = "showsMemo"
         static let showsTraditionalAge = "showsTraditionalAge"
         static let gender = "gender"
         static let showsZodiac = "showsZodiac"
@@ -205,7 +205,7 @@ final class AppSettings {
         lastJumpInput = defaults.object(forKey: Key.lastJumpInput) as? Int
         jumpSelectionUseCounts = defaults.dictionary(forKey: Key.jumpSelectionUseCounts) as? [String: Int] ?? [:]
         // 未設定時はONを既定とするため、値の有無を見てから読み出す
-        showsMemoOnlyForSelf = defaults.object(forKey: Key.showsMemoOnlyForSelf) as? Bool ?? true
+        showsMemo = defaults.object(forKey: Key.showsMemo) as? Bool ?? true
         showsTraditionalAge = defaults.object(forKey: Key.showsTraditionalAge) as? Bool ?? true
     }
 }

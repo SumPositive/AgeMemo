@@ -4,7 +4,7 @@ import Foundation
 
 enum AppConfig {
     static let yearRange = 1600...2100
-    static let maximumMemoLength = 400
+    static let maximumMemoLength = 100
     static let maximumAgeInput = 150
     static let maximumPersonNameLength = 20
     static let memoSaveDelayNanoseconds: UInt64 = 500_000_000

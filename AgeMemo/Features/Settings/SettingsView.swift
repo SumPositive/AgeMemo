@@ -136,10 +136,10 @@ struct SettingsView: View {
                         Text(gender.title)
                     }
 
-                    Toggle(isOn: $settings.showsMemoOnlyForSelf) {
+                    Toggle(isOn: $settings.showsMemo) {
                         HStack(alignment: .center, spacing: 4) {
-                            Text("メモは自分だけに表示")
-                            BeginnerHelpBanner("オンにすると、年に書いたメモは「自分」の一覧でだけ表示されます。年齢や名簿の一覧ではメモが隠れるため、他の人に画面を見せるときに便利です。オフにするとどの一覧でもメモが表示されます。")
+                            Text("メモを表示")
+                            BeginnerHelpBanner("オンにすると、一覧と年の詳細にメモが表示されます。メモは「自分」と名簿の方それぞれに分かれて保存され、選んでいる方のメモだけが表示されます。オフにするとどの一覧でもメモが隠れます。")
                         }
                     }
 

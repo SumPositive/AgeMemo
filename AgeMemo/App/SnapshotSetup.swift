@@ -34,7 +34,8 @@ enum SnapshotSetup {
         settings.gender = .male
         settings.showsTraditionalAge = false
         settings.displayMode = .expert
-        settings.showsMemoOnlyForSelf = false
+        // 撮影ではメモ欄を出す。持ち主のいない「年齢」タブには元から出ない
+        settings.showsMemo = true
 
         // 年齢一覧は補助表示なしで撮影するため、起動時はすべてOFFにする
         settings.showsZodiac = false
@@ -77,8 +78,9 @@ enum SnapshotSetup {
             (1964, "東京オリンピック。この年に生まれた"),
             (1989, "平成に改元。社会人になった年"),
         ]
-        for (year, text) in obsoleteMemos where memoStore.text(for: year) == text {
-            memoStore.update(year: year, text: "")
+        // 旧版のサンプルは移行で「自分」のメモになっている
+        for (year, text) in obsoleteMemos where memoStore.text(for: year, owner: .myself) == text {
+            memoStore.update(year: year, text: "", owner: .myself)
         }
     }
 

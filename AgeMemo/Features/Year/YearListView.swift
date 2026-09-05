@@ -67,8 +67,17 @@ struct YearListView: View {
     }
 
     /// 設定がONのあいだは「自分」のときだけメモを表示する
+    /// メモの持ち主。「年齢」タブと名簿未選択のときは特定の人を指さない
+    private var memoOwner: MemoOwner? {
+        switch ageDisplayMode {
+        case .personal: .myself
+        case .person: selectedPersonID.map { .person($0) }
+        case .age: nil
+        }
+    }
+
     private var showsMemo: Bool {
-        settings.showsMemoOnlyForSelf ? ageDisplayMode == .personal : true
+        settings.showsMemo && memoOwner != nil
     }
 
     /// 一覧で強調する生年。自分／名簿の各モードで基準となる年を示す
@@ -141,7 +150,9 @@ struct YearListView: View {
         // 記念日を選んでいる間は年齢列に周年数を出す。displayedAge は
         // 記念日選択時に nil を返すため、両者は互いに排他的
         let rowAge: Int? = displayedAge(for: row.gregorian) ?? anniversaryCount(for: row.gregorian)
-        let rowMemo: String? = showsMemo ? memoStore.text(for: row.gregorian) : nil
+        let rowMemo: String? = memoOwner.flatMap { owner in
+            showsMemo ? memoStore.text(for: row.gregorian, owner: owner) : nil
+        }
         let rowIsCurrentYear: Bool = row.gregorian == currentYear
         let rowIsBirthYear: Bool = row.gregorian == highlightedBirthYear
         let rowIsSelected: Bool = row.gregorian == selectedDestinationYear
@@ -356,19 +367,18 @@ struct YearListView: View {
     /// 文を連結すると訳したときに語順が崩れるため、あえて分割しない
     private var listHelp: LocalizedStringKey {
         switch (ageDisplayMode, showsMemo) {
-        case (.age, true):
-            "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
-        case (.age, false):
+        // 「年齢」は特定の方を指さないためメモを持たない
+        case (.age, _):
             "年齢を指定すると、その年齢の方が生まれた年へ移動します。行をタップすると、その年のカレンダーが開きます。"
         case (.personal, true):
-            "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+            "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモは自分のぶんとして保存されます。"
         case (.personal, false):
             "自分の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーが開きます。"
         case (.person, true):
             if isShowingAnniversary {
-                "名簿で選んだ記念日をもとに、各年で何周年になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+                "名簿で選んだ記念日をもとに、各年で何周年になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモはその記念日ごとに分かれて保存されます。"
             } else {
-                "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモにはその年の出来事を書き留められます。"
+                "名簿で選んだ方の生年月日をもとに、各年に何歳になるかを表示します。行をタップすると、その年のカレンダーとメモが開きます。メモはその方ごとに分かれて保存されます。"
             }
         case (.person, false):
             if isShowingAnniversary {
