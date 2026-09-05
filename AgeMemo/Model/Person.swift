@@ -108,6 +108,17 @@ final class PersonStore {
         save()
     }
 
+    /// 書き出し用に現在の名簿をそのまま渡す
+    func snapshot() -> [Person] {
+        people
+    }
+
+    /// 読み込んだ内容で全て置き換える
+    func replaceAll(with people: [Person]) {
+        self.people = people
+        save()
+    }
+
     private func load() {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return }
         do {

@@ -68,6 +68,29 @@ final class MemoStore {
         scheduleSave()
     }
 
+    /// 書き出し用に、保存しているものと同じ形を渡す
+    func snapshot() -> MemoBackup {
+        var people: [String: [Int: YearMemo]] = [:]
+        for (owner, ownerMemos) in memos {
+            guard case .person(let id) = owner else { continue }
+            people[id.uuidString] = ownerMemos
+        }
+        return MemoBackup(myself: memos[.myself] ?? [:], people: people)
+    }
+
+    /// 読み込んだ内容で全て置き換える。取り込みは上書きなので、
+    /// 呼ぶ側が確認を取ってから使う
+    func replaceAll(with backup: MemoBackup) {
+        memos = [:]
+        setMemos(backup.myself, for: .myself)
+        for (identifier, ownerMemos) in backup.people {
+            guard let id = UUID(uuidString: identifier) else { continue }
+            setMemos(ownerMemos, for: .person(id))
+        }
+        hasUnsavedChanges = true
+        flushPendingSave()
+    }
+
     func flushPendingSave() {
         pendingSaveTask?.cancel()
         pendingSaveTask = nil

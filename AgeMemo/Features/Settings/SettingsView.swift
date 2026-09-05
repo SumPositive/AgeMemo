@@ -188,6 +188,8 @@ struct SettingsView: View {
 
                 }
 
+                BackupSection()
+
                 Section {
                     Button("取扱説明") {
                         // 端末の言語に合わせて取扱説明の言語を切り替える
