@@ -55,7 +55,12 @@ struct YearDetailView: View {
                     }
                     YearCalendarView(row: row)
                 }
-                .padding()
+                // 縦スクロールでは、幅を超えた子が左右へはみ出して切れる。
+                // 余白を除いた幅に内容を閉じ込めて、特大でも欠けないようにする
+                .containerRelativeFrame(.horizontal) { width, _ in
+                    max(width - contentPadding * 2, 0)
+                }
+                .padding(contentPadding)
             }
             .scrollIndicators(.hidden)
             // 年は本文の見出しに出るため、シートのタイトルには置かない
@@ -127,6 +132,9 @@ struct YearDetailView: View {
         settings.displayMode == .beginner
     }
 
+    /// 本文の左右余白。内容幅の計算と揃える必要があるため定数にする
+    private let contentPadding: CGFloat = 16
+
     /// 暦の属性ラベルの幅。「十二支」の3文字が収まる幅を文字サイズに追従させる
     @ScaledMetric(relativeTo: .caption) private var attributeLabelWidth: CGFloat = 42
     /// 年齢説明を設定文字サイズから段階的に縮小する基準
@@ -151,6 +159,10 @@ struct YearDetailView: View {
                 }
             }
             .font(.title2.bold())
+            // 特大では「1988年 昭和63年」が幅を超えるため、1行のまま縮小する
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .frame(maxWidth: .infinity, alignment: .leading)
             // 撮影時に開いた年を検証できるようにする
             .accessibilityIdentifier("detail.year.\(row.gregorian)")
 
@@ -162,6 +174,8 @@ struct YearDetailView: View {
                     Text("元年（\(String(ganNen.startMonth))月\(String(ganNen.startDay))日〜）")
                 }
                 .font(.title3.bold())
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
@@ -177,6 +191,11 @@ struct YearDetailView: View {
                         fittedDescription(
                             anniversaryDescription(anniversaryCount),
                             isSecondary: anniversaryCount < 0
+                        )
+                        // 周年を含む行だけ、語の解説を開けるようにする
+                        .calendarTermTappable(
+                            anniversaryCount > 0 ? CalendarTermGlossary.anniversary : nil,
+                            selection: $selectedTerm
                         )
                     }
                 }
@@ -243,9 +262,11 @@ struct YearDetailView: View {
                 }
             }
         }
-        // 改元年は元号が2つ並んで長くなるため、折り返さず縮小して1行に収める
-        .lineLimit(1)
-        .minimumScaleFactor(0.5)
+        // 改元年は元号が2つ並んで長くなるため、まず縮小で1行に収める。
+        // en の読み（ローマ字）＋特大では縮小だけでは足りないので、
+        // 2行までの折り返しを許して端が切れないようにする
+        .lineLimit(2)
+        .minimumScaleFactor(0.4)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -265,17 +286,43 @@ struct YearDetailView: View {
         }
     }
 
-    /// 明示した改行だけを残し、各行が収まるまで全体を縮小する
+    /// 年齢や周年の説明を、言語に合った方法で幅に収める。
+    ///
+    /// ja は語の途中で折り返すと読みにくいため、明示した改行だけを残して
+    /// 全体を縮小する。en は単語の切れ目で折り返せるので、縮小せず
+    /// そのままの文字サイズで折り返した方が読みやすい
+    @ViewBuilder
     private func fittedDescription(_ text: String, isSecondary: Bool) -> some View {
-        ViewThatFits(in: .horizontal) {
-            ForEach(descriptionScales, id: \.self) { scale in
-                Text(verbatim: text)
-                    .font(.system(size: descriptionFontSize * scale))
-                    .foregroundStyle(isSecondary ? AnyShapeStyle(.secondary) : AnyShapeStyle(.primary))
-                    .lineLimit(3)
-                    .fixedSize(horizontal: true, vertical: true)
+        if CalendarTermLocale.isJapanese {
+            ViewThatFits(in: .horizontal) {
+                ForEach(descriptionScales, id: \.self) { scale in
+                    descriptionText(text, scale: scale, isSecondary: isSecondary)
+                        .fixedSize(horizontal: true, vertical: true)
+                }
+                // どの倍率でも収まらないときだけ折り返す
+                descriptionText(text, scale: descriptionScales.last ?? 1, isSecondary: isSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
+        } else {
+            // 元の2行がそれぞれ折り返すため、行数の上限を広げておく
+            descriptionText(text, scale: 1, isSecondary: isSecondary, lineLimit: 8)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    private func descriptionText(
+        _ text: String,
+        scale: CGFloat,
+        isSecondary: Bool,
+        lineLimit: Int = 3
+    ) -> some View {
+        Text(verbatim: text)
+            .font(.system(size: descriptionFontSize * scale))
+            .foregroundStyle(isSecondary ? AnyShapeStyle(.secondary) : AnyShapeStyle(.primary))
+            .lineLimit(lineLimit)
+            // 折り返した行が中央に寄らないよう、左端へ揃える
+            .multilineTextAlignment(.leading)
     }
 
     /// 説明文が収まる倍率を上から順に試す
@@ -353,14 +400,11 @@ struct YearDetailView: View {
         return AgeCalculator.anniversaryCount(for: row.gregorian, startDate: startDate)
     }
 
-    /// 日本語の読み。ja はかなのみ、en はかなとローマ字を併記する
+    /// 日本語の読み。出し分けは CalendarTermLocale に集約し、括弧だけ添える
     private func reading(kana: String, romaji: String) -> String {
-        isJapanese ? "（\(kana)）" : "（\(kana) / \(romaji)）"
+        "（\(CalendarTermLocale.reading(kana: kana, romaji: romaji))）"
     }
 
-    private var isJapanese: Bool {
-        Locale.current.language.languageCode?.identifier == "ja"
-    }
 
     /// 年の意味を1行で説明する。操作の案内にあたるため訳す
     private func ageDescription(_ age: Int) -> String {

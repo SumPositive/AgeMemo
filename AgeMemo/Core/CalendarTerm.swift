@@ -51,8 +51,9 @@ enum CalendarTermLocale {
         Locale.current.language.languageCode?.identifier == "ja"
     }
 
-    /// ja はかなのみ、en はかなとローマ字を併記する
+    /// ja はかな、en はローマ字。かなを読めない利用者にはローマ字だけで足り、
+    /// 併記すると行が長くなって特大で折り返すため、片方だけを出す
     static func reading(kana: String, romaji: String) -> String {
-        isJapanese ? kana : "\(kana) / \(romaji)"
+        isJapanese ? kana : romaji
     }
 }

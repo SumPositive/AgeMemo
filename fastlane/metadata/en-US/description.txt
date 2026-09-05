@@ -2,7 +2,7 @@ Read the years, zodiac and luck days of Japan — on one line
 
 In Japan, years are counted two ways at once. 2026 is also Reiwa 8, and official forms, licences, certificates and museum labels often use only the second form. Nenrin puts both on the same line, for every year from 1600 to 2100.
 
-Note: the app's interface is available in English, but the calendar data it shows — era names, zodiac signs, rokuyo — stays in Japanese, because that is how you will meet it on real documents. Readings are given in kana and romaji, and tapping any of these terms opens an explanation of what it means and where it came from.
+Note: the app's interface is available in English, but the calendar data it shows — era names, zodiac signs, rokuyo — stays in Japanese, because that is how you will meet it on real documents. Readings are given in romaji, and tapping any of these terms opens an explanation of what it means and where it came from.
 
 ■ The list
 ・Western year, Japanese era year, zodiac animal and age on one line
