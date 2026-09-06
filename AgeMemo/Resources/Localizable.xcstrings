@@ -39,13 +39,13 @@
       "comment": "年齢の単位。桁揃えに影響するため訳さない",
       "shouldTranslate": false
     },
-    "%lld年後に生まれる方の誕生年": {
+    "%lld年後に生まれる方がいます": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Birth year of someone born in %lld years"
+            "value": "People born %lld years from now"
           }
         }
       }
@@ -787,6 +787,17 @@
         }
       }
     },
+    "この年に生まれた方がいます": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "People born this year"
+          }
+        }
+      }
+    },
     "この年に生まれました": {
       "extractionState": "manual",
       "localizations": {
@@ -893,6 +904,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cancel"
+          }
+        }
+      }
+    },
+    "タップすると並び順を切り替えます": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to reverse the order"
           }
         }
       }
@@ -1140,7 +1162,15 @@
     },
     "九星": {
       "extractionState": "manual",
-      "shouldTranslate": false
+      "shouldTranslate": false,
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Star"
+          }
+        }
+      }
     },
     "九星の中央に位置する星で、五行は土にあたります。他の八星すべてを従える定位置を持たない星とされ、良くも悪くも力が強く、中心に立つ性質とされます。": {
       "extractionState": "manual",
@@ -1329,7 +1359,7 @@
         }
       }
     },
-    "今年の元日で数え%lld歳\n今年の誕生日で満%lld歳\nになる方の誕生年です": {
+    "今年の元日で数え%lld歳\n今年の誕生日で満%lld歳\nになる方が生まれた年です": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1373,7 +1403,7 @@
         }
       }
     },
-    "今年の誕生日で満%@歳になる方の誕生年です": {
+    "今年の誕生日で満%@歳になる方が生まれた年です": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1384,24 +1414,13 @@
         }
       }
     },
-    "今年の誕生日で満%lld歳になる方の誕生年です": {
+    "今年の誕生日で満%lld歳になる方が生まれた年です": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Birth year of someone turning %lld on their birthday this year"
-          }
-        }
-      }
-    },
-    "今年生まれた方の誕生年": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Birth year of someone born this year"
           }
         }
       }
@@ -1975,6 +1994,17 @@
         }
       }
     },
+    "周年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anniv."
+          }
+        }
+      }
+    },
     "周年は、ある出来事があった年から何年が経ったかを数える言い方です。「創立50周年」「結婚10周年」のように使います。\n\n年齢と違って月日は見ません。10月に開店した店でも、その年のうちは1月から「今年で5周年」と数えます。出来事のあった年が0周年で、翌年が1周年です。\n\n「〜年目」とは数え方が違う点に注意してください。開店した年が1年目なので、5周年は6年目にあたります。区切りの年には記念の催しを開くことが多く、10周年、50周年、100周年のように切りのよい数が好まれます。": {
       "extractionState": "manual",
       "localizations": {
@@ -1982,6 +2012,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "周年 (shūnen) counts the years that have passed since something happened. You will see it in phrases such as 創立50周年 (the 50th year since founding) and 結婚10周年 (ten years of marriage).\n\nUnlike an age, it ignores the month and day. A shop that opened in October is already counted as 今年で5周年 — five years this year — from January onward. The year the event happened is 0周年, and the following year is 1周年.\n\nNote that this differs from 〜年目 (nen-me), which counts the opening year as year 1: 5周年 falls in the 6th 年目. Round numbers are favoured for celebrations, so 10周年, 50周年 and 100周年 are often marked with an event."
+          }
+        }
+      }
+    },
+    "和暦": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Era"
           }
         }
       }
@@ -2151,6 +2192,17 @@
         }
       }
     },
+    "完了": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
     "宝永地震と、その49日後に起きた富士山の宝永噴火が記録されています。富士山の最後の噴火です。": {
       "extractionState": "manual",
       "localizations": {
@@ -2197,7 +2249,15 @@
     },
     "干支": {
       "extractionState": "manual",
-      "shouldTranslate": false
+      "shouldTranslate": false,
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zodiac"
+          }
+        }
+      }
     },
     "干支は、十干（甲・乙・丙…の10種）と十二支（子・丑・寅…の12種）を順に組み合わせたものです。10と12の最小公倍数である60年で一巡し、61年目にまた同じ組み合わせへ戻ります。\n\n60年で生まれ年の干支に還ることを「還暦」といい、数え61歳を祝う習慣はここから来ています。\n\n「今年の干支は午年」のように十二支だけを指すことも多いのですが、暦の上での干支は十干と合わせた「丙午」のような形が本来の呼び方です。歴史上の出来事にも、壬申の乱や戊辰戦争のように干支の名が残っています。": {
       "extractionState": "manual",
@@ -2220,7 +2280,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "年 and 周年 at a glance"
+            "value": "Year → anniversary"
           }
         }
       }
@@ -2254,17 +2314,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Age"
-          }
-        }
-      }
-    },
-    "年齢と生まれた年の早見表": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Age → year of birth"
           }
         }
       }
@@ -2890,6 +2939,17 @@
         }
       }
     },
+    "生まれ年": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth year"
+          }
+        }
+      }
+    },
     "生まれ年で決まる九つの星": {
       "extractionState": "manual",
       "localizations": {
@@ -2897,6 +2957,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nine stars, one for each birth year"
+          }
+        }
+      }
+    },
+    "生まれ年と年齢の早見表": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth year → age"
           }
         }
       }
@@ -3044,6 +3115,17 @@
         }
       }
     },
+    "節目": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marks"
+          }
+        }
+      }
+    },
     "羊": {
       "extractionState": "manual",
       "localizations": {
@@ -3161,6 +3243,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Outside the range — moving to %@"
+          }
+        }
+      }
+    },
+    "西暦": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Year"
+          }
+        }
+      }
+    },
+    "西暦の大きい順": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Newest year first"
+          }
+        }
+      }
+    },
+    "西暦の小さい順": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oldest year first"
           }
         }
       }

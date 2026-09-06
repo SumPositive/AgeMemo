@@ -2,6 +2,37 @@
 
 import SwiftUI
 
+/// 一覧の列幅。行と見出しで同じ値を使い、見出しが中身の真上に来るようにする。
+/// すべて基準フォントサイズに対する倍率で持ち、文字サイズが変わっても比率を保つ
+enum YearColumnMetrics {
+    /// 行の左右端に空ける幅
+    static let edgeInset: CGFloat = 12
+    /// 基本3列（西暦・和暦・年齢）の列間
+    static let columnSpacing: CGFloat = 10
+
+    static let gregorianWidthRatio: CGFloat = 2.55
+    static let eraWidthRatio: CGFloat = 4.1
+    /// 年齢は「99歳」を原則の幅とし、桁が増える行だけ広がる
+    static let ageMinWidthRatio: CGFloat = 2.3
+
+    /// 干支と九星を積むときの九星の縮小率。列幅もこれを基準に決まる
+    static let nineStarScale: CGFloat = 0.70
+    /// 干支だけのときの列幅倍率
+    static let zodiacOnlyWidthRatio: CGFloat = 2.6
+    /// 学齢・賀寿・厄年の縮小率
+    static let badgeScale: CGFloat = 0.66
+
+    /// 干支・九星列の幅。九星を出すかどうかで基準が変わる
+    static func zodiacWidth(fontSize: CGFloat, showsNineStar: Bool) -> CGFloat {
+        showsNineStar ? fontSize * nineStarScale * 4 : fontSize * zodiacOnlyWidthRatio
+    }
+
+    /// 学齢・賀寿・厄年の列幅。最長の「大還暦」（3文字）に合わせる
+    static func badgeWidth(fontSize: CGFloat) -> CGFloat {
+        fontSize * badgeScale * 3
+    }
+}
+
 /// 行の下に添えるカプセルの内容
 struct AlternateAgeHint: Equatable {
     enum Kind: Equatable {
@@ -37,8 +68,6 @@ struct YearRowView: View {
     var isSelected: Bool = false
     /// 一覧でタップした行。青系・緑系と区別できる色で示す
     var isTapped: Bool = false
-    /// 年齢モードでは年齢を左端に置き、一覧の性格の違いを明確にする
-    var showsAgeFirst: Bool = false
     /// 干支列を表示する。九星だけONの場合は九星のみを同じ列に出す
     var showsZodiac: Bool = false
     /// 還暦・喜寿などの節目。該当しない年は nil
@@ -62,10 +91,10 @@ struct YearRowView: View {
     @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
     @ScaledMetric(relativeTo: .caption2) private var preferredHintFontSize: CGFloat = 11
 
-    /// 基本3列（年齢・西暦・和暦）の列間。常にこの幅で詰めて並べる
-    private let baseColumnSpacing: CGFloat = 10
+    /// 基本3列（西暦・和暦・年齢）の列間。常にこの幅で詰めて並べる
+    private let baseColumnSpacing = YearColumnMetrics.columnSpacing
     /// 行の左右端に空ける幅
-    private let edgeInset: CGFloat = 12
+    private let edgeInset = YearColumnMetrics.edgeInset
 
     private var hasMemo: Bool {
         !(memo?.isEmpty ?? true)
@@ -187,10 +216,12 @@ struct YearRowView: View {
         .frame(maxWidth: .infinity)
     }
 
-    /// 基本3列の index 番目。年齢一覧だけ年齢が先頭に来る
+    /// 基本3列の index 番目
     @ViewBuilder
     private func baseColumn(at index: Int, fontSize: CGFloat) -> some View {
-        let order: [BaseColumnKind] = showsAgeFirst ? [.age, .gregorian, .era] : [.gregorian, .era, .age]
+        // どの一覧でも西暦・和暦・年齢の順に固定する。並びの基準である西暦を
+        // 常に左端に置き、一覧を切り替えても変わるのは年齢列の中身だけにする
+        let order: [BaseColumnKind] = [.gregorian, .era, .age]
         switch order[index] {
         case .age:
             ageColumn(fontSize: fontSize)
@@ -198,7 +229,7 @@ struct YearRowView: View {
             gregorianColumn(fontSize: fontSize)
         case .era:
             eraColumn(fontSize: fontSize)
-                .frame(width: fontSize * 4.1, alignment: .leading)
+                .frame(width: fontSize * YearColumnMetrics.eraWidthRatio, alignment: .leading)
         }
     }
 
@@ -235,19 +266,19 @@ struct YearRowView: View {
     private func badgeColumn(fontSize: CGFloat) -> some View {
         // 常に縦積み。幅は最長の「大還暦」（3文字）が収まる分で固定し、
         // 該当の有無や文字数で列位置がずれないようにする
-        let badgeFontSize = fontSize * 0.66
+        let badgeFontSize = fontSize * YearColumnMetrics.badgeScale
         return VStack(alignment: .leading, spacing: 0) {
             badgeGroup(font: .system(size: badgeFontSize))
         }
         .lineLimit(1)
-        .frame(width: badgeFontSize * 3, alignment: .leading)
+        .frame(width: YearColumnMetrics.badgeWidth(fontSize: fontSize), alignment: .leading)
     }
 
     private func gregorianColumn(fontSize: CGFloat) -> some View {
         Text(String(row.gregorian))
             .font(.system(size: fontSize, weight: .semibold, design: .monospaced))
             .lineLimit(1)
-            .frame(width: fontSize * 2.55, alignment: .trailing)
+            .frame(width: fontSize * YearColumnMetrics.gregorianWidthRatio, alignment: .trailing)
     }
 
     @ViewBuilder
@@ -255,16 +286,16 @@ struct YearRowView: View {
         // 干支と九星も常に縦積み。幅は九星の「一白水星」（4文字）に合わせて
         // 固定し、行ごとに列位置がずれないようにする
         if showsZodiac, let nineStar {
-            let nineStarFontSize = fontSize * 0.70
+            let nineStarFontSize = fontSize * YearColumnMetrics.nineStarScale
             VStack(alignment: .leading, spacing: 0) {
                 zodiacText(size: fontSize * 0.82)
                 nineStarText(nineStar, size: nineStarFontSize)
             }
-            .frame(width: nineStarFontSize * 4, alignment: .leading)
+            .frame(width: YearColumnMetrics.zodiacWidth(fontSize: fontSize, showsNineStar: true), alignment: .leading)
         } else if showsZodiac {
             // 絵文字＋漢字1文字ぶん
             zodiacText(size: fontSize)
-                .frame(width: fontSize * 2.6, alignment: .leading)
+                .frame(width: YearColumnMetrics.zodiacWidth(fontSize: fontSize, showsNineStar: false), alignment: .leading)
         } else if let nineStar {
             let nineStarFontSize = fontSize * 0.72
             nineStarText(nineStar, size: nineStarFontSize)
@@ -335,7 +366,7 @@ struct YearRowView: View {
         switch hint.kind {
         case .ageJump(let selectedAge):
             // この行そのものが何の年かを1文で説明する
-            "今年の誕生日で満\(String(selectedAge))歳になる方の誕生年です"
+            "今年の誕生日で満\(String(selectedAge))歳になる方が生まれた年です"
         case .beforeBirthdayToday:
             // value は誕生日前の満年齢。誕生日を迎えると +1 になり、
             // 数え年は元日にその値へ達しているので +2 にあたる
@@ -364,20 +395,14 @@ struct YearRowView: View {
                 .foregroundStyle(age < 0 ? AnyShapeStyle(.secondary) : AnyShapeStyle(rowTextColor))
                 .lineLimit(1)
 
-            if showsAgeFirst {
-                // 年齢一覧は年齢列の従来幅を維持する
-                ageText
-                    .frame(width: fontSize * 3.6, alignment: .trailing)
-            } else {
-                // 自分／名簿は「99歳」の幅を原則とし、必要な行だけ広げる
-                ageText
-                    .fixedSize(horizontal: true, vertical: false)
-                    .frame(minWidth: fontSize * 2.3, alignment: .trailing)
-            }
+            // 「99歳」の幅を原則とし、必要な行だけ広げる
+            ageText
+                .fixedSize(horizontal: true, vertical: false)
+                .frame(minWidth: fontSize * YearColumnMetrics.ageMinWidthRatio, alignment: .trailing)
         } else {
             // 年齢未設定時も列配置を保つ
             Color.clear
-                .frame(width: fontSize * (showsAgeFirst ? 3.6 : 2.3))
+                .frame(width: fontSize * YearColumnMetrics.ageMinWidthRatio)
         }
     }
 

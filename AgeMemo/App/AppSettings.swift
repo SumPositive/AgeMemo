@@ -69,6 +69,22 @@ enum AppearanceMode: Int, CaseIterable, Identifiable {
     }
 }
 
+/// 一覧の並び順。西暦・和暦・年齢はいずれも西暦年の単調な関数なので、
+/// 3列は同じ1つの並び順を別の見え方で示しているにすぎない。
+/// そのため昇降はこの1つの値だけで表す
+enum YearSortOrder: Int, CaseIterable, Identifiable {
+    /// 西暦の小さい順（過去が上）
+    case ascending
+    /// 西暦の大きい順（未来が上）
+    case descending
+
+    var id: Int { rawValue }
+
+    var toggled: YearSortOrder {
+        self == .ascending ? .descending : .ascending
+    }
+}
+
 @MainActor
 @Observable
 final class AppSettings {
@@ -84,6 +100,33 @@ final class AppSettings {
 
     var appearanceMode: AppearanceMode {
         didSet { defaults.set(appearanceMode.rawValue, forKey: Key.appearanceMode) }
+    }
+
+    /// 「生まれ年」一覧の並び順。年齢が西暦と逆向きに増える一覧なので、
+    /// 自分／名簿とは求める向きが違う。それぞれ別に覚える
+    var birthYearListSortOrder: YearSortOrder {
+        didSet { defaults.set(birthYearListSortOrder.rawValue, forKey: Key.birthYearListSortOrder) }
+    }
+
+    /// 「自分」「名簿」一覧の並び順。どちらも一人の年齢を追う一覧なので同じ値を使う
+    var personListSortOrder: YearSortOrder {
+        didSet { defaults.set(personListSortOrder.rawValue, forKey: Key.personListSortOrder) }
+    }
+
+    /// 一覧の並び順。見出しの矢印をタップして切り替える
+    func yearSortOrder(for mode: AgeDisplayMode) -> YearSortOrder {
+        switch mode {
+        case .age: birthYearListSortOrder
+        case .personal, .person: personListSortOrder
+        }
+    }
+
+    /// その一覧の並び順を反転する
+    func toggleYearSortOrder(for mode: AgeDisplayMode) {
+        switch mode {
+        case .age: birthYearListSortOrder = birthYearListSortOrder.toggled
+        case .personal, .person: personListSortOrder = personListSortOrder.toggled
+        }
     }
 
     /// 数え年を補足として表示するか。一覧の年齢列は常に満年齢
@@ -186,6 +229,8 @@ final class AppSettings {
         static let showsUnluckyYear = "showsUnluckyYear"
         static let showsSchoolAge = "showsSchoolAge"
         static let showsNineStar = "showsNineStar"
+        static let birthYearListSortOrder = "birthYearListSortOrder"
+        static let personListSortOrder = "personListSortOrder"
     }
 
     private init(defaults: UserDefaults = .standard) {
@@ -200,6 +245,9 @@ final class AppSettings {
         showsUnluckyYear = defaults.bool(forKey: Key.showsUnluckyYear)
         showsSchoolAge = defaults.bool(forKey: Key.showsSchoolAge)
         showsNineStar = defaults.bool(forKey: Key.showsNineStar)
+        // 未設定なら 0 ＝ ascending が返り、どちらの一覧も西暦の小さい順で開く
+        birthYearListSortOrder = YearSortOrder(rawValue: defaults.integer(forKey: Key.birthYearListSortOrder)) ?? .ascending
+        personListSortOrder = YearSortOrder(rawValue: defaults.integer(forKey: Key.personListSortOrder)) ?? .ascending
         birthDate = defaults.object(forKey: Key.birthDate) as? Date
         lastJumpSelectionID = defaults.string(forKey: Key.lastJumpSelectionID)
         lastJumpInput = defaults.object(forKey: Key.lastJumpInput) as? Int

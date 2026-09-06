@@ -52,6 +52,23 @@ struct YearListView: View {
     /// 復帰時に年越しを反映できるよう状態値として保持する
     @State private var currentYear = Calendar.current.component(.year, from: .now)
 
+    /// 今見ている一覧の並び順。「生まれ年」と「自分／名簿」で別々に覚える
+    private var sortOrder: YearSortOrder {
+        settings.yearSortOrder(for: ageDisplayMode)
+    }
+
+    /// 一覧に並べる順。rows は西暦の小さい順で作られているので、
+    /// 降順のときだけ反転する。元データは作り直さない
+    private var orderedRows: [YearRow] {
+        sortOrder == .ascending ? rows : rows.reversed()
+    }
+
+    /// 「生まれ年」一覧の年齢は西暦と逆向きに増える（今年 - その年）。
+    /// 見出しの年齢列の矢印だけを反対に向けるために使う
+    private var invertsAgeDirection: Bool {
+        ageDisplayMode == .age
+    }
+
     private var selectedPerson: Person? {
         guard let selectedPersonID else { return nil }
         return personStore.people.first { $0.id == selectedPersonID }
@@ -67,7 +84,7 @@ struct YearListView: View {
     }
 
     /// 設定がONのあいだは「自分」のときだけメモを表示する
-    /// メモの持ち主。「年齢」タブと名簿未選択のときは特定の人を指さない
+    /// メモの持ち主。「生まれ年」タブと名簿未選択のときは特定の人を指さない
     private var memoOwner: MemoOwner? {
         switch ageDisplayMode {
         case .personal: .myself
@@ -157,7 +174,6 @@ struct YearListView: View {
         let rowIsBirthYear: Bool = row.gregorian == highlightedBirthYear
         let rowIsSelected: Bool = row.gregorian == selectedDestinationYear
         let rowIsTapped: Bool = row.gregorian == tappedYear
-        let rowShowsAgeFirst: Bool = ageDisplayMode == .age
         let rowLongevity: Longevity? = longevity(for: row.gregorian)
         let rowUnluckyYear: UnluckyYear? = unluckyYear(for: row.gregorian)
         let rowSchoolMilestone: SchoolMilestone? = schoolMilestone(for: row.gregorian)
@@ -176,7 +192,6 @@ struct YearListView: View {
                 isBirthYear: rowIsBirthYear,
                 isSelected: rowIsSelected,
                 isTapped: rowIsTapped,
-                showsAgeFirst: rowShowsAgeFirst,
                 showsZodiac: settings.showsZodiac,
                 longevity: rowLongevity,
                 unluckyYear: rowUnluckyYear,
@@ -208,7 +223,7 @@ struct YearListView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        ForEach(rows) { row in
+                        ForEach(orderedRows) { row in
                             rowView(for: row)
                                 .id(row.id)
                         }
@@ -274,6 +289,23 @@ struct YearListView: View {
                         Color.clear.frame(height: 0)
                     } else {
                         HeaderBannerView()
+                    }
+                    // 列見出しは一覧のすぐ上に固定し、スクロールしても
+                    // 各列の意味と並び順が分かるようにする。
+                    // 横向きは高さが乏しいので、バナーと同じく省く
+                    if !isLandscape {
+                        YearListHeader(
+                            sortOrder: sortOrder,
+                            invertsAgeDirection: invertsAgeDirection,
+                            showsAnniversaryUnit: isShowingAnniversary,
+                            showsZodiac: settings.showsZodiac,
+                            showsNineStar: settings.showsNineStar,
+                            reservesBadgeColumn: reservesBadgeColumn,
+                            compact: effectiveDisplayMode == .expert
+                        ) {
+                            toggleSortOrder()
+                        }
+                        Divider()
                     }
                 }
                 .background(.bar)
@@ -389,10 +421,10 @@ struct YearListView: View {
         }
     }
 
-    /// 初心者モードで一覧の読み方を示す。年齢一覧と自分／名簿では引く向きが逆になる
+    /// 初心者モードで一覧の読み方を示す。生まれ年と自分／名簿では引く向きが逆になる
     private var listSummary: LocalizedStringKey {
         switch ageDisplayMode {
-        case .age: "年齢と生まれた年の早見表"
+        case .age: "生まれ年と年齢の早見表"
         case .personal: "年と年齢の早見表"
         case .person: isShowingAnniversary ? "年と周年の早見表" : "年と年齢の早見表"
         }
@@ -503,7 +535,14 @@ struct YearListView: View {
         tappedYear = nil
         switch action {
         case .age:
+            let previousSortOrder = sortOrder
             ageDisplayMode = .age
+            // 一覧ごとに並び順を覚えているため、切り替えで順序が反転することがある。
+            // 移動シートを閉じただけの場合に見ていた位置を失わないよう、
+            // 反転したときは当年へ寄せ直しておく
+            if previousSortOrder != sortOrder {
+                scrollRequest = YearScrollRequest(year: currentYear)
+            }
             // 年齢だけでなく西暦・元号でも移動できるよう、共通の移動シートを開く
             presentedSheet = .era
         case .personal:
@@ -549,6 +588,17 @@ struct YearListView: View {
     /// 行ごとに列位置がずれると一覧として読みにくいため
     private var reservesBadgeColumn: Bool {
         settings.showsLongevity || settings.showsSchoolAge || settings.showsUnluckyYear
+    }
+
+    /// 並び順を反転する。西暦・和暦・年齢は同じ1つの並び順なので、
+    /// どの列を押しても同じ切り替えになる。
+    /// 変わるのは今見ている一覧の分だけで、もう一方の一覧は元の順のまま
+    private func toggleSortOrder() {
+        // 見ていた年を見失わないよう、反転後も同じ年へ戻す。
+        // 直前に注目していた行があればそれを優先する
+        let anchorYear = tappedYear ?? selectedDestinationYear ?? currentYear
+        settings.toggleYearSortOrder(for: ageDisplayMode)
+        scrollRequest = YearScrollRequest(year: anchorYear)
     }
 
     private func longevity(for year: Int) -> Longevity? {

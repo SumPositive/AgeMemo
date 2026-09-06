@@ -13,6 +13,8 @@ struct YearDetailView: View {
 
     let row: YearRow
     @State private var memoText: String
+    /// メモ欄のキーボードを閉じるために持つ
+    @FocusState private var isMemoFocused: Bool
     /// 漢字語をタップしたときに開く解説
     @State private var selectedTerm: CalendarTerm?
     let ageDisplayMode: AgeDisplayMode
@@ -61,13 +63,26 @@ struct YearDetailView: View {
                     max(width - contentPadding * 2, 0)
                 }
                 .padding(contentPadding)
+                .background {
+                    // メモ欄以外の余白をタップしてもキーボードを閉じる
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture { isMemoFocused = false }
+                }
             }
+            // 下へドラッグしてもキーボードを閉じられるようにする
+            .scrollDismissesKeyboard(.interactively)
             .scrollIndicators(.hidden)
             // 年は本文の見出しに出るため、シートのタイトルには置かない
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     SheetCloseButton { dismiss() }
+                }
+                // 隠す手段が分かるよう、キーボード上にも明示のボタンを置く
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("完了") { isMemoFocused = false }
                 }
             }
         }
@@ -416,14 +431,14 @@ struct YearDetailView: View {
         case .age:
             // 年齢が負の年はまだ生まれていないため、経過年数で表す
             if age > 0 {
-                // 数え年と満年齢をひと続きの文にまとめ、最後で「誕生年です」と結ぶ
+                // 数え年と満年齢をひと続きの文にまとめ、最後で「生まれた年です」と結ぶ
                 return showsTraditional
-                    ? String(localized: "今年の元日で数え\(traditional)歳\n今年の誕生日で満\(age)歳\nになる方の誕生年です")
-                    : String(localized: "今年の誕生日で満\(age)歳になる方の誕生年です")
+                    ? String(localized: "今年の元日で数え\(traditional)歳\n今年の誕生日で満\(age)歳\nになる方が生まれた年です")
+                    : String(localized: "今年の誕生日で満\(age)歳になる方が生まれた年です")
             } else if age == 0 {
-                return String(localized: "今年生まれた方の誕生年")
+                return String(localized: "この年に生まれた方がいます")
             } else {
-                return String(localized: "\(-age)年後に生まれる方の誕生年")
+                return String(localized: "\(-age)年後に生まれる方がいます")
             }
         case .personal, .person:
             // 生年より前の年は、生まれるまでの残り年数で表す
@@ -472,6 +487,7 @@ struct YearDetailView: View {
             // TextField を使う。100字なので数行で収まる
             TextField("この年の出来事", text: $memoText, axis: .vertical)
                 .lineLimit(1...)
+                .focused($isMemoFocused)
                 .padding(8)
                 .background(.background, in: RoundedRectangle(cornerRadius: 10))
                 .overlay {

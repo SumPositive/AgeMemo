@@ -1,4 +1,4 @@
-// 一覧の年齢表示状態を選ぶ3種類のタブを等幅で配置する
+// 一覧の基準（生まれ年・自分・名簿）を選ぶ3種類のタブを等幅で配置する
 
 import SwiftUI
 
@@ -11,7 +11,7 @@ enum MainToolbarAction: CaseIterable, Identifiable {
 
     var title: LocalizedStringKey {
         switch self {
-        case .age: "年齢"
+        case .age: "生まれ年"
         case .personal: "自分"
         case .person: "名簿"
         }
@@ -28,7 +28,7 @@ enum MainToolbarAction: CaseIterable, Identifiable {
 
     var symbol: String {
         switch self {
-        case .age: "number"
+        case .age: "calendar"
         case .personal: "person"
         case .person: "person.2"
         }
