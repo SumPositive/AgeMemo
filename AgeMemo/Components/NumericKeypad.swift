@@ -143,7 +143,8 @@ private struct KeypadPressBehavior: ViewModifier {
                 guard isEnabled else { return }
                 action()
             }
-            .animation(.easeOut(duration: 0.08), value: isPressed)
+        // 押下の表示はアニメーションさせない。
+        // 速く連打するとフェードが追いつかず、押せた手応えが分かりにくくなる
     }
 }
 

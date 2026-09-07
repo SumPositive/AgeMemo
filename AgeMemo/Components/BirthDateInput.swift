@@ -403,8 +403,9 @@ struct BirthDatePad: View {
                 .font(.title2.weight(.semibold))
                 .monospacedDigit()
                 .foregroundStyle(isPlaceholder ? Color(.tertiaryLabel) : Color(.label))
-                .contentTransition(.numericText())
-                .animation(.snappy, value: entry.text(for: field))
+                // 入力した数字はアニメーションさせずに即時反映する。
+                // 連続で押すと転がる演出が追いつかず、入力を取りこぼしたように見える
+                .animation(nil, value: entry.text(for: field))
 
             Text(field.unitText(isBirthDate: isBirthDate))
                 .font(.footnote)

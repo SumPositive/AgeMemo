@@ -40,6 +40,11 @@ struct EraJumpSheet: View {
     @State private var retainedInput: Int?
     @ScaledMetric(relativeTo: .largeTitle) private var displayFontSize: CGFloat = 44
 
+    /// 入力表示の1行ぶんの高さ。桁数で縮小されても行の高さを変えないために使う
+    private var displayLineHeight: CGFloat {
+        UIFont.systemFont(ofSize: displayFontSize, weight: .bold).lineHeight
+    }
+
     let rows: [YearRow]
     let ageDisplayMode: AgeDisplayMode
     /// 自分または名簿人物の年齢換算に使う生年月日
@@ -288,11 +293,16 @@ struct EraJumpSheet: View {
 
                     inputRow
 
-                    if convertedYear != boundedYear {
-                        Text("表示範囲外のため \(String(boundedYear))年へ移動します")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
+                    // 出したり消したりするとシートの高さが変わってしまうため、
+                    // 該当しないときも同じ1行分を空けたまま置いておく
+                    Text("表示範囲外のため \(String(boundedYear))年へ移動します")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .opacity(convertedYear == boundedYear ? 0 : 1)
+                        // 見えていないあいだは読み上げの対象からも外す
+                        .accessibilityHidden(convertedYear == boundedYear)
 
                     NumericKeypad(trailingKey: .sign) { key in
                         handle(key)
@@ -406,8 +416,9 @@ struct EraJumpSheet: View {
                 .foregroundStyle(isEmpty ? Color(.tertiaryLabel) : Color(.label))
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
-                .contentTransition(.numericText())
-                .animation(.snappy, value: digits)
+                // 入力した数字はアニメーションさせずに即時反映する。
+                // 連続で押すと転がる演出が追いつかず、入力を取りこぼしたように見える
+                .animation(nil, value: digits)
                 .frame(maxWidth: .infinity, alignment: .center)
 
             if case .gregorian = selection {
@@ -423,6 +434,10 @@ struct EraJumpSheet: View {
                     .accessibilityLabel(Text("移動先 西暦\(convertedYear)年"))
             }
         }
+        // 桁数によって文字の縮小率が変わると行の高さも変わり、
+        // 入力するたびにシートの高さが動いてしまう。
+        // 行内で最も高い入力表示の1行ぶんを常に確保して、その揺れを止める
+        .frame(minHeight: displayLineHeight)
         .onChange(of: selection) { previousSelection, newSelection in
             // 移動先の西暦年を保ったまま、新しい年号の値へ換算する
             let sourceInput = signedInput ?? retainedInput ?? placeholderInputYear(for: previousSelection)
