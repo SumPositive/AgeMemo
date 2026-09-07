@@ -41,7 +41,8 @@ struct BeginnerHelpBanner: View {
                 .font(helpButtonFont)
                 .foregroundStyle(Color.accentColor)
                 .opacity(isBeginner ? 1 : 0.72)
-                .padding(isBeginner ? 8 : 5)
+                // アイコンは小さくても押しやすいよう、余白でタップ領域を確保する
+                .padding(isBeginner ? 9 : 6)
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)
@@ -49,8 +50,8 @@ struct BeginnerHelpBanner: View {
     }
 
     private var helpButtonFont: Font {
-        // 達人モードのアイコンは少し控えめにする
-        isBeginner ? .callout.weight(.semibold) : .footnote.weight(.semibold)
+        // 見出しの添え物なので小さめにし、達人モードはさらに控えめにする
+        isBeginner ? .footnote.weight(.semibold) : .caption.weight(.semibold)
     }
 
     private var helpSheetHeight: CGFloat {

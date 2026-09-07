@@ -421,55 +421,72 @@ struct YearListView: View {
         }
     }
 
-    /// 初心者モードで一覧の読み方を示す。生まれ年と自分／名簿では引く向きが逆になる
-    private var listSummary: LocalizedStringKey {
+    /// 初心者モードで一覧の読み方を示す。誰の早見表かをここで示す。
+    /// 名簿の人物名は訳す対象ではないため、名前だけ `String` として差し込む
+    private var listSummary: Text {
         switch ageDisplayMode {
-        case .age: "生まれ年と年齢の早見表"
-        case .personal: "年と年齢の早見表"
-        case .person: isShowingAnniversary ? "年と周年の早見表" : "年と年齢の早見表"
+        case .age:
+            Text("生まれ年の早見表")
+        case .personal:
+            Text("自分の早見表")
+        case .person:
+            // 名簿を開く前など、まだ誰も選んでいないときは対象を示さない
+            if let name = selectedPerson?.name {
+                Text("\(name)の早見表")
+            } else {
+                Text("早見表")
+            }
         }
     }
 
-    /// ツールバーのボタン1つ分の幅。説明をその真下で中央寄せにする。
-    /// ボタン自体は文字サイズで広がらないため、ここも固定幅にして中央の説明の幅を確保する
-    private let sideCaptionWidth: CGFloat = 44
-    /// ツールバーボタンの画面端からの余白。キャプションの枠をボタンと同じ位置に置く
+    /// ツールバーボタンの画面端からの余白。説明の枠をボタンと同じ位置に置く
     private let toolbarHorizontalInset: CGFloat = 16
+    /// ツールバーボタンの真下に置く説明の幅。ボタン（44pt）より少し広く取り、
+    /// 大きな文字でも縮めずに1行で収まるようにする。
+    /// 枠は中心を軸に広がるため、広げても位置はボタンの真下のままになる
+    private let sideCaptionWidth: CGFloat = 56
 
     /// 初心者モードの説明行。ボタンのカプセルに収めると文字が欠けるため、
     /// ナビゲーションバーの下に別の行として置く
     private var beginnerCaptions: some View {
-        // 左右はボタンの真下に固定し、中央の説明は残りの幅の中だけで縮める。
-        // HStack に並べると中央が左右を押し出すため、重ねて配置する
+        // 左右はボタンの真下に固定幅で置き、中央はその内側に重ねる。
+        // 3つを横に並べると中央が左右を押し出して画面外へ追いやるため、
+        // 左右だけを HStack に置き、中央は overlay で別に重ねる
         HStack(alignment: .top, spacing: 0) {
-            Text("設定")
-                .minimumScaleFactor(0.4)
-                .frame(width: sideCaptionWidth)
+            captionText("設定")
             Spacer(minLength: 0)
-            Text("移動")
-                .minimumScaleFactor(0.4)
-                .frame(width: sideCaptionWidth)
+            captionText("移動")
         }
         .overlay {
-            // 中央の要約に (i) を添えて、一覧の読み方とタップ操作の説明を開けるようにする
+            // 中央の要約に (?) を添えて、一覧の読み方とタップ操作の説明を開けるようにする
             HStack(spacing: 2) {
-                Text(listSummary)
+                listSummary
                     // 縮むのは中央だけにして、左右はボタンの真下から動かさない
                     .lineLimit(1)
-                    .minimumScaleFactor(0.4)
+                    .minimumScaleFactor(0.5)
                 BeginnerHelpBanner(listHelp)
             }
-            .padding(.horizontal, sideCaptionWidth + 4)
+            // 左右の説明に重ならない幅までに収める
+            .padding(.horizontal, sideCaptionWidth)
         }
         .font(.caption2)
         .foregroundStyle(.secondary)
-        .lineLimit(1)
         .padding(.horizontal, toolbarHorizontalInset)
         // タイトルとの間は詰め、一覧との間は空けて区切りを分かりやすくする
         .padding(.top, -6)
         .padding(.bottom, 8)
         .frame(maxWidth: .infinity)
         .background(.bar)
+    }
+
+    /// ツールバーボタンの真下に置く説明。縦に積むと読みにくいため1行に保ち、
+    /// 枠に収まらない大きさのときだけ縮めて欠けを防ぐ。
+    /// 最大の文字サイズでも 0.75 倍あれば収まるので、読めなくなるほどは縮まない
+    private func captionText(_ title: LocalizedStringKey) -> some View {
+        Text(title)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .frame(width: sideCaptionWidth)
     }
 
     // シートでは「自動」も現在の外観へ解決して渡す。

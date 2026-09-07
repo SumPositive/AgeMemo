@@ -9,6 +9,18 @@
       "comment": "月の輝面比。記号のみ",
       "shouldTranslate": false
     },
+    "%@の早見表": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@'s year → age chart"
+          }
+        }
+      },
+      "comment": "名簿で選んだ方または記念日の名前が入る"
+    },
     "%@を変更": {
       "extractionState": "manual",
       "localizations": {
@@ -2274,28 +2286,6 @@
       "extractionState": "manual",
       "shouldTranslate": false
     },
-    "年と周年の早見表": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Year → anniversary"
-          }
-        }
-      }
-    },
-    "年と年齢の早見表": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Year → age"
-          }
-        }
-      }
-    },
     "年に付ける日本独自の名前": {
       "extractionState": "manual",
       "localizations": {
@@ -2479,6 +2469,17 @@
     "日生": {
       "extractionState": "manual",
       "shouldTranslate": false
+    },
+    "早見表": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Year → age chart"
+          }
+        }
+      }
     },
     "明暦の大火からの江戸復興が進められた時期にあたります。": {
       "extractionState": "manual",
@@ -2961,7 +2962,7 @@
         }
       }
     },
-    "生まれ年と年齢の早見表": {
+    "生まれ年の早見表": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3155,6 +3156,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your gender"
+          }
+        }
+      }
+    },
+    "自分の早見表": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My year → age chart"
           }
         }
       }
