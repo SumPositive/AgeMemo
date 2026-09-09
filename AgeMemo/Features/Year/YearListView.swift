@@ -257,6 +257,10 @@ struct YearListView: View {
             }
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
+            // ナビゲーションバーも紙の地色にして、下に続く和紙とつなげる。
+            // ここは繊維を描けないので地色だけを合わせる
+            .toolbarBackground(WashiBackground.paperColor(colorScheme), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -305,10 +309,13 @@ struct YearListView: View {
                         ) {
                             toggleSortOrder()
                         }
-                        Divider()
                     }
                 }
-                .background(.bar)
+                // ヘルプ・広告・列見出しを1枚の紙として見せる。
+                // 個別に枠を付けるより、まとまって一覧の台紙に見える。
+                // 上端のナビゲーションバーは toolbarBackground が同じ地色を敷き、
+                // ここから続く紙としてつながる
+                .background(WashiBackground(colorScheme: colorScheme))
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 BottomToolbar(
@@ -476,11 +483,11 @@ struct YearListView: View {
         .font(.caption2)
         .foregroundStyle(.secondary)
         .padding(.horizontal, toolbarHorizontalInset)
-        // タイトルとの間は詰め、一覧との間は空けて区切りを分かりやすくする
-        .padding(.top, -6)
+        // 一覧との間は空けて区切りを分かりやすくする。
+        // 上は詰められるだけ詰める。負の余白でせり出すと親（和紙）の領域から
+        // 外れて文字が欠けるため、0 より小さくはしない
         .padding(.bottom, 8)
         .frame(maxWidth: .infinity)
-        .background(.bar)
     }
 
     /// ツールバーボタンの真下に置く説明。縦に積むと読みにくいため1行に保ち、

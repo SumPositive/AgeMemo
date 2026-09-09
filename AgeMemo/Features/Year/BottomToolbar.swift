@@ -40,6 +40,8 @@ struct BottomToolbar: View {
     let selection: MainToolbarAction
     let action: (MainToolbarAction) -> Void
 
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         HStack(spacing: 0) {
             ForEach(MainToolbarAction.allCases) { item in
@@ -70,6 +72,12 @@ struct BottomToolbar: View {
         }
         .padding(.horizontal, 4)
         .padding(.vertical, 6)
-        .background(.bar)
+        // 上部の見出しと同じ和紙にして、一覧を紙で挟んだ体裁にそろえる
+        .background {
+            WashiBackground(colorScheme: colorScheme)
+                // safeAreaInset の中身は下の安全領域まで広がらないため、
+                // 紙だけをホームインジケータの裏まで伸ばす
+                .ignoresSafeArea(edges: .bottom)
+        }
     }
 }
