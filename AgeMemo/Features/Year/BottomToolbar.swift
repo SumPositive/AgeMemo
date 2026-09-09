@@ -53,6 +53,9 @@ struct BottomToolbar: View {
                             Text(item.title)
                                 .font(.caption2)
                                 .lineLimit(1)
+                                // 3等分した枠に「生まれ年」が入らない文字サイズでは
+                                // 端が切れるため、枠の中で縮める
+                                .minimumScaleFactor(0.6)
                         }
                     }
                     .frame(maxWidth: .infinity, minHeight: 42)

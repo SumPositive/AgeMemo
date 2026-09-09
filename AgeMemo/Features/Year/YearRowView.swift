@@ -31,6 +31,67 @@ enum YearColumnMetrics {
     static func badgeWidth(fontSize: CGFloat) -> CGFloat {
         fontSize * badgeScale * 3
     }
+
+    /// 列の合計幅。端の余白と列間も含めた、その基準サイズで必要になる幅
+    static func totalWidth(
+        fontSize: CGFloat,
+        showsZodiac: Bool,
+        showsNineStar: Bool,
+        reservesBadgeColumn: Bool
+    ) -> CGFloat {
+        var width = edgeInset * 2
+        width += fontSize * gregorianWidthRatio + columnSpacing
+        width += fontSize * eraWidthRatio + columnSpacing
+        width += fontSize * ageMinWidthRatio
+        if showsZodiac || showsNineStar {
+            width += columnSpacing
+            width += zodiacWidth(fontSize: fontSize, showsNineStar: showsZodiac && showsNineStar)
+        }
+        if reservesBadgeColumn {
+            width += columnSpacing + badgeWidth(fontSize: fontSize)
+        }
+        return width
+    }
+
+    /// 列幅の基準に使うフォントサイズ。
+    ///
+    /// 列幅は文字サイズに比例するため、大きな文字と狭い画面が重なると
+    /// 合計が画面幅を超え、両端の列が切れる。そこで画面に収まる上限を求め、
+    /// それ以上は基準サイズを頭打ちにする。行も見出しも同じ値を使うので、
+    /// 頭打ちになっても両者の列位置は揃ったままになる。
+    ///
+    /// 文字そのものは各列の `minimumScaleFactor` で縮むため、
+    /// 基準サイズを抑えても読めなくなるわけではない
+    static func fittedFontSize(
+        _ fontSize: CGFloat,
+        availableWidth: CGFloat,
+        showsZodiac: Bool,
+        showsNineStar: Bool,
+        reservesBadgeColumn: Bool
+    ) -> CGFloat {
+        guard availableWidth > 0 else { return fontSize }
+        let needed = totalWidth(
+            fontSize: fontSize,
+            showsZodiac: showsZodiac,
+            showsNineStar: showsNineStar,
+            reservesBadgeColumn: reservesBadgeColumn
+        )
+        guard needed > availableWidth else { return fontSize }
+        // 端余白と列間は文字サイズに比例しない固定値なので、
+        // その分を差し引いた残りで比率を出す
+        let fixed = fixedWidth(showsZodiacColumn: showsZodiac || showsNineStar, reservesBadgeColumn: reservesBadgeColumn)
+        let variable = needed - fixed
+        guard variable > 0 else { return fontSize }
+        return fontSize * max(0, availableWidth - fixed) / variable
+    }
+
+    /// 文字サイズに比例しない固定の幅（端余白と列間）の合計
+    private static func fixedWidth(showsZodiacColumn: Bool, reservesBadgeColumn: Bool) -> CGFloat {
+        var width = edgeInset * 2 + columnSpacing * 2
+        if showsZodiacColumn { width += columnSpacing }
+        if reservesBadgeColumn { width += columnSpacing }
+        return width
+    }
 }
 
 /// 行の下に添えるカプセルの内容

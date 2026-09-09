@@ -23,6 +23,8 @@ private func nonPersonalizedAdRequest() -> Request {
 }
 
 struct HeaderBannerView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         if hidesBannerForSnapshot {
             // App Store用スクリーンショットには広告枠を含めない
@@ -30,12 +32,27 @@ struct HeaderBannerView: View {
         } else if !AdMobConfig.bannerUnitID.isEmpty {
             AdMobBannerRepresentable(adUnitID: AdMobConfig.bannerUnitID)
                 .frame(width: 320, height: 50)
+                // 広告そのものは不透明なことが多いため、地はバナーの外側へ回り込ませる
+                .padding(6)
+                .background(bannerBackground)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 6)
+                // 上下は誤タップを避けるため広めに取る
+                .padding(.vertical, 10)
         } else {
             // ユニットID未設定時にEmptyViewを返すとsafeAreaInsetが破綻するため高さ0の実体を返す
             Color.clear.frame(height: 0)
         }
+    }
+
+    /// 広告の白地が一覧から浮かないよう、アクセント色をごく薄く敷いて枠に馴染ませる。
+    /// 暗所では同じ濃度だと沈んで見えないため、ダークだけ少し濃くする
+    private var bannerBackground: some View {
+        RoundedRectangle(cornerRadius: 12, style: .continuous)
+            .fill(Color.accentColor.opacity(colorScheme == .dark ? 0.10 : 0.05))
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(Color.accentColor.opacity(colorScheme == .dark ? 0.18 : 0.10), lineWidth: 1)
+            }
     }
 
     private var hidesBannerForSnapshot: Bool {

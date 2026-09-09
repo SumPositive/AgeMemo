@@ -43,24 +43,61 @@ struct YearListHeader: View {
     }
 
     var body: some View {
+        // 列幅は基準サイズに比例するため、大きな文字と狭い画面が重なると
+        // 合計が画面幅を超えて両端の見出しが切れる。実際に使える幅を測り、
+        // 収まる基準サイズへ頭打ちにしてから列を組む
+        GeometryReader { proxy in
+            let fitted = fittedFontSize(availableWidth: proxy.size.width)
+            // 見出しの文字も列幅と同じ比率で抑える。列幅だけを詰めると
+            // 年齢列のように自然幅で場所を取る見出しが枠を押し広げてしまう
+            columns(fontSize: fitted, labelSize: labelFontSize * fitted / rowFontSize)
+                .frame(width: proxy.size.width)
+        }
+        // GeometryReader は縦に広がろうとするため、必要な高さを明示する。
+        // 幅は測るまで分からないので、高さは頭打ち前の文字で確保しておく
+        .frame(height: headerHeight(labelSize: labelFontSize))
+    }
+
+    /// 画面幅に収まるまで頭打ちにした、列幅の基準サイズ
+    private func fittedFontSize(availableWidth: CGFloat) -> CGFloat {
+        YearColumnMetrics.fittedFontSize(
+            rowFontSize,
+            availableWidth: availableWidth,
+            showsZodiac: showsZodiac,
+            showsNineStar: showsNineStar,
+            reservesBadgeColumn: reservesBadgeColumn
+        )
+    }
+
+    /// 見出しの高さ。文字とその上下の余白から決める。
+    /// 幅に収まらず文字を抑えたときは、その分だけ高さも詰める
+    private func headerHeight(labelSize: CGFloat) -> CGFloat {
+        labelSize * 1.4 + (compact ? 4 : 6) * 2
+    }
+
+    private func columns(fontSize rowFontSize: CGFloat, labelSize labelFontSize: CGFloat) -> some View {
         // 行と同じ列幅・列間・端余白で並べ、見出しが中身の真上に来るようにする。
         // 行は ViewThatFits で縮むことがあるが、見出しは基準サイズのまま置く
         HStack(spacing: 0) {
             Spacer(minLength: YearColumnMetrics.edgeInset)
 
-            headerLabel("西暦", order: sortOrder)
+            headerLabel("西暦", order: sortOrder, labelSize: labelFontSize)
                 .frame(width: rowFontSize * YearColumnMetrics.gregorianWidthRatio, alignment: .trailing)
             Spacer(minLength: YearColumnMetrics.columnSpacing)
-            headerLabel("和暦", order: sortOrder)
+            headerLabel("和暦", order: sortOrder, labelSize: labelFontSize)
                 .frame(width: rowFontSize * YearColumnMetrics.eraWidthRatio, alignment: .leading)
             Spacer(minLength: YearColumnMetrics.columnSpacing)
-            headerLabel(ageTitle, order: ageOrder)
+            headerLabel(ageTitle, order: ageOrder, labelSize: labelFontSize)
+                // 年齢列だけは下限幅しか決めていないため、他の固定幅列に押されると
+                // minimumScaleFactor が働いて見出しだけが縮む。行と同じく
+                // 自然な幅を先に確保して、押し潰されないようにする
+                .fixedSize(horizontal: true, vertical: false)
                 .frame(minWidth: rowFontSize * YearColumnMetrics.ageMinWidthRatio, alignment: .trailing)
 
             if showsZodiacColumn {
                 Spacer(minLength: YearColumnMetrics.columnSpacing)
                 // 干支・九星は年そのものの属性で並び順を持たないため、矢印は付けない
-                plainLabel(showsZodiac ? "干支" : "九星")
+                plainLabel(showsZodiac ? "干支" : "九星", labelSize: labelFontSize)
                     .frame(
                         width: YearColumnMetrics.zodiacWidth(
                             fontSize: rowFontSize,
@@ -72,7 +109,7 @@ struct YearListHeader: View {
 
             if reservesBadgeColumn {
                 Spacer(minLength: YearColumnMetrics.columnSpacing)
-                plainLabel("節目")
+                plainLabel("節目", labelSize: labelFontSize)
                     .frame(width: YearColumnMetrics.badgeWidth(fontSize: rowFontSize), alignment: .leading)
             }
 
@@ -91,11 +128,14 @@ struct YearListHeader: View {
     }
 
     /// 並び順を持つ列の見出し。名前と矢印を添える
-    private func headerLabel(_ title: LocalizedStringKey, order: YearSortOrder) -> some View {
+    private func headerLabel(_ title: LocalizedStringKey, order: YearSortOrder, labelSize labelFontSize: CGFloat) -> some View {
         HStack(spacing: 1) {
             Text(title)
-            Image(systemName: order == .ascending ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
+            Image(systemName: sortArrowSymbol(order))
                 .font(.system(size: labelFontSize * 0.62))
+                // 中空は輪郭線だけになり塗りより弱く見えるため、
+                // 反転中の矢印は少し濃くして塗りと存在感をそろえる
+                .foregroundStyle(sortOrder == YearSortOrder.default ? AnyShapeStyle(.secondary) : AnyShapeStyle(Color.primary))
         }
         .font(.system(size: labelFontSize, weight: .semibold))
         .foregroundStyle(.secondary)
@@ -103,8 +143,26 @@ struct YearListHeader: View {
         .minimumScaleFactor(0.6)
     }
 
+    /// 並び順の矢印。向きで昇降順を、塗りつぶしの有無で既定かどうかを示す。
+    ///
+    /// 既定の並びなら中塗り（▲▼）、反転しているときは中空（△▽）にして、
+    /// 今が初期状態かどうかを一目で分かるようにする。
+    /// 判定は列ごとの向きではなく一覧全体の並び順で行う。
+    /// 「生まれ年」一覧の年齢列は西暦と逆を向くが、それは既定でも起きるため
+    /// 列の向きで判定すると初期状態なのに中空になってしまう
+    private func sortArrowSymbol(_ order: YearSortOrder) -> String {
+        let pointsUp = order == .ascending
+        let isDefault = sortOrder == YearSortOrder.default
+        switch (pointsUp, isDefault) {
+        case (true, true): return "arrowtriangle.up.fill"
+        case (true, false): return "arrowtriangle.up"
+        case (false, true): return "arrowtriangle.down.fill"
+        case (false, false): return "arrowtriangle.down"
+        }
+    }
+
     /// 並び順に関わらない列の見出し
-    private func plainLabel(_ title: LocalizedStringKey) -> some View {
+    private func plainLabel(_ title: LocalizedStringKey, labelSize labelFontSize: CGFloat) -> some View {
         Text(title)
             .font(.system(size: labelFontSize, weight: .semibold))
             .foregroundStyle(.secondary)

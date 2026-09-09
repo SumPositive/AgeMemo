@@ -461,10 +461,14 @@ struct YearListView: View {
             // 中央の要約に (?) を添えて、一覧の読み方とタップ操作の説明を開けるようにする
             HStack(spacing: 2) {
                 listSummary
-                    // 縮むのは中央だけにして、左右はボタンの真下から動かさない
+                    // 縮むのは中央だけにして、左右はボタンの真下から動かさない。
+                    // 大きな文字＋狭い画面では 0.5 でも収まらず端が切れるため、
+                    // (?) の分だけ残して更に縮められるようにする
                     .lineLimit(1)
-                    .minimumScaleFactor(0.5)
+                    .minimumScaleFactor(0.35)
                 BeginnerHelpBanner(listHelp)
+                    // (?) は縮めず、要約だけを縮めて場所を譲る
+                    .layoutPriority(1)
             }
             // 左右の説明に重ならない幅までに収める
             .padding(.horizontal, sideCaptionWidth)

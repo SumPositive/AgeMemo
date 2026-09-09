@@ -83,6 +83,9 @@ enum YearSortOrder: Int, CaseIterable, Identifiable {
     var toggled: YearSortOrder {
         self == .ascending ? .descending : .ascending
     }
+
+    /// 起動時の並び順。どの一覧も西暦の小さい順から始まる
+    static let `default`: YearSortOrder = .ascending
 }
 
 @MainActor
