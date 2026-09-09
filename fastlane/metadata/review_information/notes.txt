@@ -8,6 +8,6 @@ What is different:
 - In the year detail view, tapping a Japanese term (era name, stem-branch, rokuyo, nine-star sign, yakudoshi, gaju) opens a written explanation of its meaning, reading and cultural background, in the user's language. This is the core of the app's educational intent and is not offered by the existing wareki converters.
 - Birthday-aware guidance distinguishes the age reached in the selected year from the person's age today.
 - Roster entries can be birthdays or anniversaries. Anniversary entries show year-by-year counts for milestones such as wedding anniversaries and company founding dates.
-- Per-year notes (up to 400 characters), for genealogy and family-register research.
+- Per-year notes (up to 100 characters) for yourself and each roster entry, for genealogy and family-register research.
 
 The app is intended as an educational and cultural reference for Japanese-language learners, genealogy researchers, and foreign residents in Japan filling in official forms.

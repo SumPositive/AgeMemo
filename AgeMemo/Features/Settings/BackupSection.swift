@@ -52,9 +52,11 @@ struct BackupSection: View {
             case .success:
                 lastError = nil
                 completionMessage = "書き出しました"
-            case .failure:
-                // 利用者が取り消した場合もここへ来るため、失敗として扱わない
-                break
+            case .failure(let error):
+                // 利用者のキャンセルだけを通知対象から外す
+                if !BackupFileOperation.isCancellation(error) {
+                    lastError = .exportFailed
+                }
             }
             exportedFile = nil
         }
@@ -71,7 +73,11 @@ struct BackupSection: View {
             Button("キャンセル", role: .cancel) {}
         } message: { document in
             let summary = document.summary
-            Text("メモ\(summary.memoCount)件と名簿\(summary.personCount)件を読み込みます。いま入っているメモと名簿はすべて置き換わり、この操作は取り消せません。")
+            // 型を固定し、翻訳カタログの数値書式と一致させる
+            let memoCount = Int64(summary.memoCount)
+            let personCount = Int64(summary.personCount)
+            let format = String(localized: "メモ%lld件と名簿%lld件を読み込みます。いま入っているメモと名簿はすべて置き換わり、この操作は取り消せません。")
+            Text(String.localizedStringWithFormat(format, memoCount, personCount))
         }
     }
 
@@ -102,7 +108,11 @@ struct BackupSection: View {
     private func handleImportResult(_ result: Result<URL, Error>) {
         completionMessage = nil
         guard case .success(let url) = result else {
-            // 取り消しはここへ来るため、何も知らせない
+            // 利用者のキャンセルだけを通知対象から外す
+            if case .failure(let error) = result,
+               !BackupFileOperation.isCancellation(error) {
+                lastError = .importFailed
+            }
             return
         }
         // 「ファイル」アプリ側のファイルは、読む間だけ許可をもらう
@@ -111,21 +121,27 @@ struct BackupSection: View {
 
         do {
             let document = try BackupCoder.decode(try Data(contentsOf: url))
-            guard document.version <= BackupDocument.currentVersion else {
-                lastError = .unsupportedVersion
-                return
-            }
+            try BackupValidator.validate(document)
             lastError = nil
             pendingImport = document
+        } catch let error as BackupError {
+            lastError = error
         } catch {
             lastError = .decodeFailed
         }
     }
 
     private func apply(_ document: BackupDocument) {
-        memoStore.replaceAll(with: document.memos)
-        personStore.replaceAll(with: document.people)
-        let summary = document.summary
-        completionMessage = "メモ\(summary.memoCount)件と名簿\(summary.personCount)件を読み込みました"
+        do {
+            try BackupRestorer.apply(document, memoStore: memoStore, personStore: personStore)
+            let summary = document.summary
+            completionMessage = "メモ\(summary.memoCount)件と名簿\(summary.personCount)件を読み込みました"
+            lastError = nil
+        } catch {
+            completionMessage = nil
+            // 巻き戻しにも失敗した場合は伝えることが変わるので、
+            // BackupRestorer が返したエラーをそのまま見せる
+            lastError = error as? BackupError ?? .restoreFailed
+        }
     }
 }

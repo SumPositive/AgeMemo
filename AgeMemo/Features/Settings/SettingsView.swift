@@ -228,6 +228,7 @@ struct SettingsView: View {
             .sheet(isPresented: $isEditingBirthDate) {
                 BirthDateInputSheet(title: "生年月日", birthDate: settings.birthDate) { newValue in
                     settings.birthDate = newValue
+                    return true
                 }
                 .appAppearance(colorScheme: sheetColorScheme)
                 .alert("自分の生年月日を登録してください", isPresented: $showsBirthDateRegistrationPrompt) {

@@ -28,7 +28,7 @@ Note: the app's interface is available in English, but the calendar data it show
 ・The moon as you would see it that evening; 大安 taian is marked in red and full moons in yellow
 ・Era transition days are marked in place
 ・Tap any term — an era name, zodiac sign, rokuyo, nine-star sign, yakudoshi or gaju — to read what it means and where it came from
-・Write a note of up to 400 characters on any year
+・Write a note of up to 100 characters for any year, separately for yourself and each roster entry
 
 ■ Optional columns
 ・干支 eto — the zodiac animal, with its full sixty-cycle name

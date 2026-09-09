@@ -11,6 +11,7 @@ struct PersonSheet: View {
 
     @State private var editorTarget: PersonEditorTarget?
     @State private var pendingDeletion: Person?
+    @State private var deletionError: PersonDeletionError?
 
     let select: (Person) -> Void
 
@@ -106,6 +107,14 @@ struct PersonSheet: View {
                             .foregroundStyle(.red)
                     }
                 }
+
+                if let deletionError {
+                    Section {
+                        Text(deletionError.message)
+                            .font(.footnote)
+                            .foregroundStyle(.red)
+                    }
+                }
             }
             .navigationTitle("名簿")
             .navigationBarTitleDisplayMode(.inline)
@@ -135,9 +144,17 @@ struct PersonSheet: View {
             }
             .alert("削除しますか？", isPresented: deletionBinding, presenting: pendingDeletion) { person in
                 Button("削除", role: .destructive) {
-                    // 名簿から消えた人のメモは引く手立てが無くなるため一緒に消す
-                    memoStore.removeAll(for: .person(person.id))
-                    personStore.delete(id: person.id)
+                    do {
+                        // 名簿とその人のメモは片方だけ残らないよう一体で削除する
+                        try PersonDeletionCoordinator.delete(
+                            id: person.id,
+                            memoStore: memoStore,
+                            personStore: personStore
+                        )
+                        deletionError = nil
+                    } catch {
+                        deletionError = error as? PersonDeletionError ?? .deleteFailed
+                    }
                 }
                 Button("キャンセル", role: .cancel) {}
             } message: { person in
@@ -341,12 +358,19 @@ private struct PersonEditorSheet: View {
         ) { birthDate in
             switch target {
             case .add:
-                personStore.add(name: trimmedName, birthDate: birthDate, gender: gender, kind: kind)
+                return personStore.add(name: trimmedName, birthDate: birthDate, gender: gender, kind: kind)
             case .edit(let person):
-                personStore.update(id: person.id, name: trimmedName, birthDate: birthDate, gender: gender, kind: kind)
+                return personStore.update(id: person.id, name: trimmedName, birthDate: birthDate, gender: gender, kind: kind)
             }
         } header: {
             VStack(alignment: .leading, spacing: 8) {
+                if let error = personStore.lastError {
+                    // 保存できなかった場合は入力を残したまま理由を示す
+                    Text(error.message)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                }
+
                 // 種別で名前欄・性別欄・日付の単位が変わるため、名前より上に置く
                 AZAdaptiveRadioRow(
                     options: PersonKind.allCases,

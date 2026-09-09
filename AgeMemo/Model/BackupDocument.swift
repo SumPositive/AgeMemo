@@ -24,8 +24,13 @@ struct BackupDocument: Codable, Equatable, Sendable {
 
     static let currentVersion = 1
 
-    init(memos: MemoBackup, people: [Person], exportedAt: Date = .now) {
-        self.version = Self.currentVersion
+    init(
+        memos: MemoBackup,
+        people: [Person],
+        exportedAt: Date = .now,
+        version: Int = Self.currentVersion
+    ) {
+        self.version = version
         self.exportedAt = exportedAt
         self.appVersion = Bundle.main
             .object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
@@ -40,18 +45,138 @@ struct BackupDocument: Codable, Equatable, Sendable {
     }
 }
 
+/// 読み込み前にバックアップ全体の対応形式と参照関係を確かめる
+enum BackupValidator {
+    static func validate(_ document: BackupDocument) throws {
+        guard document.version == BackupDocument.currentVersion else {
+            throw BackupError.unsupportedVersion
+        }
+
+        let personIDs = document.people.map(\.id)
+        guard Set(personIDs).count == personIDs.count else { throw BackupError.decodeFailed }
+        guard document.people.allSatisfy({ person in
+            let name = person.name.trimmingCharacters(in: .whitespacesAndNewlines)
+            return !name.isEmpty && AppConfig.yearRange.contains(person.birthYear)
+        }) else {
+            throw BackupError.decodeFailed
+        }
+
+        let validPersonIDs = Set(personIDs)
+        for (identifier, memos) in document.memos.people {
+            guard let id = UUID(uuidString: identifier), validPersonIDs.contains(id) else {
+                throw BackupError.decodeFailed
+            }
+            guard memos.keys.allSatisfy(AppConfig.yearRange.contains) else {
+                throw BackupError.decodeFailed
+            }
+        }
+        guard document.memos.myself.keys.allSatisfy(AppConfig.yearRange.contains) else {
+            throw BackupError.decodeFailed
+        }
+    }
+}
+
 /// 書き出し・取り込みで起きた問題
-enum BackupError: Sendable, Hashable {
+enum BackupError: Error, Sendable, Hashable {
     case encodeFailed
+    case exportFailed
+    case importFailed
     case decodeFailed
     case unsupportedVersion
+    case restoreFailed
+    /// 復元に失敗したうえ、元の内容へも戻せなかった。
+    /// 端末には取り込み途中の内容が残っている
+    case rollbackFailed
 
     /// 利用者に見せる説明
     var message: LocalizedStringKey {
         switch self {
         case .encodeFailed: "書き出せませんでした"
+        case .exportFailed: "ファイルへ書き出せませんでした"
+        case .importFailed: "ファイルを選択できませんでした"
         case .decodeFailed: "このファイルは読み込めませんでした。書き出したファイルを選んでください"
-        case .unsupportedVersion: "新しいバージョンのアプリで書き出したファイルです。アプリを更新してください"
+        case .unsupportedVersion: "このバックアップ形式には対応していません"
+        case .restoreFailed: "メモと名簿を復元できませんでした。データを確認してください"
+        case .rollbackFailed: "復元に失敗し、元の内容へも戻せませんでした。端末の空き容量を確かめて、書き出したファイルから読み込み直してください"
+        }
+    }
+}
+
+/// ファイル選択のキャンセルと実際の失敗を区別する
+enum BackupFileOperation {
+    static func isCancellation(_ error: Error) -> Bool {
+        let error = error as NSError
+        return error.domain == NSCocoaErrorDomain && error.code == NSUserCancelledError
+    }
+}
+
+/// 2つの保存先をまとめて置き換え、途中で失敗したら元へ戻す
+@MainActor
+enum BackupRestorer {
+    static func apply(
+        _ document: BackupDocument,
+        memoStore: MemoStore,
+        personStore: PersonStore
+    ) throws {
+        try BackupValidator.validate(document)
+        // 名簿の置き換えで失敗したときにメモを戻すため、先に控えておく。
+        // 名簿は最後に書くので、名簿側の以前の内容は要らない
+        let previousMemos = memoStore.snapshot()
+
+        // メモが先。ここで失敗したときはまだ何も書き換わっていないので、
+        // 戻す操作は要らない
+        do {
+            try memoStore.replaceAll(with: document.memos)
+        } catch {
+            throw BackupError.restoreFailed
+        }
+
+        // 名簿で失敗すると、メモだけ置き換わった状態が残る。
+        // メモを元へ戻し、それも失敗したときは取り込み途中の内容が
+        // 端末に残るため、別のエラーとして知らせる
+        do {
+            try personStore.replaceAll(with: document.people)
+        } catch {
+            do {
+                try memoStore.replaceAll(with: previousMemos)
+            } catch {
+                throw BackupError.rollbackFailed
+            }
+            throw BackupError.restoreFailed
+        }
+    }
+}
+
+/// 名簿とその人のメモを一体として削除する
+@MainActor
+enum PersonDeletionCoordinator {
+    static func delete(
+        id: UUID,
+        memoStore: MemoStore,
+        personStore: PersonStore
+    ) throws {
+        let previousMemos = memoStore.snapshot()
+        let previousPeople = personStore.snapshot()
+        var remainingMemos = previousMemos
+        remainingMemos.people.removeValue(forKey: id.uuidString)
+        let remainingPeople = previousPeople.filter { $0.id != id }
+
+        // 先に名簿を消す。途中終了時にメモを失うより、孤立メモが残る方が安全
+        do {
+            try personStore.replaceAll(with: remainingPeople)
+        } catch {
+            throw PersonDeletionError.deleteFailed
+        }
+
+        do {
+            try memoStore.replaceAll(with: remainingMemos)
+        } catch {
+            do {
+                try personStore.replaceAll(with: previousPeople)
+            } catch {
+                throw PersonDeletionError.rollbackFailed
+            }
+            throw PersonDeletionError.deleteFailed
         }
     }
 }

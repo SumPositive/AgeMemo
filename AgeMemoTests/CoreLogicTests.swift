@@ -185,3 +185,70 @@ final class CoreLogicTests: XCTestCase {
         XCTAssertNil(SchoolAge.milestone(inYear: 2041, birthDate: birthDate))
     }
 }
+
+@MainActor
+final class AppSettingsTests: XCTestCase {
+    /// 新規利用時は補助的な数え年を表示しない
+    func testTraditionalAgeDefaultsToOff() throws {
+        let suiteName = "AppSettingsTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let settings = AppSettings(defaults: defaults)
+        XCTAssertFalse(settings.showsTraditionalAge)
+    }
+
+    /// 生まれ年一覧と自分・名簿一覧は別々に並び順を保持する
+    func testSortOrdersAreStoredSeparately() throws {
+        let suiteName = "AppSettingsTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let settings = AppSettings(defaults: defaults)
+        settings.toggleYearSortOrder(for: .age)
+        XCTAssertEqual(settings.yearSortOrder(for: .age), .descending)
+        XCTAssertEqual(settings.yearSortOrder(for: .personal), .ascending)
+        XCTAssertEqual(settings.yearSortOrder(for: .person), .ascending)
+
+        settings.toggleYearSortOrder(for: .person)
+        XCTAssertEqual(settings.yearSortOrder(for: .personal), .descending)
+        XCTAssertEqual(AppSettings(defaults: defaults).yearSortOrder(for: .age), .descending)
+    }
+}
+
+final class YearColumnMetricsTests: XCTestCase {
+    /// 広い幅では文字を縮めず、指定した補助列も維持する
+    func testWideLayoutKeepsFullScaleAndColumns() {
+        let layout = YearColumnMetrics.layout(
+            availableWidth: 440,
+            fontSize: 17,
+            wantsZodiac: true,
+            wantsNineStar: true,
+            wantsBadgeColumn: true
+        )
+        XCTAssertEqual(layout.scale, 1)
+        XCTAssertTrue(layout.columns.showsZodiac)
+        XCTAssertTrue(layout.columns.showsNineStar)
+        XCTAssertTrue(layout.columns.reservesBadgeColumn)
+    }
+
+    /// 狭い幅でも基本3列を残し、計算した幅を画面内へ収める
+    func testNarrowLayoutFitsInsideAvailableWidth() {
+        let availableWidth: CGFloat = 320
+        let fontSize: CGFloat = 40
+        let layout = YearColumnMetrics.layout(
+            availableWidth: availableWidth,
+            fontSize: fontSize,
+            wantsZodiac: true,
+            wantsNineStar: true,
+            wantsBadgeColumn: true
+        )
+        let scaledFontSize = fontSize * layout.scale
+        let occupiedWidth = YearColumnMetrics.edgeInset * 2
+            + YearColumnMetrics.columnsWidth(fontSize: scaledFontSize, columns: layout.columns)
+            + layout.columnSpacing * CGFloat(layout.columns.spacingCount)
+
+        XCTAssertLessThanOrEqual(occupiedWidth, availableWidth + 0.001)
+        XCTAssertLessThanOrEqual(layout.scale, 1)
+    }
+}

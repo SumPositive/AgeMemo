@@ -236,7 +236,8 @@ final class AppSettings {
         static let personListSortOrder = "personListSortOrder"
     }
 
-    private init(defaults: UserDefaults = .standard) {
+    /// テストでは専用のUserDefaultsを渡し、実データと分離する
+    init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         displayMode = DisplayMode(rawValue: defaults.integer(forKey: Key.displayMode)) ?? .beginner
         fontScale = AppFontScale(rawValue: defaults.integer(forKey: Key.fontScale)) ?? .system
@@ -255,8 +256,10 @@ final class AppSettings {
         lastJumpSelectionID = defaults.string(forKey: Key.lastJumpSelectionID)
         lastJumpInput = defaults.object(forKey: Key.lastJumpInput) as? Int
         jumpSelectionUseCounts = defaults.dictionary(forKey: Key.jumpSelectionUseCounts) as? [String: Int] ?? [:]
-        // 未設定時はONを既定とするため、値の有無を見てから読み出す
+        // メモは既定ON、数え年の補足は既定OFF（DESIGN.md §設定）。
+        // 既定ONのものは bool(forKey:) だと未設定でも false になるため、
+        // object(forKey:) で「未設定」を見分ける
         showsMemo = defaults.object(forKey: Key.showsMemo) as? Bool ?? true
-        showsTraditionalAge = defaults.object(forKey: Key.showsTraditionalAge) as? Bool ?? true
+        showsTraditionalAge = defaults.bool(forKey: Key.showsTraditionalAge)
     }
 }

@@ -45,6 +45,30 @@ final class NenrinUITests: XCTestCase {
         snapshot("03YearDetail")
     }
 
+    /// 名簿を選ばず閉じた場合は、以前の一覧とタブ選択を保つ
+    @MainActor
+    func testClosingRosterWithoutSelectionKeepsAgeTab() {
+        let app = XCUIApplication()
+        app.launchArguments += ["-FASTLANE_SNAPSHOT", "YES"]
+        app.launch()
+        waitForList(app)
+
+        let ageTab = app.buttons["tab.age"]
+        let personTab = app.buttons["tab.person"]
+        XCTAssertTrue(ageTab.isSelected)
+        personTab.tap()
+
+        let closeButton = app.buttons["sheet.close"]
+        XCTAssertTrue(closeButton.waitForExistence(timeout: 10), "名簿シートが開かない")
+        closeButton.tap()
+        XCTAssertTrue(ageTab.waitForExistence(timeout: 10), "一覧へ戻らない")
+        XCTAssertTrue(ageTab.isSelected)
+        XCTAssertFalse(personTab.isSelected)
+
+        let modeMarker = app.buttons["snapshot.open1963Detail"]
+        XCTAssertEqual(modeMarker.value as? String, "age")
+    }
+
     // MARK: - 補助
 
     /// 全端末の撮影文字サイズを設定の「大」に揃える

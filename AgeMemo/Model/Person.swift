@@ -70,11 +70,13 @@ final class PersonStore {
         load()
     }
 
-    func add(name: String, birthDate: Date, gender: Gender = .unspecified, kind: PersonKind = .birthday) {
+    @discardableResult
+    func add(name: String, birthDate: Date, gender: Gender = .unspecified, kind: PersonKind = .birthday) -> Bool {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
+        guard !trimmed.isEmpty else { return false }
         // 並び順は利用者が決めるため、追加は末尾へ置くだけにする
-        people.append(
+        var replacement = people
+        replacement.append(
             Person(
                 name: String(trimmed.prefix(AppConfig.maximumPersonNameLength)),
                 birthDate: birthDate,
@@ -82,41 +84,80 @@ final class PersonStore {
                 kind: kind
             )
         )
-        save()
+        return commit(replacement)
     }
 
-    func update(id: UUID, name: String, birthDate: Date, gender: Gender = .unspecified, kind: PersonKind = .birthday) {
-        guard let index = people.firstIndex(where: { $0.id == id }) else { return }
+    @discardableResult
+    func update(id: UUID, name: String, birthDate: Date, gender: Gender = .unspecified, kind: PersonKind = .birthday) -> Bool {
+        guard let index = people.firstIndex(where: { $0.id == id }) else { return false }
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        people[index].name = String(trimmed.prefix(AppConfig.maximumPersonNameLength))
-        people[index].birthDate = birthDate
-        people[index].gender = gender
-        people[index].kind = kind
+        guard !trimmed.isEmpty else { return false }
+        var replacement = people
+        replacement[index].name = String(trimmed.prefix(AppConfig.maximumPersonNameLength))
+        replacement[index].birthDate = birthDate
+        replacement[index].gender = gender
+        replacement[index].kind = kind
         // 生年を変えても手で決めた並びは保つ
-        save()
+        return commit(replacement)
     }
 
-    func delete(id: UUID) {
-        people.removeAll { $0.id == id }
-        save()
+    @discardableResult
+    func delete(id: UUID) -> Bool {
+        var replacement = people
+        replacement.removeAll { $0.id == id }
+        return commit(replacement)
     }
 
     /// ドラッグで並べ替える
-    func move(from source: IndexSet, to destination: Int) {
-        people.move(fromOffsets: source, toOffset: destination)
-        save()
+    @discardableResult
+    func move(from source: IndexSet, to destination: Int) -> Bool {
+        var replacement = people
+        replacement.move(fromOffsets: source, toOffset: destination)
+        return commit(replacement)
     }
 
-    /// 書き出し用に現在の名簿をそのまま渡す
+    /// 書き出し用に現在の名簿を渡す。
+    /// 復元の巻き戻しが `replaceAll(with: snapshot())` を使うため、
+    /// 読み込み側と同じ正規化を通して往復で変わらないようにする
     func snapshot() -> [Person] {
-        people
+        Self.normalized(people)
     }
 
-    /// 読み込んだ内容で全て置き換える
-    func replaceAll(with people: [Person]) {
-        self.people = people
-        save()
+    /// 読み込んだ内容を保存できた場合だけ、現在の名簿と置き換える
+    func replaceAll(with people: [Person]) throws {
+        // 追加や編集と同じ形へそろえる。通さないと、前の版や手を加えた
+        // ファイルから上限を超える名前がそのまま入り、あとで編集したときに
+        // 黙って切り詰められる
+        let normalized = Self.normalized(people)
+        do {
+            try write(normalized)
+            self.people = normalized
+            lastError = nil
+        } catch {
+            lastError = .saveFailed
+            throw PersonStoreError.saveFailed
+        }
+    }
+
+    /// 保存する形へそろえる。名前の前後の空白を落とし、上限の長さに収める。
+    ///
+    /// `snapshot()` が返す形もこれと同じなので、
+    /// `replaceAll(with: snapshot())` は元へ戻す操作として使える
+    static func normalized(_ people: [Person]) -> [Person] {
+        var seenIDs: Set<UUID> = []
+        return people.compactMap { person in
+            var person = person
+            person.name = String(
+                person.name.trimmingCharacters(in: .whitespacesAndNewlines)
+                    .prefix(AppConfig.maximumPersonNameLength)
+            )
+            // 空名・重複ID・表示範囲外の日付は一覧から正しく操作できないため除く
+            guard !person.name.isEmpty,
+                  AppConfig.yearRange.contains(person.birthYear),
+                  seenIDs.insert(person.id).inserted
+            else { return nil }
+            return person
+        }
     }
 
     private func load() {
@@ -130,27 +171,45 @@ final class PersonStore {
                 lastError = .unsupportedFormat
                 return
             }
-            people = document.people
+            let normalized = Self.normalized(document.people)
+            people = normalized
+            // 旧版や不整合データも次回から同じ形で読めるよう保存し直す
+            if normalized != document.people {
+                do {
+                    try write(normalized)
+                } catch {
+                    lastError = .saveFailed
+                }
+            }
         } catch {
             lastError = .loadFailed
         }
     }
 
-    private func save() {
+    /// 保存できた場合だけ画面上の名簿を差し替える
+    private func commit(_ replacement: [Person]) -> Bool {
         do {
-            try FileManager.default.createDirectory(
-                at: fileURL.deletingLastPathComponent(),
-                withIntermediateDirectories: true
-            )
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            encoder.dateEncodingStrategy = .iso8601
-            let data = try encoder.encode(PersonDocument(version: 1, people: people))
-            try data.write(to: fileURL, options: .atomic)
+            try write(replacement)
+            people = replacement
             lastError = nil
+            return true
         } catch {
             lastError = .saveFailed
+            return false
         }
+    }
+
+    /// 指定された名簿を端末へ原子的に保存する
+    private func write(_ people: [Person]) throws {
+        try FileManager.default.createDirectory(
+            at: fileURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(PersonDocument(version: 1, people: people))
+        try data.write(to: fileURL, options: .atomic)
     }
 
     private static func defaultFileURL() -> URL {

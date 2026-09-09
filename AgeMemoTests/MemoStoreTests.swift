@@ -73,6 +73,20 @@ final class MemoStoreTests: XCTestCase {
         XCTAssertEqual(loaded.text(for: 2026, owner: .myself), "自分のメモ")
     }
 
+    /// 削除を保存できない場合は画面上のメモも残す
+    func testRemoveAllFailureKeepsCurrentMemo() throws {
+        let personID = UUID()
+        let store = MemoStore(fileURL: fileURL)
+        store.update(year: 2026, text: "残すメモ", owner: .person(personID))
+        store.flushPendingSave()
+        try FileManager.default.removeItem(at: fileURL)
+        try FileManager.default.createDirectory(at: fileURL, withIntermediateDirectories: true)
+
+        XCTAssertFalse(store.removeAll(for: .person(personID)))
+        XCTAssertEqual(store.text(for: 2026, owner: .person(personID)), "残すメモ")
+        XCTAssertEqual(store.lastError, .saveFailed)
+    }
+
     /// 1.0.0形式（持ち主の区別がない）のメモは自分のメモとして読み込む
     func testLegacyDocumentMigratesToMyself() throws {
         let legacy = """
@@ -95,6 +109,27 @@ final class MemoStoreTests: XCTestCase {
         let reloaded = MemoStore(fileURL: fileURL)
         XCTAssertEqual(reloaded.text(for: 1989, owner: .myself), "平成に改元")
         XCTAssertNil(reloaded.lastError)
+    }
+
+    /// 以前の版で保存された長いメモは起動時に現在の上限へ整える
+    func testVersion2DocumentIsNormalizedWhenLoaded() throws {
+        let longText = "  " + String(repeating: "あ", count: AppConfig.maximumMemoLength + 10) + "  "
+        let document = """
+        {
+          "version": 2,
+          "myself": { "2026": { "text": "\(longText)", "updatedAt": "2026-09-05T00:00:00Z" } },
+          "people": {}
+        }
+        """
+        try FileManager.default.createDirectory(
+            at: fileURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try Data(document.utf8).write(to: fileURL, options: .atomic)
+
+        let loaded = MemoStore(fileURL: fileURL)
+        XCTAssertEqual(loaded.text(for: 2026, owner: .myself)?.count, AppConfig.maximumMemoLength)
+        XCTAssertEqual(MemoStore(fileURL: fileURL).text(for: 2026, owner: .myself)?.count, AppConfig.maximumMemoLength)
     }
 }
 
@@ -172,5 +207,74 @@ final class PersonStoreTests: XCTestCase {
         let loaded = PersonStore(fileURL: fileURL)
         XCTAssertEqual(loaded.people.first?.kind, .birthday)
         XCTAssertEqual(loaded.people.first?.gender, .male)
+    }
+
+    /// 保存できない場合は追加を画面上の名簿へも反映しない
+    func testAddFailureKeepsCurrentPeople() throws {
+        let date = try XCTUnwrap(
+            Calendar(identifier: .gregorian)
+                .date(from: DateComponents(year: 1963, month: 9, day: 1))
+        )
+        try FileManager.default.createDirectory(at: fileURL, withIntermediateDirectories: true)
+
+        let store = PersonStore(fileURL: fileURL)
+        XCTAssertFalse(store.add(name: "保存できない人", birthDate: date))
+        XCTAssertTrue(store.people.isEmpty)
+        XCTAssertEqual(store.lastError, .saveFailed)
+    }
+
+    /// 編集・削除・並べ替えを保存できない場合も元の名簿を保つ
+    func testMutationFailuresKeepCurrentPeople() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let firstDate = try XCTUnwrap(calendar.date(from: DateComponents(year: 1963, month: 9, day: 1)))
+        let secondDate = try XCTUnwrap(calendar.date(from: DateComponents(year: 1964, month: 10, day: 2)))
+        let store = PersonStore(fileURL: fileURL)
+        XCTAssertTrue(store.add(name: "一人目", birthDate: firstDate))
+        XCTAssertTrue(store.add(name: "二人目", birthDate: secondDate))
+        let original = store.people
+        let firstID = try XCTUnwrap(original.first?.id)
+        try FileManager.default.removeItem(at: fileURL)
+        try FileManager.default.createDirectory(at: fileURL, withIntermediateDirectories: true)
+
+        XCTAssertFalse(store.update(id: firstID, name: "変更後", birthDate: secondDate))
+        XCTAssertEqual(store.people, original)
+        XCTAssertFalse(store.delete(id: firstID))
+        XCTAssertEqual(store.people, original)
+        XCTAssertFalse(store.move(from: IndexSet(integer: 0), to: 2))
+        XCTAssertEqual(store.people, original)
+    }
+
+    /// 起動時に空名と重複IDを除き、名前を現在の上限へ整える
+    func testStoredPeopleAreNormalizedWhenLoaded() throws {
+        let date = try XCTUnwrap(
+            Calendar(identifier: .gregorian)
+                .date(from: DateComponents(year: 1963, month: 9, day: 1))
+        )
+        let outOfRangeDate = try XCTUnwrap(
+            Calendar(identifier: .gregorian)
+                .date(from: DateComponents(year: AppConfig.yearRange.lowerBound - 1, month: 1, day: 1))
+        )
+        let duplicateID = UUID()
+        let people = [
+            Person(id: duplicateID, name: "  " + String(repeating: "名", count: AppConfig.maximumPersonNameLength + 1), birthDate: date),
+            Person(id: duplicateID, name: "重複", birthDate: date),
+            Person(name: "   ", birthDate: date),
+            Person(name: "範囲外", birthDate: outOfRangeDate),
+        ]
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(["version": 1])
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        json["people"] = try JSONSerialization.jsonObject(with: encoder.encode(people))
+        try FileManager.default.createDirectory(
+            at: fileURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try JSONSerialization.data(withJSONObject: json).write(to: fileURL, options: .atomic)
+
+        let loaded = PersonStore(fileURL: fileURL)
+        XCTAssertEqual(loaded.people.count, 1)
+        XCTAssertEqual(loaded.people.first?.name.count, AppConfig.maximumPersonNameLength)
+        XCTAssertEqual(PersonStore(fileURL: fileURL).people, loaded.people)
     }
 }

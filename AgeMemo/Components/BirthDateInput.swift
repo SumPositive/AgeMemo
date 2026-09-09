@@ -456,7 +456,8 @@ struct BirthDateInputSheet<Header: View>: View {
     private let isBirthDate: Bool
     private let onContentInteraction: () -> Void
     private let header: Header
-    private let commit: (Date) -> Void
+    /// 保存できたときだけtrueを返し、シートを閉じる
+    private let commit: (Date) -> Bool
 
     init(
         title: String,
@@ -464,7 +465,7 @@ struct BirthDateInputSheet<Header: View>: View {
         canSave: Bool = true,
         isBirthDate: Bool = true,
         onContentInteraction: @escaping () -> Void = {},
-        commit: @escaping (Date) -> Void,
+        commit: @escaping (Date) -> Bool,
         @ViewBuilder header: () -> Header = { EmptyView() }
     ) {
         self.title = title
@@ -526,7 +527,7 @@ struct BirthDateInputSheet<Header: View>: View {
                         // 押せるようにしておき、不正な日付はここで知らせる
                         didAttemptSave = true
                         guard let resolvedBirthDate else { return }
-                        commit(resolvedBirthDate)
+                        guard commit(resolvedBirthDate) else { return }
                         dismiss()
                     }
                     .disabled(!canSave)

@@ -37,6 +37,8 @@ struct YearListView: View {
     @State private var presentedSheet: PresentedSheet?
     @State private var didSetInitialPosition = false
     @State private var selectedToolbarAction = MainToolbarAction.age
+    /// シート内の選択が確定するまで、下部タブの表示を切り替えない
+    @State private var pendingToolbarAction: MainToolbarAction?
     @State private var ageDisplayMode = AgeDisplayMode.age
     /// 選択人物は値コピーではなくIDで保持し、名簿の編集へ追随させる
     @State private var selectedPersonID: UUID?
@@ -391,9 +393,14 @@ struct YearListView: View {
             // 名簿シートを閉じずに当年へ戻す
             scrollRequest = YearScrollRequest(year: currentYear)
         }
-        .sheet(item: $presentedSheet) { sheet in
+        .sheet(item: $presentedSheet, onDismiss: finishPendingToolbarAction) { sheet in
             sheetContent(sheet)
                 .appAppearance(colorScheme: sheetColorScheme)
+        }
+        .onChange(of: settings.birthDate) { _, birthDate in
+            // 生年月日の登録が完了したら「自分」一覧への切り替えを確定する
+            guard pendingToolbarAction == .personal, birthDate != nil else { return }
+            switchToPersonalList()
         }
     }
 
@@ -555,6 +562,8 @@ struct YearListView: View {
             PersonSheet { person in
                 selectedPersonID = person.id
                 ageDisplayMode = .person
+                selectedToolbarAction = .person
+                pendingToolbarAction = nil
                 scroll(to: currentYear)
             }
         case .era:
@@ -579,12 +588,12 @@ struct YearListView: View {
     }
 
     private func handleToolbarAction(_ action: MainToolbarAction) {
-        // 最後に選択した操作を下部タブへ反映する
-        selectedToolbarAction = action
         // 一覧を切り替えた時点でタップ行の明示を解除する
         tappedYear = nil
         switch action {
         case .age:
+            selectedToolbarAction = .age
+            pendingToolbarAction = nil
             let previousSortOrder = sortOrder
             ageDisplayMode = .age
             // 一覧ごとに並び順を覚えているため、切り替えで順序が反転することがある。
@@ -596,10 +605,12 @@ struct YearListView: View {
             // 年齢だけでなく西暦・元号でも移動できるよう、共通の移動シートを開く
             presentedSheet = .era
         case .personal:
-            ageDisplayMode = .personal
             selectedDestinationYear = nil
             isAgeJumpDestination = false
             if birthYear != nil {
+                selectedToolbarAction = .personal
+                pendingToolbarAction = nil
+                ageDisplayMode = .personal
 #if DEBUG
                 // 撮影時は設定画面を経由せず、自分一覧の補助表示をすべて有効にする
                 SnapshotSetup.enableAuxiliaryDisplaysIfNeeded(settings: settings)
@@ -607,13 +618,37 @@ struct YearListView: View {
                 scroll(to: currentYear)
             } else {
                 // 設定画面から生年月日入力を直接開き、登録が必要な理由を案内する
+                pendingToolbarAction = .personal
                 presentedSheet = .settings(requestsBirthDateRegistration: true)
             }
         case .person:
             selectedDestinationYear = nil
             isAgeJumpDestination = false
+            pendingToolbarAction = .person
             presentedSheet = .person
         }
+    }
+
+    /// シートを閉じたときに保留を片付ける。
+    ///
+    /// onChange(of: birthDate) と onDismiss はどちらが先に走るか決まっていない。
+    /// onDismiss が先でも切り替えが失われないよう、ここでも登録の有無を見て
+    /// 「自分」一覧へ確定させる。どちらの順序でも結果は同じになる
+    private func finishPendingToolbarAction() {
+        if pendingToolbarAction == .personal, settings.birthDate != nil {
+            switchToPersonalList()
+            return
+        }
+        // 選択せずに閉じた場合は、以前のタブと一覧を保つ
+        pendingToolbarAction = nil
+    }
+
+    /// 「自分」一覧へ切り替えて保留を解く。二重に呼ばれても同じ結果になる
+    private func switchToPersonalList() {
+        selectedToolbarAction = .personal
+        ageDisplayMode = .personal
+        pendingToolbarAction = nil
+        scroll(to: currentYear)
     }
 
     private func scroll(to year: Int) {
