@@ -52,6 +52,8 @@ struct YearListView: View {
     /// 復帰時に年越しを反映できるよう状態値として保持する
     @State private var currentYear = Calendar.current.component(.year, from: .now)
 
+    /// 列構成を決めるときの基準サイズ。行の本文と同じ基準にそろえる
+    @ScaledMetric(relativeTo: .body) private var rowFontSize: CGFloat = 17
     /// 今見ている一覧の並び順。「生まれ年」と「自分／名簿」で別々に覚える
     private var sortOrder: YearSortOrder {
         settings.yearSortOrder(for: ageDisplayMode)
@@ -163,7 +165,7 @@ struct YearListView: View {
     /// 1行分の表示。body 側に直接書くと式が大きくなりすぎて型チェックが
     /// 破綻するため、独立した関数として切り出す
     @ViewBuilder
-    private func rowView(for row: YearRow) -> some View {
+    private func rowView(for row: YearRow, layout: YearColumnMetrics.Layout) -> some View {
         // 記念日を選んでいる間は年齢列に周年数を出す。displayedAge は
         // 記念日選択時に nil を返すため、両者は互いに排他的
         let rowAge: Int? = displayedAge(for: row.gregorian) ?? anniversaryCount(for: row.gregorian)
@@ -192,15 +194,14 @@ struct YearListView: View {
                 isBirthYear: rowIsBirthYear,
                 isSelected: rowIsSelected,
                 isTapped: rowIsTapped,
-                showsZodiac: settings.showsZodiac,
                 longevity: rowLongevity,
                 unluckyYear: rowUnluckyYear,
                 schoolMilestone: rowSchoolMilestone,
                 nineStar: rowNineStar,
-                reservesBadgeColumn: reservesBadgeColumn,
                 alternateAgeHint: rowAlternateAgeHint,
                 showsAnniversaryUnit: rowShowsAnniversaryUnit,
-                compact: rowCompact
+                compact: rowCompact,
+                layout: layout
             )
             .onTapGesture {
                 // 詳細を閉じた後も、どの行を開いたか分かるようにする
@@ -220,109 +221,130 @@ struct YearListView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(orderedRows) { row in
-                            rowView(for: row)
-                                .id(row.id)
+            // iPad の分割表示のように、向きが変わらなくても幅だけ変わる場面がある。
+            // 幅は状態に持たずここで直に配る。@State を経由すると反映が
+            // 1フレーム遅れ、狭めた直後は古い（広い）幅で組まれて端が切れる。
+            //
+            // safeAreaInset より内側で測ると、見出しと行で基準の幅がずれる。
+            // ここで一度だけ測り、同じ値から作った layout を両方へ渡す
+            GeometryReader { listGeometry in
+                // 一覧は iPhone の最大幅までで頭打ちにする。iPad の広い幅で
+                // 列を伸ばすと列間が離れすぎて対応が読み取れなくなるうえ、
+                // 分割表示の細かい刻みすべてで破綻しないか確かめる必要が出る。
+                // ここで絞れば、対応すべき見え方は iPhone の範囲だけで済む
+                let contentWidth = min(listGeometry.size.width, YearColumnMetrics.maximumListWidth)
+                let layout = columnLayout(listWidth: contentWidth)
+
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(orderedRows) { row in
+                                rowView(for: row, layout: layout)
+                                    .id(row.id)
+                            }
                         }
+                        // 列は絞った幅の中に置き、余った左右は空けておく
+                        .frame(width: contentWidth)
+                        .frame(maxWidth: .infinity)
                     }
-                    // 中身の自然幅で横に広がらないよう、スクロール領域の幅に合わせる。
-                    // 付けないとカプセルなど長い行が画面外へはみ出す
-                    .containerRelativeFrame(.horizontal)
-                }
-                .scrollIndicators(.hidden)
-                .task {
-                    guard !didSetInitialPosition else { return }
-                    didSetInitialPosition = true
-                    var initialYear = currentYear
-#if DEBUG
-                    if SnapshotSetup.isActive {
-                        // 撮影時の1枚目は2026年を移動先として明示する
-                        initialYear = SnapshotSetup.initialListYear
-                        selectedDestinationYear = initialYear
+                    .scrollIndicators(.hidden)
+                    .task {
+                        guard !didSetInitialPosition else { return }
+                        didSetInitialPosition = true
+                        var initialYear = currentYear
+    #if DEBUG
+                        if SnapshotSetup.isActive {
+                            // 撮影時の1枚目は2026年を移動先として明示する
+                            initialYear = SnapshotSetup.initialListYear
+                            selectedDestinationYear = initialYear
+                        }
+    #endif
+                        // 初回レイアウト後に撮影用の年または当年へ移動する
+                        await Task.yield()
+                        proxy.scrollTo(initialYear, anchor: .center)
                     }
-#endif
-                    // 初回レイアウト後に撮影用の年または当年へ移動する
-                    await Task.yield()
-                    proxy.scrollTo(initialYear, anchor: .center)
-                }
-                .onChange(of: scrollRequest) { _, request in
-                    guard let request else { return }
-                    withAnimation(.easeInOut) {
-                        proxy.scrollTo(request.year, anchor: .center)
-                    }
-                }
-            }
-            .navigationTitle(navigationTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            // ナビゲーションバーも紙の地色にして、下に続く和紙とつなげる。
-            // ここは繊維を描けないので地色だけを合わせる
-            .toolbarBackground(WashiBackground.paperColor(colorScheme), for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        presentedSheet = .settings(requestsBirthDateRegistration: false)
-                    } label: {
-                        // ToolbarItem の外側に付けた識別子は公開されないことがあるため、
-                        // ラベル側にも同じ識別子を持たせる
-                        Label("設定", systemImage: "gearshape")
-                            .accessibilityIdentifier("nav.settings")
-                    }
-                    .accessibilityIdentifier("nav.settings")
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        presentedSheet = .era
-                    } label: {
-                        Label("移動", systemImage: "arrow.up.forward")
-                    }
-                }
-            }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                VStack(spacing: 0) {
-                    if isBeginner {
-                        beginnerCaptions
-                    }
-                    // 横向きは一覧に使える高さが少ないためバナーを出さない。
-                    // ただし中身が空になると safeAreaInset がレイアウトを確定できず
-                    // インセットが画面全体へ膨張するため、高さ0の実体を必ず置く
-                    if isLandscape {
-                        Color.clear.frame(height: 0)
-                    } else {
-                        HeaderBannerView()
-                    }
-                    // 列見出しは一覧のすぐ上に固定し、スクロールしても
-                    // 各列の意味と並び順が分かるようにする。
-                    // 横向きは高さが乏しいので、バナーと同じく省く
-                    if !isLandscape {
-                        YearListHeader(
-                            sortOrder: sortOrder,
-                            invertsAgeDirection: invertsAgeDirection,
-                            showsAnniversaryUnit: isShowingAnniversary,
-                            showsZodiac: settings.showsZodiac,
-                            showsNineStar: settings.showsNineStar,
-                            reservesBadgeColumn: reservesBadgeColumn,
-                            compact: effectiveDisplayMode == .expert
-                        ) {
-                            toggleSortOrder()
+                    .onChange(of: scrollRequest) { _, request in
+                        guard let request else { return }
+                        withAnimation(.easeInOut) {
+                            proxy.scrollTo(request.year, anchor: .center)
                         }
                     }
                 }
-                // ヘルプ・広告・列見出しを1枚の紙として見せる。
-                // 個別に枠を付けるより、まとまって一覧の台紙に見える。
-                // 上端のナビゲーションバーは toolbarBackground が同じ地色を敷き、
-                // ここから続く紙としてつながる
-                .background(WashiBackground(colorScheme: colorScheme))
-            }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                BottomToolbar(
-                    displayMode: effectiveDisplayMode,
-                    selection: selectedToolbarAction,
-                    action: handleToolbarAction
-                )
+                .navigationTitle(navigationTitle)
+                .navigationBarTitleDisplayMode(.inline)
+                // ナビゲーションバーも紙の地色にして、下に続く和紙とつなげる。
+                // ここは繊維を描けないので地色だけを合わせる
+                .toolbarBackground(WashiBackground.paperColor(colorScheme), for: .navigationBar)
+                .toolbarBackground(.visible, for: .navigationBar)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            presentedSheet = .settings(requestsBirthDateRegistration: false)
+                        } label: {
+                            // ToolbarItem の外側に付けた識別子は公開されないことがあるため、
+                            // ラベル側にも同じ識別子を持たせる
+                            Label("設定", systemImage: "gearshape")
+                                .accessibilityIdentifier("nav.settings")
+                        }
+                        .accessibilityIdentifier("nav.settings")
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            presentedSheet = .era
+                        } label: {
+                            Label("移動", systemImage: "arrow.up.forward")
+                        }
+                    }
+                }
+                .safeAreaInset(edge: .top, spacing: 0) {
+                    VStack(spacing: 0) {
+                        if isBeginner {
+                            // 「設定」「移動」はナビゲーションバーのボタンの真下に
+                            // 置くため、一覧の幅ではなく画面いっぱいのまま扱う
+                            beginnerCaptions
+                        }
+                        // 横向きは一覧に使える高さが少ないためバナーを出さない。
+                        // ただし中身が空になると safeAreaInset がレイアウトを確定できず
+                        // インセットが画面全体へ膨張するため、高さ0の実体を必ず置く
+                        if isLandscape {
+                            Color.clear.frame(height: 0)
+                        } else {
+                            HeaderBannerView()
+                                // 広告も一覧と同じ幅に収め、紙の上での位置をそろえる
+                                .frame(width: contentWidth)
+                                .frame(maxWidth: .infinity)
+                        }
+                        // 列見出しは一覧のすぐ上に固定し、スクロールしても
+                        // 各列の意味と並び順が分かるようにする。
+                        // 横向きは高さが乏しいので、バナーと同じく省く
+                        if !isLandscape {
+                            YearListHeader(
+                                sortOrder: sortOrder,
+                                invertsAgeDirection: invertsAgeDirection,
+                                showsAnniversaryUnit: isShowingAnniversary,
+                                layout: layout,
+                                compact: effectiveDisplayMode == .expert
+                            ) {
+                                toggleSortOrder()
+                            }
+                            // 見出しも行と同じ幅に収め、列の位置をそろえる
+                            .frame(width: contentWidth)
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
+                    // ヘルプ・広告・列見出しを1枚の紙として見せる。
+                    // 個別に枠を付けるより、まとまって一覧の台紙に見える。
+                    // 上端のナビゲーションバーは toolbarBackground が同じ地色を敷き、
+                    // ここから続く紙としてつながる
+                    .background(WashiBackground(colorScheme: colorScheme))
+                }
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    BottomToolbar(
+                        displayMode: effectiveDisplayMode,
+                        selection: selectedToolbarAction,
+                        action: handleToolbarAction
+                    )
+                }
             }
         }
         .overlay(alignment: .topLeading) {
@@ -614,8 +636,20 @@ struct YearListView: View {
     /// その年に迎える賀寿。生まれる前の年には出さない
     /// 学齢・賀寿・厄年のいずれかがONなら、該当しない年でも列幅を確保する。
     /// 行ごとに列位置がずれると一覧として読みにくいため
-    private var reservesBadgeColumn: Bool {
+    private var wantsBadgeColumn: Bool {
         settings.showsLongevity || settings.showsSchoolAge || settings.showsUnluckyYear
+    }
+
+    /// 実際の幅に対する列の置き方。縮小率・列間・列構成をまとめて持つ。
+    /// 行と見出しがこの1つの答えだけを見るので、両者が食い違わない
+    private func columnLayout(listWidth: CGFloat) -> YearColumnMetrics.Layout {
+        YearColumnMetrics.layout(
+            availableWidth: listWidth,
+            fontSize: rowFontSize,
+            wantsZodiac: settings.showsZodiac,
+            wantsNineStar: settings.showsNineStar,
+            wantsBadgeColumn: wantsBadgeColumn
+        )
     }
 
     /// 並び順を反転する。西暦・和暦・年齢は同じ1つの並び順なので、

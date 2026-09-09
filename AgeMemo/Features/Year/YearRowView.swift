@@ -5,10 +5,13 @@ import SwiftUI
 /// 一覧の列幅。行と見出しで同じ値を使い、見出しが中身の真上に来るようにする。
 /// すべて基準フォントサイズに対する倍率で持ち、文字サイズが変わっても比率を保つ
 enum YearColumnMetrics {
-    /// 行の左右端に空ける幅
+    /// 行の左右端に空ける幅。列間と違い、ここは詰めずに保つ
     static let edgeInset: CGFloat = 12
-    /// 基本3列（西暦・和暦・年齢）の列間
+    /// 列間の既定値。幅に余りがなければここから詰めていく
     static let columnSpacing: CGFloat = 10
+
+    /// 列間を詰めきったときに残す幅。これ以上詰めると隣の列と地続きに見える
+    static let minimumColumnSpacing: CGFloat = 8
 
     static let gregorianWidthRatio: CGFloat = 2.55
     static let eraWidthRatio: CGFloat = 4.1
@@ -22,6 +25,9 @@ enum YearColumnMetrics {
     /// 学齢・賀寿・厄年の縮小率
     static let badgeScale: CGFloat = 0.66
 
+    /// 文字を縮められる下限。これ以上小さくすると一覧として読めなくなる
+    static let minimumTextScale: CGFloat = 0.5
+
     /// 干支・九星列の幅。九星を出すかどうかで基準が変わる
     static func zodiacWidth(fontSize: CGFloat, showsNineStar: Bool) -> CGFloat {
         showsNineStar ? fontSize * nineStarScale * 4 : fontSize * zodiacOnlyWidthRatio
@@ -32,65 +38,134 @@ enum YearColumnMetrics {
         fontSize * badgeScale * 3
     }
 
-    /// 列の合計幅。端の余白と列間も含めた、その基準サイズで必要になる幅
-    static func totalWidth(
-        fontSize: CGFloat,
-        showsZodiac: Bool,
-        showsNineStar: Bool,
-        reservesBadgeColumn: Bool
-    ) -> CGFloat {
-        var width = edgeInset * 2
-        width += fontSize * gregorianWidthRatio + columnSpacing
-        width += fontSize * eraWidthRatio + columnSpacing
+    /// 出す列の構成。行と見出しで同じ値を使う
+    struct Columns: Equatable {
+        var showsZodiac: Bool
+        var showsNineStar: Bool
+        var reservesBadgeColumn: Bool
+
+        /// 干支・九星をまとめた1列を出すか
+        var showsZodiacColumn: Bool { showsZodiac || showsNineStar }
+        /// 干支と九星を縦に積むか
+        var stacksNineStar: Bool { showsZodiac && showsNineStar }
+
+        /// 端の余白を除いた列間の数。列が n 個なら n-1 か所
+        var spacingCount: Int {
+            var count = 2  // 西暦-和暦, 和暦-年齢
+            if showsZodiacColumn { count += 1 }
+            if reservesBadgeColumn { count += 1 }
+            return count
+        }
+    }
+
+    /// 幅に対する列の置き方。行と見出しはこの1つの答えだけを見る
+    struct Layout: Equatable {
+        /// 文字と列幅の縮小率。1 なら指定サイズそのまま
+        var scale: CGFloat
+        /// 列と列の間に空ける幅
+        var columnSpacing: CGFloat
+        /// 実際に出す列
+        var columns: Columns
+
+        /// 縮小後の基準フォントサイズ
+        func fontSize(base: CGFloat) -> CGFloat { base * scale }
+    }
+
+    /// 余りがあるときに列間へ配る上限。これ以上離すと列の対応が読み取りにくい
+    static let maximumColumnSpacing: CGFloat = 28
+
+    /// 一覧の最大幅。iPhone 17 Pro Max の画面幅にそろえる。
+    /// iPad でもこの幅までで頭打ちにし、対応すべきレイアウトを
+    /// iPhone の範囲だけに絞る
+    static let maximumListWidth: CGFloat = 440
+
+    /// 列の幅だけの合計（端の余白と列間を含まない）
+    static func columnsWidth(fontSize: CGFloat, columns: Columns) -> CGFloat {
+        var width = fontSize * gregorianWidthRatio
+        width += fontSize * eraWidthRatio
         width += fontSize * ageMinWidthRatio
-        if showsZodiac || showsNineStar {
-            width += columnSpacing
-            width += zodiacWidth(fontSize: fontSize, showsNineStar: showsZodiac && showsNineStar)
+        if columns.showsZodiacColumn {
+            width += zodiacWidth(fontSize: fontSize, showsNineStar: columns.stacksNineStar)
         }
-        if reservesBadgeColumn {
-            width += columnSpacing + badgeWidth(fontSize: fontSize)
+        if columns.reservesBadgeColumn {
+            width += badgeWidth(fontSize: fontSize)
         }
         return width
     }
 
-    /// 列幅の基準に使うフォントサイズ。
+    /// その幅における列の置き方を決める。
     ///
-    /// 列幅は文字サイズに比例するため、大きな文字と狭い画面が重なると
-    /// 合計が画面幅を超え、両端の列が切れる。そこで画面に収まる上限を求め、
-    /// それ以上は基準サイズを頭打ちにする。行も見出しも同じ値を使うので、
-    /// 頭打ちになっても両者の列位置は揃ったままになる。
+    /// 手順は2段。
+    /// 1. 指定された文字サイズのまま列を並べ、余り（または不足）を列間で吸収する。
+    ///    余れば列間を広げ、足りなければ最小の列間まで詰める
+    /// 2. 列間を最小まで詰めても入らないぶんだけ、列幅と文字を均等に縮める
     ///
-    /// 文字そのものは各列の `minimumScaleFactor` で縮むため、
-    /// 基準サイズを抑えても読めなくなるわけではない
-    static func fittedFontSize(
-        _ fontSize: CGFloat,
+    /// こうすると、広い画面では指定サイズの読みやすさを保ったまま列が散り、
+    /// 狭い画面では余白から先に削られて文字の縮小は最後になる
+    static func layout(
         availableWidth: CGFloat,
-        showsZodiac: Bool,
-        showsNineStar: Bool,
-        reservesBadgeColumn: Bool
-    ) -> CGFloat {
-        guard availableWidth > 0 else { return fontSize }
-        let needed = totalWidth(
-            fontSize: fontSize,
-            showsZodiac: showsZodiac,
-            showsNineStar: showsNineStar,
-            reservesBadgeColumn: reservesBadgeColumn
+        fontSize: CGFloat,
+        wantsZodiac: Bool,
+        wantsNineStar: Bool,
+        wantsBadgeColumn: Bool
+    ) -> Layout {
+        let wanted = Columns(
+            showsZodiac: wantsZodiac,
+            showsNineStar: wantsNineStar,
+            reservesBadgeColumn: wantsBadgeColumn
         )
-        guard needed > availableWidth else { return fontSize }
-        // 端余白と列間は文字サイズに比例しない固定値なので、
-        // その分を差し引いた残りで比率を出す
-        let fixed = fixedWidth(showsZodiacColumn: showsZodiac || showsNineStar, reservesBadgeColumn: reservesBadgeColumn)
-        let variable = needed - fixed
-        guard variable > 0 else { return fontSize }
-        return fontSize * max(0, availableWidth - fixed) / variable
+        // 測る前は指定どおりに置く。幅が分かった時点で組み直される
+        guard availableWidth > 0 else {
+            return Layout(scale: 1, columnSpacing: columnSpacing, columns: wanted)
+        }
+
+        // 補助列は右から順に落とせる。設定で出す指定でも、
+        // 文字を縮めきっても入らないなら列ごと下ろしたほうが読める
+        for columns in fallbacks(from: wanted) {
+            let inner = availableWidth - edgeInset * 2
+            let spacingCount = CGFloat(columns.spacingCount)
+            let columnsAtFullSize = columnsWidth(fontSize: fontSize, columns: columns)
+
+            // 第1段：文字は指定サイズのまま、列間だけで調整する
+            let spacingBudget = inner - columnsAtFullSize
+            if spacingBudget >= minimumColumnSpacing * spacingCount {
+                let spacing = min(maximumColumnSpacing, spacingBudget / spacingCount)
+                return Layout(scale: 1, columnSpacing: spacing, columns: columns)
+            }
+
+            // 第2段：列間は最小のまま、列幅と文字を均等に縮める
+            let widthForColumns = inner - minimumColumnSpacing * spacingCount
+            guard widthForColumns > 0, columnsAtFullSize > 0 else { continue }
+            let scale = widthForColumns / columnsAtFullSize
+            if scale >= minimumTextScale {
+                return Layout(scale: scale, columnSpacing: minimumColumnSpacing, columns: columns)
+            }
+            // 下限まで縮めても入らないので、次の候補（列を1つ落とした構成）へ
+        }
+
+        // 基本3列を最小の文字で置く。これ以上は削れない
+        let basic = Columns(showsZodiac: false, showsNineStar: false, reservesBadgeColumn: false)
+        return Layout(scale: minimumTextScale, columnSpacing: minimumColumnSpacing, columns: basic)
     }
 
-    /// 文字サイズに比例しない固定の幅（端余白と列間）の合計
-    private static func fixedWidth(showsZodiacColumn: Bool, reservesBadgeColumn: Bool) -> CGFloat {
-        var width = edgeInset * 2 + columnSpacing * 2
-        if showsZodiacColumn { width += columnSpacing }
-        if reservesBadgeColumn { width += columnSpacing }
-        return width
+    /// 補助列を右から順に下ろした候補。左にある基本3列は必ず残す
+    private static func fallbacks(from wanted: Columns) -> [Columns] {
+        var candidates = [wanted]
+        if wanted.reservesBadgeColumn {
+            candidates.append(Columns(
+                showsZodiac: wanted.showsZodiac,
+                showsNineStar: wanted.showsNineStar,
+                reservesBadgeColumn: false
+            ))
+        }
+        if wanted.stacksNineStar {
+            // 干支と九星を積んでいたら、まず九星だけ下ろす
+            candidates.append(Columns(showsZodiac: true, showsNineStar: false, reservesBadgeColumn: false))
+        }
+        if wanted.showsZodiacColumn {
+            candidates.append(Columns(showsZodiac: false, showsNineStar: false, reservesBadgeColumn: false))
+        }
+        return candidates
     }
 }
 
@@ -129,8 +204,6 @@ struct YearRowView: View {
     var isSelected: Bool = false
     /// 一覧でタップした行。青系・緑系と区別できる色で示す
     var isTapped: Bool = false
-    /// 干支列を表示する。九星だけONの場合は九星のみを同じ列に出す
-    var showsZodiac: Bool = false
     /// 還暦・喜寿などの節目。該当しない年は nil
     var longevity: Longevity?
     /// 前厄・本厄・後厄。性別が未指定なら nil
@@ -139,9 +212,6 @@ struct YearRowView: View {
     var schoolMilestone: SchoolMilestone?
     /// 九星の本命星。設定がOFFなら nil
     var nineStar: NineStar?
-    /// 学齢・賀寿・厄年のいずれかが設定でONか。
-    /// ONの間は該当しない年でも列幅を確保し、行ごとに列位置がずれないようにする
-    var reservesBadgeColumn: Bool = false
     /// もう一方の年齢の可能性を年齢列の下に添える。
     /// 年齢一覧のジャンプ先には「まだ誕生日前ならこの歳」、自分／名簿一覧の当年には
     /// 「今日はまだ誕生日前なのでこの歳」を表示する
@@ -149,11 +219,20 @@ struct YearRowView: View {
     /// age 列の単位。記念日を選んでいるときは「歳」ではなく「周年」にする
     var showsAnniversaryUnit: Bool = false
     let compact: Bool
+    /// 列の置き方。幅から決まる縮小率・列間・列構成をまとめて受け取る。
+    /// 見出しと同じ値を使うことで、列の位置と有無が必ずそろう
+    var layout = YearColumnMetrics.Layout(
+        scale: 1,
+        columnSpacing: YearColumnMetrics.columnSpacing,
+        columns: YearColumnMetrics.Columns(
+            showsZodiac: false,
+            showsNineStar: false,
+            reservesBadgeColumn: false
+        )
+    )
     @ScaledMetric(relativeTo: .body) private var preferredFontSize: CGFloat = 17
     @ScaledMetric(relativeTo: .caption2) private var preferredHintFontSize: CGFloat = 11
 
-    /// 基本3列（西暦・和暦・年齢）の列間。常にこの幅で詰めて並べる
-    private let baseColumnSpacing = YearColumnMetrics.columnSpacing
     /// 行の左右端に空ける幅
     private let edgeInset = YearColumnMetrics.edgeInset
 
@@ -170,21 +249,17 @@ struct YearRowView: View {
             // 親は leading 揃えなので、行の中央へ寄せ直す
             if let alternateAgeHint {
                 alternateAgeHintCapsule(alternateAgeHint)
-                    // 行の自然幅ではなくスクロール領域の実幅からカプセル幅を決める
+                    // 行の自然幅ではなく、一覧に使える幅からカプセル幅を決める。
+                    // スクロール領域の実幅を見ると、幅を絞った iPad で行より広くなる
                     .containerRelativeFrame(.horizontal) { length, _ in
-                        length - edgeInset * 2
+                        min(length, YearColumnMetrics.maximumListWidth) - edgeInset * 2
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
             }
 
-            // 補助表示は固定幅の列にしたので、行ごとに形が変わらない。
-            // 倍率だけを ViewThatFits で決める
-            ViewThatFits(in: .horizontal) {
-                ForEach(primaryScales, id: \.self) { scale in
-                    primaryLine(scale: scale)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            // 列の幅・列間・縮小率はすべて layout が決めている。
+            // 行はそれをそのまま置くだけで、幅の判断はしない
+            primaryLine
 
             if hasSecondaryLine {
                 HStack(spacing: 6) {
@@ -210,14 +285,10 @@ struct YearRowView: View {
         .accessibilityElement(children: .combine)
     }
 
-    /// 収まる倍率を上から順に試す
-    private var primaryScales: [CGFloat] {
-        [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5]
-    }
-
-    /// 説明文の各行が折り返さない倍率を上から順に試す
+    /// 説明文の各行が折り返さない倍率を上から順に試す。
+    /// カプセルは1行の文なので、列よりも小さくして良い
     private var hintScales: [CGFloat] {
-        primaryScales + [0.45, 0.4]
+        [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]
     }
 
     /// ダークモードの純白は一覧が明滅して見えるため、少し落ち着かせる
@@ -246,56 +317,46 @@ struct YearRowView: View {
         }
     }
 
-    private func primaryLine(scale: CGFloat) -> some View {
-        // 余白を保って収まらない場合だけ、すべての列を同じ倍率で縮小する
-        let baseFontSize = preferredFontSize * scale
-        let auxiliaryFontSize = baseFontSize
+    /// 列を1行に並べる。
+    ///
+    /// 列間は layout が決めた確定値を置く。Spacer（最小値）にすると
+    /// 実際の幅が親の提案次第で変わり、行と見出しでずれる。
+    /// 端の余白だけは可変にして、合計が親より狭いときの余りを左右へ均等に流す
+    private var primaryLine: some View {
+        let fontSize = layout.fontSize(base: preferredFontSize)
+        let columns = layout.columns
+        let spacing = layout.columnSpacing
 
-        // 補助列は常に縦積みで最小幅なので、すべての余白を可変にして
-        // 均等に配れる。3列なら4か所、5列なら6か所へ同じ幅で分かれる
         return HStack(spacing: 0) {
             Spacer(minLength: edgeInset)
 
-            baseColumn(at: 0, fontSize: baseFontSize)
-            Spacer(minLength: baseColumnSpacing)
-            baseColumn(at: 1, fontSize: baseFontSize)
-            Spacer(minLength: baseColumnSpacing)
-            baseColumn(at: 2, fontSize: baseFontSize)
+            gregorianColumn(fontSize: fontSize)
+            columnGap(spacing)
+            eraColumn(fontSize: fontSize)
+                .frame(width: fontSize * YearColumnMetrics.eraWidthRatio, alignment: .leading)
+            columnGap(spacing)
+            ageColumn(fontSize: fontSize)
 
-            if showsZodiac || nineStar != nil {
-                Spacer(minLength: baseColumnSpacing)
-                zodiacColumn(fontSize: auxiliaryFontSize)
+            if columns.showsZodiacColumn {
+                columnGap(spacing)
+                zodiacColumn(fontSize: fontSize, columns: columns)
             }
 
-            if reservesBadgeColumn {
-                Spacer(minLength: baseColumnSpacing)
-                badgeColumn(fontSize: auxiliaryFontSize)
+            if columns.reservesBadgeColumn {
+                columnGap(spacing)
+                badgeColumn(fontSize: fontSize)
             }
 
             Spacer(minLength: edgeInset)
         }
+        // 端の Spacer が伸びるには親からの幅の提案が要る。
+        // 行の VStack は leading 揃えなので、ここで明示的に広げておく
         .frame(maxWidth: .infinity)
     }
 
-    /// 基本3列の index 番目
-    @ViewBuilder
-    private func baseColumn(at index: Int, fontSize: CGFloat) -> some View {
-        // どの一覧でも西暦・和暦・年齢の順に固定する。並びの基準である西暦を
-        // 常に左端に置き、一覧を切り替えても変わるのは年齢列の中身だけにする
-        let order: [BaseColumnKind] = [.gregorian, .era, .age]
-        switch order[index] {
-        case .age:
-            ageColumn(fontSize: fontSize)
-        case .gregorian:
-            gregorianColumn(fontSize: fontSize)
-        case .era:
-            eraColumn(fontSize: fontSize)
-                .frame(width: fontSize * YearColumnMetrics.eraWidthRatio, alignment: .leading)
-        }
-    }
-
-    private enum BaseColumnKind {
-        case age, gregorian, era
+    /// 列と列の間。確定した幅を置くので、行と見出しで必ず同じ位置になる
+    private func columnGap(_ width: CGFloat) -> some View {
+        Color.clear.frame(width: width, height: 0)
     }
 
     /// 学齢・賀寿・厄年をまとめて出す
@@ -339,28 +400,32 @@ struct YearRowView: View {
         Text(String(row.gregorian))
             .font(.system(size: fontSize, weight: .semibold, design: .monospaced))
             .lineLimit(1)
+            // 幅が変わった直後は縮小率がまだ追いついていないことがある。
+            // その1フレームで桁が切れないよう、枠の中で縮む余地を持たせる
+            .minimumScaleFactor(0.7)
             .frame(width: fontSize * YearColumnMetrics.gregorianWidthRatio, alignment: .trailing)
     }
 
     @ViewBuilder
-    private func zodiacColumn(fontSize: CGFloat) -> some View {
+    private func zodiacColumn(fontSize: CGFloat, columns: YearColumnMetrics.Columns) -> some View {
         // 干支と九星も常に縦積み。幅は九星の「一白水星」（4文字）に合わせて
-        // 固定し、行ごとに列位置がずれないようにする
-        if showsZodiac, let nineStar {
-            let nineStarFontSize = fontSize * YearColumnMetrics.nineStarScale
+        // 固定し、行ごとに列位置がずれないようにする。
+        // 何を出すかは layout が決めており、行はそれに従うだけ
+        let width = YearColumnMetrics.zodiacWidth(fontSize: fontSize, showsNineStar: columns.stacksNineStar)
+
+        if columns.stacksNineStar, let nineStar {
             VStack(alignment: .leading, spacing: 0) {
                 zodiacText(size: fontSize * 0.82)
-                nineStarText(nineStar, size: nineStarFontSize)
+                nineStarText(nineStar, size: fontSize * YearColumnMetrics.nineStarScale)
             }
-            .frame(width: YearColumnMetrics.zodiacWidth(fontSize: fontSize, showsNineStar: true), alignment: .leading)
-        } else if showsZodiac {
+            .frame(width: width, alignment: .leading)
+        } else if columns.showsZodiac {
             // 絵文字＋漢字1文字ぶん
             zodiacText(size: fontSize)
-                .frame(width: YearColumnMetrics.zodiacWidth(fontSize: fontSize, showsNineStar: false), alignment: .leading)
+                .frame(width: width, alignment: .leading)
         } else if let nineStar {
-            let nineStarFontSize = fontSize * 0.72
-            nineStarText(nineStar, size: nineStarFontSize)
-                .frame(width: nineStarFontSize * 4, alignment: .leading)
+            nineStarText(nineStar, size: fontSize * 0.72)
+                .frame(width: width, alignment: .leading)
         }
     }
 
@@ -457,6 +522,9 @@ struct YearRowView: View {
                 .lineLimit(1)
 
             // 「99歳」の幅を原則とし、必要な行だけ広げる
+            // 年齢は桁数で幅が変わるので、自然幅を確保してから下限を当てる。
+            // fixedSize があると minimumScaleFactor は効かないが、
+            // この列は下限より広がれるので枠に負けて切れることはない
             ageText
                 .fixedSize(horizontal: true, vertical: false)
                 .frame(minWidth: fontSize * YearColumnMetrics.ageMinWidthRatio, alignment: .trailing)
@@ -473,7 +541,8 @@ struct YearRowView: View {
                 Text(span.displayText)
                     .font(.system(size: fontSize))
                     .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
+                    // 幅が変わった直後の1フレームでも元号名が切れないようにする
+                    .minimumScaleFactor(0.7)
             }
         }
     }

@@ -16,12 +16,8 @@ struct YearListHeader: View {
     let invertsAgeDirection: Bool
     /// 年齢列の見出し。記念日を選んでいるときは「周年」にする
     let showsAnniversaryUnit: Bool
-    /// 干支列を出しているか。行と同じ列構成にするために要る
-    let showsZodiac: Bool
-    /// 九星を出しているか。干支と積むと列幅の基準が変わる
-    let showsNineStar: Bool
-    /// 学齢・賀寿・厄年の列を確保しているか
-    let reservesBadgeColumn: Bool
+    /// 列の置き方。行と同じ値を受け取ることで、見出しが必ず中身の真上に来る
+    let layout: YearColumnMetrics.Layout
     let compact: Bool
     let toggle: () -> Void
 
@@ -38,84 +34,53 @@ struct YearListHeader: View {
         showsAnniversaryUnit ? "周年" : "年齢"
     }
 
-    private var showsZodiacColumn: Bool {
-        showsZodiac || showsNineStar
-    }
-
     var body: some View {
-        // 列幅は基準サイズに比例するため、大きな文字と狭い画面が重なると
-        // 合計が画面幅を超えて両端の見出しが切れる。実際に使える幅を測り、
-        // 収まる基準サイズへ頭打ちにしてから列を組む
-        GeometryReader { proxy in
-            let fitted = fittedFontSize(availableWidth: proxy.size.width)
-            // 見出しの文字も列幅と同じ比率で抑える。列幅だけを詰めると
-            // 年齢列のように自然幅で場所を取る見出しが枠を押し広げてしまう
-            columns(fontSize: fitted, labelSize: labelFontSize * fitted / rowFontSize)
-                .frame(width: proxy.size.width)
-        }
-        // GeometryReader は縦に広がろうとするため、必要な高さを明示する。
-        // 幅は測るまで分からないので、高さは頭打ち前の文字で確保しておく
-        .frame(height: headerHeight(labelSize: labelFontSize))
-    }
+        // 列の幅・列間・構成はすべて layout が決めている。
+        // 見出しは行と同じ値でそのまま並べるだけ
+        let fontSize = layout.fontSize(base: rowFontSize)
+        let columns = layout.columns
+        let spacing = layout.columnSpacing
+        // 見出しの文字も列と同じ率で縮める。列だけ縮めると、年齢列のように
+        // 自然幅で場所を取る見出しが枠を押し広げてしまう
+        let labelSize = labelFontSize * layout.scale
 
-    /// 画面幅に収まるまで頭打ちにした、列幅の基準サイズ
-    private func fittedFontSize(availableWidth: CGFloat) -> CGFloat {
-        YearColumnMetrics.fittedFontSize(
-            rowFontSize,
-            availableWidth: availableWidth,
-            showsZodiac: showsZodiac,
-            showsNineStar: showsNineStar,
-            reservesBadgeColumn: reservesBadgeColumn
-        )
-    }
-
-    /// 見出しの高さ。文字とその上下の余白から決める。
-    /// 幅に収まらず文字を抑えたときは、その分だけ高さも詰める
-    private func headerHeight(labelSize: CGFloat) -> CGFloat {
-        labelSize * 1.4 + (compact ? 4 : 6) * 2
-    }
-
-    private func columns(fontSize rowFontSize: CGFloat, labelSize labelFontSize: CGFloat) -> some View {
-        // 行と同じ列幅・列間・端余白で並べ、見出しが中身の真上に来るようにする。
-        // 行は ViewThatFits で縮むことがあるが、見出しは基準サイズのまま置く
-        HStack(spacing: 0) {
+        return HStack(spacing: 0) {
             Spacer(minLength: YearColumnMetrics.edgeInset)
 
-            headerLabel("西暦", order: sortOrder, labelSize: labelFontSize)
-                .frame(width: rowFontSize * YearColumnMetrics.gregorianWidthRatio, alignment: .trailing)
-            Spacer(minLength: YearColumnMetrics.columnSpacing)
-            headerLabel("和暦", order: sortOrder, labelSize: labelFontSize)
-                .frame(width: rowFontSize * YearColumnMetrics.eraWidthRatio, alignment: .leading)
-            Spacer(minLength: YearColumnMetrics.columnSpacing)
-            headerLabel(ageTitle, order: ageOrder, labelSize: labelFontSize)
+            headerLabel("西暦", order: sortOrder, labelSize: labelSize)
+                .frame(width: fontSize * YearColumnMetrics.gregorianWidthRatio, alignment: .trailing)
+            columnGap(spacing)
+            headerLabel("和暦", order: sortOrder, labelSize: labelSize)
+                .frame(width: fontSize * YearColumnMetrics.eraWidthRatio, alignment: .leading)
+            columnGap(spacing)
+            headerLabel(ageTitle, order: ageOrder, labelSize: labelSize)
                 // 年齢列だけは下限幅しか決めていないため、他の固定幅列に押されると
                 // minimumScaleFactor が働いて見出しだけが縮む。行と同じく
                 // 自然な幅を先に確保して、押し潰されないようにする
                 .fixedSize(horizontal: true, vertical: false)
-                .frame(minWidth: rowFontSize * YearColumnMetrics.ageMinWidthRatio, alignment: .trailing)
+                .frame(minWidth: fontSize * YearColumnMetrics.ageMinWidthRatio, alignment: .trailing)
 
-            if showsZodiacColumn {
-                Spacer(minLength: YearColumnMetrics.columnSpacing)
+            if columns.showsZodiacColumn {
+                columnGap(spacing)
                 // 干支・九星は年そのものの属性で並び順を持たないため、矢印は付けない
-                plainLabel(showsZodiac ? "干支" : "九星", labelSize: labelFontSize)
+                plainLabel(columns.showsZodiac ? "干支" : "九星", labelSize: labelSize)
                     .frame(
                         width: YearColumnMetrics.zodiacWidth(
-                            fontSize: rowFontSize,
-                            showsNineStar: showsZodiac && showsNineStar
+                            fontSize: fontSize,
+                            showsNineStar: columns.stacksNineStar
                         ),
                         alignment: .leading
                     )
             }
 
-            if reservesBadgeColumn {
-                Spacer(minLength: YearColumnMetrics.columnSpacing)
-                plainLabel("節目", labelSize: labelFontSize)
-                    .frame(width: YearColumnMetrics.badgeWidth(fontSize: rowFontSize), alignment: .leading)
+            if columns.reservesBadgeColumn {
+                columnGap(spacing)
+                plainLabel("節目", labelSize: labelSize)
+                    .frame(width: YearColumnMetrics.badgeWidth(fontSize: fontSize), alignment: .leading)
             }
 
             Spacer(minLength: YearColumnMetrics.edgeInset)
         }
-        .frame(maxWidth: .infinity)
         .padding(.vertical, compact ? 4 : 6)
         .contentShape(Rectangle())
         .onTapGesture(perform: toggle)
@@ -125,6 +90,11 @@ struct YearListHeader: View {
         .accessibilityHint("タップすると並び順を切り替えます")
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("list.header")
+    }
+
+    /// 列と列の間。行と同じ確定幅を置くので、見出しが中身の真上から動かない
+    private func columnGap(_ width: CGFloat) -> some View {
+        Color.clear.frame(width: width, height: 0)
     }
 
     /// 並び順を持つ列の見出し。名前と矢印を添える
