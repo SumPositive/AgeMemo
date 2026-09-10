@@ -177,6 +177,40 @@ fastlane screenshots        # 3カット × 2言語 × 2機種
 
 iPad の分割表示は幅の刻みが細かく、広い幅に合わせて列を伸ばすと列間が離れすぎて列の対応が読み取れなくなります。そのすべての刻みで破綻しないことを担保する労力に見合わないため、**対応すべき見え方を iPhone の範囲（320〜440pt）に絞る**判断をしました。
 
+### 持ち主ごとのメモ（1.2.0〜）
+
+メモは `MemoOwner`（`.myself` と `.person(UUID)`）で引きます。保存ファイルは version 2 で
+自分と名簿を分けて持ち、version 1（自分のぶんだけ）は読み込み時に `.myself` へ移して
+書き直します。**読めない version は黙って捨てず `lastError` を立てて中断します。**
+空のまま上書きすると利用者のメモを失います。
+
+**保存形へそろえる処理は `MemoStore.normalized(_:)` 1か所だけです。** 保存前の整形、
+読み込み、復元（`replaceAll(with:)`）のすべてがここを通ります。片方だけ通すと、
+読み込んだメモに前後の空白が残って `hasMemos(for:)` の判定や一覧の表示が保存経路と
+食い違います。`snapshot()` もこの形を返すので、`replaceAll(with: snapshot())` は
+「元の状態へ戻す」操作として使えます。復元の巻き戻しがこれに依存しています。
+
+**削除と復元は、保存が成功してから画面へ反映します。** 先にメモリを書き換えると、
+保存に失敗したときに画面の内容と端末の内容が食い違ったまま残ります。入力中の trim は
+打鍵の邪魔になるため、書き出す直前にだけ行います。
+
+### 書き出しと読み込み（1.2.0〜）
+
+`BackupDocument` がメモと名簿を1つの JSON にまとめます。`version` を持ち、
+`BackupValidator` が形式・ID の重複・名簿とメモの参照関係・年の範囲を読み込み**前**に
+検査します。他人の作った JSON も届く前提で、アプリの不変条件を満たさないものは
+取り込みません。
+
+**2つの保存先をまとめて置き換えるため、途中で失敗したら巻き戻します**
+（`BackupRestorer`）。メモ → 名簿の順に書き、名簿で失敗したらメモを元へ戻します。
+その巻き戻しにも失敗した場合だけ `rollbackFailed` を返し、取り込み途中の内容が
+端末に残っていることを利用者へ伝えます。名簿から人を消すときも同じ考えで
+`PersonDeletionCoordinator` が名簿 → メモの順に消します。**先に名簿を消すのは、
+途中で終わったときにメモを失うより孤立メモが残る方が安全だからです。**
+
+ファイル選択のキャンセルは失敗ではありません。`BackupFileOperation.isCancellation(_:)`
+で `NSUserCancelledError` を見分け、エラー表示を出さないようにしています。
+
 ### 和紙の背景（1.2.0〜）
 
 `WashiBackground` が生成りの地に短い繊維を `Canvas` で散らします。画像を持たないのでどの解像度でも粒が潰れません。繊維は `SeededGenerator`（SplitMix64）の固定乱数から作り、再描画で模様が動かないようにしています。
@@ -191,13 +225,14 @@ AgeMemo/
 ├── Core/          — JapaneseEra、Zodiac、AgeCalculator、
 │                    Longevity、UnluckyYear、SchoolAge、NineStar、Rokuyo、MoonPhase
 │                    CalendarTerm、CalendarTermGlossary、EraGlossary（用語解説）
-├── Model/         — YearRow、MemoStore、Person、Gender、StoreError
+├── Model/         — YearRow、MemoStore、MemoOwner、Person、PersonKind、Gender、
+│                    BackupDocument（書き出しと復元）、StoreError
 ├── Components/    — AZPicker、NumericKeypad、BirthDateInput、BeginnerHelpBanner、
-│                    CalendarTermSheet ほか
+│                    CalendarTermSheet、WashiBackground ほか
 ├── Features/
-│   ├── Year/      — 主画面（一覧、行、詳細、カレンダー、下部タブ）
-│   ├── Jump/      — 年齢／移動／名簿の各シート
-│   ├── Settings/  — 設定画面
+│   ├── Year/      — 主画面（一覧、見出し、行、詳細、カレンダー、下部タブ）
+│   ├── Jump/      — 元号移動／名簿の各シート
+│   ├── Settings/  — 設定画面、BackupSection（書き出し・読み込み）
 │   └── Ads/       — AdMobBanner
 └── Resources/     — Assets、Info.plist、Localizable.xcstrings、InfoPlist.xcstrings
 ```
@@ -217,7 +252,7 @@ AgeMemo/
 |---|---|---|
 | 1.0.0 | 2026-09-03 | 初版 |
 | 1.1.0 | 2026-09-05 | 年詳細の用語解説、英語版の文化解説、誕生日前後の年齢案内、名簿の記念日・周年表示 |
-| 1.2.0 | 準備中 | 生まれ年一覧へのリデザイン、列見出しと並び替え、自分／名簿のメモ、書き出しと復元、和紙の背景 |
+| 1.2.0 | 2026-09-10 | 生まれ年一覧へのリデザイン、列見出しと並び替え、自分／名簿のメモ、書き出しと復元、和紙の背景 |
 
 ## ライセンス
 
