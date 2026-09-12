@@ -799,6 +799,17 @@
         }
       }
     },
+    "ご要望やご提案もぜひお聞かせください。今後の新機能や改善を検討する際の参考にさせていただきます。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please share any requests or suggestions in your review. We will consider them when planning future features and improvements."
+          }
+        }
+      }
+    },
     "このバックアップ形式には対応していません" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1118,13 +1129,13 @@
         }
       }
     },
-    "レビューする" : {
+    "アプリを評価する" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Write a Review"
+            "value" : "Rate This App"
           }
         }
       }

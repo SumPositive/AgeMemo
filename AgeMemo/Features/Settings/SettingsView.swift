@@ -199,11 +199,20 @@ struct SettingsView: View {
                         }
                     }
 
-                    Button("レビューする") {
+                    Button {
                         // requestReview は表示可否を OS が決めるため、押しても
                         // 何も起きないことがある。ボタンからは App Store を直接開く
                         if let url = AppConfig.reviewURL {
                             openURL(url)
+                        }
+                    } label: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("アプリを評価する")
+                            // 要望や提案もレビューへ記入できることを案内する
+                            Text("ご要望やご提案もぜひお聞かせください。今後の新機能や改善を検討する際の参考にさせていただきます。")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.leading)
                         }
                     }
                 }
