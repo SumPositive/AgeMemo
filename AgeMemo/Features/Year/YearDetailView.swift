@@ -405,7 +405,7 @@ struct YearDetailView: View {
             for: row.gregorian,
             mode: ageDisplayMode,
             birthDate: effectiveBirthDate,
-            currentYear: Calendar.current.component(.year, from: .now)
+            currentYear: AppConfig.gregorianCalendar.component(.year, from: .now)
         )
     }
 

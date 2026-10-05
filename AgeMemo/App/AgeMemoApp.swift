@@ -38,6 +38,8 @@ struct AgeMemoApp: App {
     var body: some Scene {
         WindowGroup {
             YearListView()
+                // 画面内の日付表示も西暦を基準にする
+                .environment(\.calendar, AppConfig.gregorianCalendar)
                 .environment(settings)
                 .environment(memoStore)
                 .environment(personStore)

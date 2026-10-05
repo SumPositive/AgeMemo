@@ -3,6 +3,16 @@
 import Foundation
 
 enum AppConfig {
+    /// 年齢計算と年移動で使う西暦
+    static var gregorianCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .autoupdatingCurrent
+        // 暦は西暦に固定し、週の開始曜日だけ端末設定を反映する
+        calendar.firstWeekday = Calendar.autoupdatingCurrent.firstWeekday
+        calendar.minimumDaysInFirstWeek = Calendar.autoupdatingCurrent.minimumDaysInFirstWeek
+        return calendar
+    }
+
     static let yearRange = 1600...2100
     static let maximumMemoLength = 100
     static let maximumAgeInput = 150

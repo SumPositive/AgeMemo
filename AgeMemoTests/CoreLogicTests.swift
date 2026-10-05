@@ -4,6 +4,28 @@ import XCTest
 @testable import AgeMemo
 
 final class CoreLogicTests: XCTestCase {
+    func testMonthCalendarFollowsWeekStart() {
+        // 2026年10月1日は木曜日。開始曜日を変えても見出しと空欄を揃える
+        XCTAssertEqual(MonthCalendarWeekLayout.weekdayIndices(firstWeekday: 1), [0, 1, 2, 3, 4, 5, 6])
+        XCTAssertEqual(MonthCalendarWeekLayout.weekdayIndices(firstWeekday: 2), [1, 2, 3, 4, 5, 6, 0])
+        XCTAssertEqual(MonthCalendarWeekLayout.weekdayIndices(firstWeekday: 7), [6, 0, 1, 2, 3, 4, 5])
+        XCTAssertEqual(MonthCalendarWeekLayout.leadingEmptyDays(monthStartWeekday: 5, firstWeekday: 1), 4)
+        XCTAssertEqual(MonthCalendarWeekLayout.leadingEmptyDays(monthStartWeekday: 5, firstWeekday: 2), 3)
+        XCTAssertEqual(MonthCalendarWeekLayout.leadingEmptyDays(monthStartWeekday: 5, firstWeekday: 7), 5)
+    }
+
+    func testCurrentYearUsesGregorianCalendar() {
+        let date = AppConfig.gregorianCalendar.date(
+            from: DateComponents(year: 2026, month: 10, day: 5)
+        )!
+        // 同じ日が和暦8年でも年齢計算には西暦2026年を渡す
+        XCTAssertEqual(Calendar(identifier: .japanese).component(.year, from: date), 8)
+        XCTAssertEqual(Calendar(identifier: .buddhist).component(.year, from: date), 2569)
+        let currentYear = AppConfig.gregorianCalendar.component(.year, from: date)
+        XCTAssertEqual(currentYear, 2026)
+        XCTAssertEqual(AgeCalculator.displayedAge(for: 1988, mode: .age, birthDate: nil, currentYear: currentYear), 38)
+    }
+
     func testJapaneseEraExamples() {
         let expected = [
             1600: "慶長5年",

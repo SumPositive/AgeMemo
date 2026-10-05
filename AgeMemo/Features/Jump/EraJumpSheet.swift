@@ -53,7 +53,7 @@ struct EraJumpSheet: View {
     let isAnniversary: Bool
     let jump: (Int) -> Void
 
-    private let currentYear = Calendar.current.component(.year, from: .now)
+    private let currentYear = AppConfig.gregorianCalendar.component(.year, from: .now)
     /// よく使う種別タグの文字サイズ。小さめのタグにして入力欄の邪魔をしない
     @ScaledMetric(relativeTo: .caption2) private var frequentSelectionFontSize: CGFloat = 11
 

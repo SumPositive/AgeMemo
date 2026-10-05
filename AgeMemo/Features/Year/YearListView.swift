@@ -52,7 +52,7 @@ struct YearListView: View {
     @State private var tappedYear: Int?
 
     /// 復帰時に年越しを反映できるよう状態値として保持する
-    @State private var currentYear = Calendar.current.component(.year, from: .now)
+    @State private var currentYear = AppConfig.gregorianCalendar.component(.year, from: .now)
 
     /// 列構成を決めるときの基準サイズ。行の本文と同じ基準にそろえる
     @ScaledMetric(relativeTo: .body) private var rowFontSize: CGFloat = 17
@@ -662,7 +662,7 @@ struct YearListView: View {
 
     /// 年をまたいで復帰した場合は当年を更新して中央へ移動する
     private func refreshCurrentYear() {
-        let refreshedYear = Calendar.current.component(.year, from: .now)
+        let refreshedYear = AppConfig.gregorianCalendar.component(.year, from: .now)
         guard currentYear != refreshedYear else { return }
         currentYear = refreshedYear
         scroll(to: refreshedYear)

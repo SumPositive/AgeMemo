@@ -3390,7 +3390,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anniversary: %@/%@/%@\n· %@周年"
+            "value" : "Anniversary: %@/%@/%@\n· %@ yrs"
           }
         }
       }
@@ -3401,7 +3401,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anniversary: %@/%@/%@ · %@周年"
+            "value" : "Anniversary: %@/%@/%@ · %@ yrs"
           }
         }
       }

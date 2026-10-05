@@ -199,6 +199,8 @@ enum BackupCoder {
     static func fileName(for date: Date = .now) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
+        // バックアップ名の年は端末の暦に関係なく西暦にする
+        formatter.calendar = AppConfig.gregorianCalendar
         formatter.dateFormat = "yyyyMMdd-HHmm"
         return "Nenrin-\(formatter.string(from: date)).json"
     }

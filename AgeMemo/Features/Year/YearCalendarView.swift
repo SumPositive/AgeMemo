@@ -2,6 +2,17 @@
 
 import SwiftUI
 
+/// 週開始曜日に合わせて見出しと月初の空欄を並べる
+enum MonthCalendarWeekLayout {
+    static func weekdayIndices(firstWeekday: Int) -> [Int] {
+        (0..<7).map { (firstWeekday - 1 + $0) % 7 }
+    }
+
+    static func leadingEmptyDays(monthStartWeekday: Int, firstWeekday: Int) -> Int {
+        (monthStartWeekday - firstWeekday + 7) % 7
+    }
+}
+
 struct YearCalendarView: View {
     let row: YearRow
 
@@ -35,7 +46,7 @@ struct YearCalendarView: View {
         )
     }
 
-    init(row: YearRow, initialMonth: Int = Calendar.current.component(.month, from: .now)) {
+    init(row: YearRow, initialMonth: Int = AppConfig.gregorianCalendar.component(.month, from: .now)) {
         self.row = row
         _month = State(initialValue: min(max(initialMonth, 1), 12))
     }
@@ -151,11 +162,16 @@ private struct MonthCalendarView: View {
     private let weekdayEnglishSymbols = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     private let dayColumns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
 
+    /// 端末の週開始曜日から見出しの並びを作る
+    private var orderedWeekdays: [Int] {
+        MonthCalendarWeekLayout.weekdayIndices(firstWeekday: calendar.firstWeekday)
+    }
+
     private var calendar: Calendar {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
         calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .current
-        calendar.firstWeekday = 1
+        calendar.firstWeekday = AppConfig.gregorianCalendar.firstWeekday
         return calendar
     }
 
@@ -164,7 +180,10 @@ private struct MonthCalendarView: View {
               let dayRange = calendar.range(of: .day, in: .month, for: firstDate) else {
             return []
         }
-        let leadingCount = calendar.component(.weekday, from: firstDate) - 1
+        let leadingCount = MonthCalendarWeekLayout.leadingEmptyDays(
+            monthStartWeekday: calendar.component(.weekday, from: firstDate),
+            firstWeekday: calendar.firstWeekday
+        )
         return Array(repeating: nil, count: leadingCount) + dayRange.map(Optional.some)
     }
 
@@ -172,7 +191,8 @@ private struct MonthCalendarView: View {
         VStack(spacing: 3) {
             // 月名は上部の切り替えUIに集約したのでここでは出さない
             LazyVGrid(columns: dayColumns, spacing: 1) {
-                ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
+                ForEach(orderedWeekdays, id: \.self) { index in
+                    let symbol = weekdaySymbols[index]
                     let weekdayStyle: Color = index == 0 ? .red : (index == 6 ? .blue : .secondary)
                     VStack(spacing: 0) {
                         Text(symbol)
@@ -297,4 +317,3 @@ private struct MonthCalendarView: View {
         return label
     }
 }
-

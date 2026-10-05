@@ -195,7 +195,7 @@ struct PersonSheet: View {
             let actual = String(AgeCalculator.currentActualAge(birthDate: person.birthDate))
             if settings.showsTraditionalAge {
                 // 数え年は元日ごとに増えるため、誕生日は見ずに年の差へ1を足す
-                let currentYear = Calendar.current.component(.year, from: .now)
+                let currentYear = AppConfig.gregorianCalendar.component(.year, from: .now)
                 let traditional = String(currentYear - person.birthYear + 1)
                 return PersonDateSummary(
                     singleLine: String(localized: "誕生日：\(year)年\(month)月\(day)日・満\(actual)歳・数え\(traditional)歳"),
@@ -207,7 +207,7 @@ struct PersonSheet: View {
                 twoLines: String(localized: "誕生日：\(year)年\(month)月\(day)日\n・満\(actual)歳")
             )
         case .anniversary:
-            let currentYear = Calendar.current.component(.year, from: .now)
+            let currentYear = AppConfig.gregorianCalendar.component(.year, from: .now)
             let count = String(AgeCalculator.anniversaryCount(for: currentYear, startDate: person.birthDate))
             return PersonDateSummary(
                 singleLine: String(localized: "記念日：\(year)年\(month)月\(day)日・\(count)周年"),
