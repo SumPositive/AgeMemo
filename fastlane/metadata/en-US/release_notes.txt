@@ -1,6 +1,2 @@
-• The year list has been redesigned as a birth year list, making it easier to read across Western years, Japanese era years and ages
-• Column headers now appear above the list — tap them to switch between newest and oldest first
-• You can now keep notes for each year, both for yourself and for everyone in the roster
-• Export all your notes and roster to a file, then restore them later — handy when you change devices
-• The background now has the texture of washi paper
-• Adjusted the feel of the number keypad
+• Fixed dates not showing correctly when your device's calendar is set to Japanese
+• The calendar now follows your device's "First Day of Week" setting
