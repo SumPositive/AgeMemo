@@ -22,15 +22,34 @@ private func nonPersonalizedAdRequest() -> Request {
     return request
 }
 
+/// MobileAds.start() の完了を SwiftUI へ伝える共有フラグ。
+/// 完了前にバナーを作ると、起動直後に WebView の起動が重なって画面が出るのが遅れる
+@MainActor
+@Observable
+final class AdReadyState {
+    static let shared = AdReadyState()
+    private(set) var isReady = false
+    func markReady() { isReady = true }
+    private init() {}
+}
+
 struct HeaderBannerView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @State private var adReady = AdReadyState.shared
 
     var body: some View {
         if hidesBannerForSnapshot {
             // App Store用スクリーンショットには広告枠を含めない
             Color.clear.frame(height: 0)
         } else if !AdMobConfig.bannerUnitID.isEmpty {
-            AdMobBannerRepresentable(adUnitID: AdMobConfig.bannerUnitID)
+            Group {
+                // 初期化が済むまでは枠だけ確保し、レイアウトが後から動かないようにする
+                if adReady.isReady {
+                    AdMobBannerRepresentable(adUnitID: AdMobConfig.bannerUnitID)
+                } else {
+                    Color.clear
+                }
+            }
                 .frame(width: 320, height: 50)
                 .frame(maxWidth: .infinity)
                 // 上下のタップできる要素（ヘルプの(?)・列見出し）との間を空ける。
