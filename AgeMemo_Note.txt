@@ -161,10 +161,10 @@ fastlane upload_metadata
 fastlane screenshots
 fastlane upload_screenshots
 -----
-Nenrin 1.2.1 公開、README.mdの開発ガイド、公開アプリパネル、取扱説明を更新して
+10/6 Nenrin 1.2.1 公開、README.mdの開発ガイド、公開アプリパネル、取扱説明を更新して
 ------------------------------------------------
 
-
+初期起動時に空白画面がしばらく表示される
 
 
 
