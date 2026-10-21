@@ -4,12 +4,12 @@
 <!-- 1024x1024。iOSが角丸マスクを行うため背景は正方形いっぱいに塗る -->
 <svg viewBox="0 0 1024 1024" width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- 背景: 小豆色。上部を明るくして立体感を出す -->
-    <radialGradient id="bg" cx="50%" cy="32%" r="86%">
-      <stop offset="0%"   stop-color="#9c5559"/>
-      <stop offset="52%"  stop-color="#7d3a42"/>
-      <stop offset="100%" stop-color="#5e2731"/>
-    </radialGradient>
+    <!-- 背景: カルメモ・クレメモと同じ小豆色の斜めグラデ。片方を変えたら揃える -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0.85" y2="1">
+      <stop offset="0"   stop-color="#bd5f57"/>
+      <stop offset="0.5" stop-color="#9c4842"/>
+      <stop offset="1"   stop-color="#6f2e2c"/>
+    </linearGradient>
 
     <!-- 年輪: 落ち着いた金。文字より暗くして背面に置く -->
     <linearGradient id="ring" x1="0" y1="0" x2="0" y2="1">

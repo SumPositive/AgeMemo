@@ -68,24 +68,15 @@ struct BeginnerHelpBanner: View {
 
     private var helpSheet: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack {
-                    Spacer()
-                    Image(systemName: "questionmark.circle")
-                        .foregroundStyle(Color.accentColor)
-                    Spacer()
-                }
-
-                Text(message)
-                    .font(.body)
-                    .foregroundStyle(Color.primary)
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(20)
+            // 見出しの疑問符アイコンは不要なので本文だけを置く
+            Text(message)
+                .font(.body)
+                .foregroundStyle(Color.primary)
+                .lineLimit(nil)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(20)
             // onGeometryChange は iOS 18 以降のため、17 でも動く方法で高さを測る
             .background {
                 GeometryReader { proxy in
