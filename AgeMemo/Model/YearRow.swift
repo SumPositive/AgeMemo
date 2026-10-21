@@ -6,6 +6,8 @@ struct EraSpan: Hashable, Sendable {
     let eraIdentifier: Int
     let eraName: String
     let eraYear: Int
+    /// 改元日。明治より前は改元日が翌年1月にあたり、行の西暦年と違うことがある
+    let startYear: Int
     let startMonth: Int
     let startDay: Int
 

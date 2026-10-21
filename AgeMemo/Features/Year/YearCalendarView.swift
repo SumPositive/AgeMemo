@@ -55,7 +55,7 @@ struct YearCalendarView: View {
         VStack(spacing: 10) {
             monthSwitcher
 
-            MonthCalendarView(year: row.gregorian, month: month, eraSpans: row.eraSpans)
+            MonthCalendarView(year: row.gregorian, month: month)
                 // 月をまたぐたびに切り替わりが分かるようにする
                 .id(month)
                 .transition(.opacity)
@@ -80,9 +80,9 @@ struct YearCalendarView: View {
         【月の満ち欠け】
         パーセントは輝面率といい、月の光っている部分の面積の割合です。新月が0％、満月が100％になります。
 
-        夕方から夜にかけて実際に空へ出ている月に合わせて計算しているので、その晩に見上げる月の姿とおおよそ一致します。満月（100％）は黄色で示します。
+        この値は、天文計算で求めたその日の正午（日本時間）のものです。夜に見上げる月は、満ちていく時期ならこれより少し多く、欠けていく時期なら少し少なくなります。
 
-        旧暦をもとにした概算のため、実際の満月と1日ずれることがあります。
+        満月（100％）は満月の瞬間がある日に黄色で示し、一般的なカレンダーの満月の日と一致します。
 
         【改元】
         改元があった年は、元号が変わる日に区切り線と新しい元号を表示します。
@@ -145,7 +145,6 @@ struct YearCalendarView: View {
 private struct MonthCalendarView: View {
     let year: Int
     let month: Int
-    let eraSpans: [EraSpan]
 
     @ScaledMetric(relativeTo: .caption2) private var scaledEraFontSize: CGFloat = 9
     @ScaledMetric(relativeTo: .caption2) private var scaledRokuyoFontSize: CGFloat = 9
@@ -173,6 +172,11 @@ private struct MonthCalendarView: View {
         calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .current
         calendar.firstWeekday = AppConfig.gregorianCalendar.firstWeekday
         return calendar
+    }
+
+    /// この月に改元した元号。改元日が翌年1月にあたる元号もあるため年の行ではなく改元日で引く
+    private var eraTransitions: [Int: EraSpan] {
+        JapaneseEra.transitions(year: year, month: month)
     }
 
     private var cells: [Int?] {
@@ -230,7 +234,7 @@ private struct MonthCalendarView: View {
     }
 
     private func dayCell(_ day: Int) -> some View {
-        let era = eraSpans.first { $0.startMonth == month && $0.startDay == day && !(month == 1 && day == 1) }
+        let era = eraTransitions[day]
         let rokuyo = rokuyo(for: day)
         let moon = moonPhase(for: day)
         return VStack(spacing: 0) {
@@ -256,7 +260,7 @@ private struct MonthCalendarView: View {
             }
             if let moon {
                 // 満月はライト時も読める濃さへ切り替える
-                let isFullMoon = moon.illuminationPercent == 100
+                let isFullMoon = moon.isFullMoon
                 let moonStyle = isFullMoon
                     ? AnyShapeStyle(fullMoonColor)
                     : AnyShapeStyle(.secondary)
@@ -289,18 +293,11 @@ private struct MonthCalendarView: View {
     }
 
     private func moonPhase(for day: Int) -> MoonPhase? {
-        guard let date = calendar.date(from: DateComponents(year: year, month: month, day: day, hour: 12)) else {
-            return nil
-        }
-        return MoonPhase(date: date)
+        MoonPhase(year: year, month: month, day: day)
     }
 
     private func rokuyo(for day: Int) -> Rokuyo? {
-        // 旧暦の日付から求めるため、時差で日がずれないよう正午で判定する
-        guard let date = calendar.date(from: DateComponents(year: year, month: month, day: day, hour: 12)) else {
-            return nil
-        }
-        return Rokuyo.forDate(date)
+        Rokuyo(year: year, month: month, day: day)
     }
 
     private func accessibilityLabel(day: Int, era: EraSpan?, rokuyo: Rokuyo?, moon: MoonPhase?) -> String {

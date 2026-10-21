@@ -166,6 +166,8 @@ fastlane upload_screenshots
 
 初期起動時に空白画面がしばらく表示される
 
+アプリアイコンの背景をCalclinの背景に合わせたい
+
 
 
 

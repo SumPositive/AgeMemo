@@ -49,6 +49,17 @@ final class CoreLogicTests: XCTestCase {
         XCTAssertTrue(transitions.contains { $0 == (1989, 1, 8) })
     }
 
+    func testPreMeijiEraTransitionUsesGregorianDate() {
+        // 元和は慶長20年7月13日。Foundation の和暦は旧暦の月日のまま7月13日にしていた
+        XCTAssertEqual(JapaneseEra.transitions(year: 1615, month: 9)[5]?.eraName, "元和")
+        XCTAssertTrue(JapaneseEra.transitions(year: 1615, month: 7).isEmpty)
+        // 正保は寛永21年12月16日で西暦では翌年1月。年数えは対照表どおり1644年を元年とする
+        XCTAssertEqual(JapaneseEra.spans(in: 1644).map(\.displayText), ["寛永21年", "正保元年"])
+        XCTAssertEqual(JapaneseEra.spans(in: 1644).last.map { [$0.startYear, $0.startMonth, $0.startDay] }, [1645, 1, 13])
+        XCTAssertEqual(JapaneseEra.transitions(year: 1645, month: 1)[13]?.eraName, "正保")
+        XCTAssertTrue(JapaneseEra.transitions(year: 1644, month: 12).isEmpty)
+    }
+
     func testZodiacExamples() {
         XCTAssertEqual(StemBranch.value(for: 1600).kanji, "庚子")
         XCTAssertEqual(StemBranch.value(for: 1868).kanji, "戊辰")
@@ -272,5 +283,36 @@ final class YearColumnMetricsTests: XCTestCase {
 
         XCTAssertLessThanOrEqual(occupiedWidth, availableWidth + 0.001)
         XCTAssertLessThanOrEqual(layout.scale, 1)
+    }
+
+    func testRokuyoFollowsJapaneseLunarCalendar() {
+        // 2026年10月の朔は日本時間10月11日0時50分。中国暦では10月10日になり六曜が1日ずれていた
+        XCTAssertEqual(LunarDate(year: 2026, month: 10, day: 10), LunarDate(month: 8, day: 30, isFullMoon: false))
+        XCTAssertEqual(LunarDate(year: 2026, month: 10, day: 11), LunarDate(month: 9, day: 1, isFullMoon: false))
+        let sakimakeDays = (1...31).filter { Rokuyo(year: 2026, month: 10, day: $0) == .sakimake }
+        XCTAssertEqual(sakimakeDays, [6, 11, 17, 23, 29])
+    }
+
+    func testLunarDateUsesJapaneseLeapMonth() {
+        // 2012年は日本では閏3月、中国では閏4月
+        XCTAssertEqual(LunarDate(year: 2012, month: 4, day: 20), LunarDate(month: 3, day: 30, isFullMoon: false))
+        XCTAssertEqual(LunarDate(year: 2012, month: 4, day: 21), LunarDate(month: 3, day: 1, isFullMoon: false))
+        XCTAssertEqual(LunarDate(year: 2012, month: 5, day: 21), LunarDate(month: 4, day: 1, isFullMoon: false))
+    }
+
+    func testFullMoonMatchesActualFullMoonDay() {
+        // 2026年10月の満月は26日13時11分。旧暦の15日（10月25日）ではない
+        let fullMoonDays = (1...31).filter { MoonPhase(year: 2026, month: 10, day: $0)?.isFullMoon == true }
+        XCTAssertEqual(fullMoonDays, [26])
+        XCTAssertEqual(MoonPhase(year: 2026, month: 10, day: 26)?.illuminationPercent, 100)
+        // 満月の前後の日は100%にしない
+        XCTAssertEqual(MoonPhase(year: 2026, month: 10, day: 25)?.illuminationPercent, 99)
+        XCTAssertEqual(MoonPhase(year: 2026, month: 10, day: 27)?.illuminationPercent, 99)
+    }
+
+    func testLunarDateCoversYearRange() {
+        XCTAssertNotNil(LunarDate(year: AppConfig.yearRange.lowerBound, month: 1, day: 1))
+        XCTAssertNotNil(LunarDate(year: AppConfig.yearRange.upperBound, month: 12, day: 31))
+        XCTAssertNil(LunarDate(year: AppConfig.yearRange.upperBound + 1, month: 2, day: 1))
     }
 }

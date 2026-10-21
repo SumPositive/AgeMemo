@@ -186,7 +186,12 @@ struct YearDetailView: View {
                 HStack(spacing: 0) {
                     Text(verbatim: ganNen.eraName)
                         .calendarTermTappable(EraGlossary.term(for: ganNen.eraName), selection: $selectedTerm)
-                    Text("元年（\(String(ganNen.startMonth))月\(String(ganNen.startDay))日〜）")
+                    // 明治より前は改元日が翌年1月にあたることがあるので、そのときは年も添える
+                    if ganNen.startYear == row.gregorian {
+                        Text("元年（\(String(ganNen.startMonth))月\(String(ganNen.startDay))日〜）")
+                    } else {
+                        Text("元年（\(String(ganNen.startYear))年\(String(ganNen.startMonth))月\(String(ganNen.startDay))日〜）")
+                    }
                 }
                 .font(.title3.bold())
                 .lineLimit(1)

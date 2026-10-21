@@ -920,13 +920,13 @@
         }
       }
     },
-    "その年のカレンダーです。日付の下に六曜と月の満ち欠けを添えています。\n\n【六曜】\n先勝・友引・先負・仏滅・大安・赤口の6日周期で、旧暦の月日から求めます。日取りを選ぶときに探すことの多い大安は赤色で示します。\n\n【月の満ち欠け】\nパーセントは輝面率といい、月の光っている部分の面積の割合です。新月が0％、満月が100％になります。\n\n夕方から夜にかけて実際に空へ出ている月に合わせて計算しているので、その晩に見上げる月の姿とおおよそ一致します。満月（100％）は黄色で示します。\n\n旧暦をもとにした概算のため、実際の満月と1日ずれることがあります。\n\n【改元】\n改元があった年は、元号が変わる日に区切り線と新しい元号を表示します。" : {
+    "その年のカレンダーです。日付の下に六曜と月の満ち欠けを添えています。\n\n【六曜】\n先勝・友引・先負・仏滅・大安・赤口の6日周期で、旧暦の月日から求めます。日取りを選ぶときに探すことの多い大安は赤色で示します。\n\n【月の満ち欠け】\nパーセントは輝面率といい、月の光っている部分の面積の割合です。新月が0％、満月が100％になります。\n\nこの値は、天文計算で求めたその日の正午（日本時間）のものです。夜に見上げる月は、満ちていく時期ならこれより少し多く、欠けていく時期なら少し少なくなります。\n\n満月（100％）は満月の瞬間がある日に黄色で示し、一般的なカレンダーの満月の日と一致します。\n\n【改元】\n改元があった年は、元号が変わる日に区切り線と新しい元号を表示します。" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The calendar for that year. Under each date you will find the rokuyo and the phase of the moon.\n\n[六曜 rokuyo]\nA six-day cycle — 先勝 senshō, 友引 tomobiki, 先負 senbu, 仏滅 butsumetsu, 大安 taian, 赤口 shakkō — derived from the lunisolar calendar. 大安, the day most often sought when choosing a date, is marked in red.\n\n[The moon]\nThe percentage is the illuminated fraction: how much of the moon's face is lit. A new moon is 0% and a full moon is 100%.\n\nIt is calculated for the moon as it actually stands in the sky from evening into night, so it matches roughly what you would see looking up that night. A full moon (100%) is marked in yellow.\n\nBecause it is an approximation based on the lunisolar calendar, it can be a day off from the true full moon.\n\n[Era changes]\nIn a year when the era changed, the day it changed is marked with a rule and the new era name."
+            "value" : "The calendar for that year. Under each date you will find the rokuyo and the phase of the moon.\n\n[六曜 rokuyo]\nA six-day cycle — 先勝 senshō, 友引 tomobiki, 先負 senbu, 仏滅 butsumetsu, 大安 taian, 赤口 shakkō — derived from the lunisolar calendar. 大安, the day most often sought when choosing a date, is marked in red.\n\n[The moon]\nThe percentage is the illuminated fraction: how much of the moon's face is lit. A new moon is 0% and a full moon is 100%.\n\nThe percentage is the value at noon (Japan time) on that day, calculated astronomically. The moon you see that night is slightly fuller while waxing and slightly thinner while waning.\n\nThe full moon (100%) is marked in yellow on the day the moon is exactly full, matching the full-moon day in ordinary Japanese calendars.\n\n[Era changes]\nIn a year when the era changed, the day it changed is marked with a rule and the new era name."
           }
         }
       }
@@ -1533,6 +1533,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : " 1 (from %@/%@)"
+          }
+        }
+      }
+    },
+    "元年（%@年%@月%@日〜）" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 1 (from %2$@/%3$@/%1$@)"
           }
         }
       }

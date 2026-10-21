@@ -101,18 +101,8 @@ enum Rokuyo: Int, CaseIterable, Identifiable, Sendable {
     }
 
     /// 旧暦の月と日から求める。月が変わるたびに並びが飛ぶのはこの式によるもの
-    static func forDate(_ date: Date, calendar: Calendar = .lunisolar) -> Rokuyo? {
-        let components = calendar.dateComponents([.month, .day], from: date)
-        guard let month = components.month, let day = components.day else { return nil }
-        return Rokuyo(rawValue: (month + day) % 6)
+    init?(year: Int, month: Int, day: Int) {
+        guard let lunar = LunarDate(year: year, month: month, day: day) else { return nil }
+        self.init(rawValue: (lunar.month + lunar.day) % 6)
     }
-}
-
-extension Calendar {
-    /// 六曜の算出に使う旧暦。日本の暦に合わせて日本時間で扱う
-    static let lunisolar: Calendar = {
-        var calendar = Calendar(identifier: .chinese)
-        calendar.timeZone = TimeZone(identifier: "Asia/Tokyo") ?? .current
-        return calendar
-    }()
 }
