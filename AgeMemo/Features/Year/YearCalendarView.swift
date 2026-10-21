@@ -77,6 +77,8 @@ struct YearCalendarView: View {
         【六曜】
         先勝・友引・先負・仏滅・大安・赤口の6日周期で、旧暦の月日から求めます。日取りを選ぶときに探すことの多い大安は赤色で示します。
 
+        旧暦は現在の方式で計算しています。1843年以前は当時の暦（宣明暦・貞享暦など）と方式が違うため、その頃の六曜は参考値です。
+
         【月の満ち欠け】
         パーセントは輝面率といい、月の光っている部分の面積の割合です。新月が0％、満月が100％になります。
 
@@ -306,7 +308,7 @@ private struct MonthCalendarView: View {
             label += " \(rokuyo.name)"
         }
         if let moon {
-            label += " \(moon.name) \(moon.illuminationPercent)パーセント"
+            label += " \(moon.spokenDescription)"
         }
         if let era {
             label += " \(era.eraName)改元"

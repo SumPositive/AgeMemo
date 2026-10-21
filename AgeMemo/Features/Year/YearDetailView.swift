@@ -76,7 +76,8 @@ struct YearDetailView: View {
             // 年は本文の見出しに出るため、シートのタイトルには置かない
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
+                // 閉じるボタンは全シートで左上にそろえる
+                ToolbarItem(placement: .cancellationAction) {
                     SheetCloseButton { dismiss() }
                 }
                 // 隠す手段が分かるよう、キーボード上にも明示のボタンを置く

@@ -7,11 +7,14 @@ struct MoonPhase: Sendable {
     let elongation: Double
     /// 望（満月の瞬間）を含む日か。一般的なカレンダーの満月の日と同じ
     let isFullMoon: Bool
+    /// 朔（新月の瞬間）を含む日か。旧暦の1日にあたる
+    let isNewMoon: Bool
 
     /// その日の日本時間の正午で求める。満月の日は表から引く
     init?(year: Int, month: Int, day: Int) {
         guard let lunar = LunarDate(year: year, month: month, day: day) else { return nil }
         isFullMoon = lunar.isFullMoon
+        isNewMoon = lunar.day == 1
         // 1970年1月1日0時（世界時）のユリウス日に、日本時間の正午（世界時3時）を足す
         let julianDay = Double(LunarDate.dayNumber(year: year, month: month, day: day)) + 2_440_587.5 + 3.0 / 24
         elongation = Self.elongation(julianDay: julianDay)
@@ -23,7 +26,7 @@ struct MoonPhase: Sendable {
         elongation / 360
     }
 
-    /// 月相を8つに分けた番号。0が新月、4が満月。各月相の中心から前後1/16ずつを同じ月相とする
+    /// 月相の絵柄を8つに分けた番号。0が新月、4が満月。各月相の中心から前後1/16ずつを同じ絵柄とする
     private var phaseIndex: Int {
         Int((phasePosition * 8).rounded()) % 8
     }
@@ -33,9 +36,11 @@ struct MoonPhase: Sendable {
         (1 - cos(elongation * .pi / 180)) / 2
     }
 
-    /// 100%は満月の日だけにし、前後の日は丸めで100%にならないよう99%で止める
+    /// 100%は満月の日、0%は新月の日だけにし、前後の日は丸めでそうならないよう1〜99%に収める
     var illuminationPercent: Int {
-        isFullMoon ? 100 : min(Int((illumination * 100).rounded()), 99)
+        if isFullMoon { return 100 }
+        if isNewMoon { return 0 }
+        return min(max(Int((illumination * 100).rounded()), 1), 99)
     }
 
     /// 月相を8つに分けたときの絵柄
@@ -46,8 +51,17 @@ struct MoonPhase: Sendable {
         ][phaseIndex]
     }
 
-    var name: String {
-        ["新月", "三日月", "上弦", "十三夜", "満月", "寝待月", "下弦", "有明月"][phaseIndex]
+    /// 読み上げ用の説明。新月・満月はその瞬間を含む日だけに付ける。
+    /// 「十三夜」「寝待月」などは旧暦の日に由来する呼び名で、絵柄の8分割には当てはまらないので使わない
+    var spokenDescription: String {
+        if isFullMoon {
+            return "満月、輝面率\(illuminationPercent)パーセント"
+        }
+        if isNewMoon {
+            return "新月、輝面率\(illuminationPercent)パーセント"
+        }
+        let direction = phasePosition < 0.5 ? "満ちていく月" : "欠けていく月"
+        return "輝面率\(illuminationPercent)パーセント、\(direction)"
     }
 
     /// 月と太陽の黄経の差を、天文計算の主要な項だけで求める（Meeus『天文アルゴリズム』47章）。

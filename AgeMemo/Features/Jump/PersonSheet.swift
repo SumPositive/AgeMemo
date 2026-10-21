@@ -134,6 +134,7 @@ struct PersonSheet: View {
                         Label("追加", systemImage: "plus")
                     }
                 }
+                // 閉じるボタンは全シートで左上にそろえる
                 ToolbarItem(placement: .cancellationAction) {
                     SheetCloseButton { dismiss() }
                 }

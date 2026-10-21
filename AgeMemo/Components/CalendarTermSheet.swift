@@ -9,9 +9,28 @@ struct CalendarTermSheet: View {
 
     @Environment(AppSettings.self) private var settings
     @Environment(\.dynamicTypeSize) private var systemDynamicTypeSize
+    @Environment(\.dismiss) private var dismiss
     @State private var sheetContentHeight: CGFloat = 220
 
     var body: some View {
+        // ほかのシートとそろえて左上に閉じるボタンを置く
+        NavigationStack {
+            content
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        SheetCloseButton { dismiss() }
+                    }
+                }
+        }
+        .dynamicTypeSize(sheetDynamicTypeSize)
+        // 本文の高さに、ドラッグハンドルと余白（84）、閉じるボタンを置くナビゲーションバー（44）を足す
+        .presentationDetents([.height(min(max(sheetContentHeight + 128, 200), 620)), .large])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Color(.systemBackground))
+    }
+
+    private var content: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 header
@@ -57,10 +76,6 @@ struct CalendarTermSheet: View {
             }
         }
         .scrollIndicators(.hidden)
-        .dynamicTypeSize(sheetDynamicTypeSize)
-        .presentationDetents([.height(min(max(sheetContentHeight + 84, 200), 620)), .large])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
     }
 
     private var header: some View {

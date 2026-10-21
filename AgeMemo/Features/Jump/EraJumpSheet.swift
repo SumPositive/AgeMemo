@@ -331,7 +331,8 @@ struct EraJumpSheet: View {
             .navigationTitle("移動")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
+                // 閉じるボタンは全シートで左上にそろえる
+                ToolbarItem(placement: .cancellationAction) {
                     SheetCloseButton { dismiss() }
                 }
             }

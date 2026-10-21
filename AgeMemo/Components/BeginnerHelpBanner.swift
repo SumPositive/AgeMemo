@@ -54,8 +54,9 @@ struct BeginnerHelpBanner: View {
         isBeginner ? .footnote.weight(.semibold) : .caption.weight(.semibold)
     }
 
+    /// 本文の高さに、ドラッグハンドルと余白（84）、閉じるボタンを置くナビゲーションバー（44）を足す
     private var helpSheetHeight: CGFloat {
-        min(max(sheetContentHeight + 84, 180), 620)
+        min(max(sheetContentHeight + 128, 180), 620)
     }
 
     private var helpDynamicTypeSize: DynamicTypeSize {
@@ -67,6 +68,19 @@ struct BeginnerHelpBanner: View {
     }
 
     private var helpSheet: some View {
+        // ほかのシートとそろえて左上に閉じるボタンを置く
+        NavigationStack {
+            helpContent
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        SheetCloseButton { showsHelpSheet = false }
+                    }
+                }
+        }
+    }
+
+    private var helpContent: some View {
         ScrollView {
             // 見出しの疑問符アイコンは不要なので本文だけを置く
             Text(message)
@@ -77,16 +91,16 @@ struct BeginnerHelpBanner: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(20)
-            // onGeometryChange は iOS 18 以降のため、17 でも動く方法で高さを測る
-            .background {
-                GeometryReader { proxy in
-                    Color.clear
-                        .preference(key: HelpContentHeightKey.self, value: proxy.size.height)
+                // onGeometryChange は iOS 18 以降のため、17 でも動く方法で高さを測る
+                .background {
+                    GeometryReader { proxy in
+                        Color.clear
+                            .preference(key: HelpContentHeightKey.self, value: proxy.size.height)
+                    }
                 }
-            }
-            .onPreferenceChange(HelpContentHeightKey.self) { height in
-                sheetContentHeight = height
-            }
+                .onPreferenceChange(HelpContentHeightKey.self) { height in
+                    sheetContentHeight = height
+                }
         }
         .scrollIndicators(.hidden)
     }
