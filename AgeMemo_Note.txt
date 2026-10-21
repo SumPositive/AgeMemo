@@ -168,6 +168,24 @@ fastlane upload_screenshots
 
 アプリアイコンの背景をCalclinの背景に合わせたい
 
+カレンダーの六曜が正しいか確認して
+
+----------------------------------------------------------
+Nenrin 1.2.2 更新内容
+- カレンダーの不具合を修正しました
+- 全てのシートに閉じるボタンを配置しました
+-----
+fastlane メタデータを更新して
+Nenrin 1.2.2 準備中、公開アプリパネル、README.mdの開発ガイド、取扱説明を更新して
+-----
+cd /Users/sumpositive/GitLocal/AgeMemo
+fastlane upload_metadata
+---
+fastlane screenshots
+fastlane upload_screenshots
+-----
+10/ Nenrin 1.2.2 公開、README.mdの開発ガイド、公開アプリパネル、取扱説明を更新して
+------------------------------------------------
 
 
 

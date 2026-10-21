@@ -1,2 +1,2 @@
-• Fixed dates not showing correctly when your device's calendar is set to Japanese
-• The calendar now follows your device's "First Day of Week" setting
+• Fixed issues in the calendar
+• Every sheet now has a close button
