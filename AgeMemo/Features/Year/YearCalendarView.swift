@@ -150,7 +150,7 @@ private struct MonthCalendarView: View {
     @ScaledMetric(relativeTo: .caption2) private var scaledRokuyoFontSize: CGFloat = 9
     @ScaledMetric(relativeTo: .caption2) private var scaledMoonFontSize: CGFloat = 8
     @ScaledMetric(relativeTo: .caption2) private var scaledWeekdayEnglishFontSize: CGFloat = 9
-    // 1か月表示になり余裕ができたので日付を大きくする。六曜と月齢の行の分だけ高くする
+    // 1か月表示になり余裕ができたので日付を大きくする。六曜と月の満ち欠けの行の分だけ高くする
     @ScaledMetric(relativeTo: .body) private var scaledDayHeight: CGFloat = 64
 
     /// 漢字語をタップしたときに開く解説

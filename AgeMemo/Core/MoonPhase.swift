@@ -1,4 +1,4 @@
-// 月齢と月相を求める
+// 月の満ち欠け（輝面率と月相）を求める
 
 import Foundation
 
@@ -7,8 +7,6 @@ struct MoonPhase: Sendable {
     let elongation: Double
     /// 望（満月の瞬間）を含む日か。一般的なカレンダーの満月の日と同じ
     let isFullMoon: Bool
-
-    private static let synodicMonth = 29.530588853
 
     /// その日の日本時間の正午で求める。満月の日は表から引く
     init?(year: Int, month: Int, day: Int) {
@@ -19,9 +17,15 @@ struct MoonPhase: Sendable {
         elongation = Self.elongation(julianDay: julianDay)
     }
 
-    /// 朔（新月）からの日数。0が新月、約14.8で満月
-    var age: Double {
-        elongation / 360 * Self.synodicMonth
+    /// 満ち欠けの周期の中での位置。0が新月、0.5が満月、1で次の新月。
+    /// 黄経差から求めた位置で、朔からの経過日数（月齢）ではない
+    var phasePosition: Double {
+        elongation / 360
+    }
+
+    /// 月相を8つに分けた番号。0が新月、4が満月。各月相の中心から前後1/16ずつを同じ月相とする
+    private var phaseIndex: Int {
+        Int((phasePosition * 8).rounded()) % 8
     }
 
     /// 満ちている割合。新月が0、満月が1
@@ -36,31 +40,14 @@ struct MoonPhase: Sendable {
 
     /// 月相を8つに分けたときの絵柄
     var symbolName: String {
-        switch age {
-        case ..<1.85: "moonphase.new.moon"
-        case ..<5.54: "moonphase.waxing.crescent"
-        case ..<9.23: "moonphase.first.quarter"
-        case ..<12.92: "moonphase.waxing.gibbous"
-        case ..<16.61: "moonphase.full.moon"
-        case ..<20.30: "moonphase.waning.gibbous"
-        case ..<23.99: "moonphase.last.quarter"
-        case ..<27.68: "moonphase.waning.crescent"
-        default: "moonphase.new.moon"
-        }
+        [
+            "moonphase.new.moon", "moonphase.waxing.crescent", "moonphase.first.quarter", "moonphase.waxing.gibbous",
+            "moonphase.full.moon", "moonphase.waning.gibbous", "moonphase.last.quarter", "moonphase.waning.crescent",
+        ][phaseIndex]
     }
 
     var name: String {
-        switch age {
-        case ..<1.85: "新月"
-        case ..<5.54: "三日月"
-        case ..<9.23: "上弦"
-        case ..<12.92: "十三夜"
-        case ..<16.61: "満月"
-        case ..<20.30: "寝待月"
-        case ..<23.99: "下弦"
-        case ..<27.68: "有明月"
-        default: "新月"
-        }
+        ["新月", "三日月", "上弦", "十三夜", "満月", "寝待月", "下弦", "有明月"][phaseIndex]
     }
 
     /// 月と太陽の黄経の差を、天文計算の主要な項だけで求める（Meeus『天文アルゴリズム』47章）。

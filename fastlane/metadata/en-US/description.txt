@@ -25,7 +25,7 @@ Note: the app's interface is available in English, but the calendar data it show
 ・A full calendar, month by month
 ・Rokuyo, the six-day luck cycle used to choose wedding and funeral dates
 ・The moon phase for each day
-・The moon as you would see it that evening; 大安 taian is marked in red and full moons in yellow
+・The moon's lit fraction at noon each day; 大安 taian is marked in red and full moons in yellow
 ・Era transition days are marked in place
 ・Tap any term — an era name, zodiac sign, rokuyo, nine-star sign, yakudoshi or gaju — to read what it means and where it came from
 ・Write a note of up to 100 characters for any year, separately for yourself and each roster entry
