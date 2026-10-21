@@ -211,8 +211,8 @@ final class LunarCalendarTests: XCTestCase {
     }
 
     func testElongationAgreesWithDE440() {
-        // 月と太陽の黄経差を、NASA JPL の DE440 から求めた値（日本時間の正午・視位置）と比べる。
-        // MoonPhase のコメントにある「誤差0.1度未満」をここで保証する。1600〜2100年の実測の最大は0.062度
+        // 月と太陽の黄経差を、NASA JPL の DE440 から求めた値（日本時間の正午・視位置）と代表日で比べる回帰テスト。
+        // 1600〜2100年の全日の保証は Scripts/verify_moon_phase.py が受け持ち、ここは式の変更による劣化を拾う
         for reference in Self.de440Noon {
             guard let moon = MoonPhase(year: reference.year, month: reference.month, day: reference.day) else {
                 XCTFail("\(reference)")
@@ -229,10 +229,11 @@ final class LunarCalendarTests: XCTestCase {
     }
 
     /// DE440（skyfield）で求めた日本時間正午の黄経差（度）と輝面率。
-    /// 10年ごとの元日、2026年の15日おき、誤差の大きかった日を含む
+    /// 10年ごとの元日、2026年の15日おき、全期間の走査で誤差が最大だった日（黄経差は1999-11-25、輝面率は1600-12-01）を含む
     private static let de440Noon: [(year: Int, month: Int, day: Int, elongation: Double, illumination: Double)] = [
         (1600, 1, 1, 186.3216, 0.99686),
         (1600, 2, 5, 245.0293, 0.71138),
+        (1600, 12, 1, 309.7726, 0.18228),
         (1610, 1, 1, 68.0365, 0.31467),
         (1620, 1, 1, 319.3944, 0.12156),
         (1630, 1, 1, 207.0146, 0.94477),
@@ -276,6 +277,7 @@ final class LunarCalendarTests: XCTestCase {
         (1981, 11, 14, 211.1276, 0.92790),
         (1989, 4, 1, 291.0706, 0.32159),
         (1990, 1, 1, 47.7984, 0.16486),
+        (1999, 11, 25, 206.0572, 0.94879),
         (2000, 1, 1, 298.8182, 0.26108),
         (2007, 10, 27, 193.2287, 0.98510),
         (2008, 11, 15, 206.3230, 0.94731),

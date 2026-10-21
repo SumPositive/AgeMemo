@@ -65,7 +65,8 @@ struct MoonPhase: Sendable {
     }
 
     /// 月と太陽の黄経の差を、天文計算の主要な項だけで求める（Meeus『天文アルゴリズム』47章）。
-    /// DE440 と比べた誤差は1600〜2100年で0.1度未満、輝面率にすると1%未満（LunarCalendarTests で確認）
+    /// DE440 と比べた誤差は1600〜2100年の全日の正午で0.1度未満（最大0.063度）、輝面率にすると1%未満。
+    /// 全日は Scripts/verify_moon_phase.py、代表日は LunarCalendarTests で確かめる
     private static func elongation(julianDay: Double) -> Double {
         let t = (julianDay - 2_451_545) / 36_525
         // 太陽の黄経

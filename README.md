@@ -247,7 +247,7 @@ Xcode から実行すると起動画面のまま数秒止まって見えます�
 - 100%（黄色）は満月の瞬間を含む日だけ、0%は新月の瞬間を含む日だけにします。前後の日は丸めでそうならないよう1〜99%に収めます
 - 読み上げも同じで、「満月」「新月」と読むのはその日だけです。ほかの日は「輝面率99パーセント、満ちていく月」のように伝えます。「十三夜」「寝待月」などは旧暦の日に由来する呼び名なので使いません
 
-`LunarCalendarTests` が、国立天文台の公表値（2026年の朔弦望）、DE440 から求めた黄経差と輝面率（誤差0.1度未満・1%未満）、六曜の決まりで回帰を確かめます。
+`LunarCalendarTests` が、国立天文台の公表値（2026年の朔弦望）、DE440 から求めた代表日の黄経差と輝面率、六曜の決まりで回帰を確かめます。1600〜2100年の全日で黄経差の誤差が0.1度未満（最大0.063度）、輝面率の差が1%未満であることは、`Scripts/verify_moon_phase.py` で確かめます。計算式を変えたら、このスクリプトも実行してください。
 
 ### 江戸時代以前の改元日（1.2.2〜）
 
@@ -278,7 +278,8 @@ AgeMemo/
 │   ├── Settings/  — 設定画面、BackupSection（書き出し・読み込み）
 │   └── Ads/       — AdMobBanner
 └── Resources/     — Assets、Info.plist、Localizable.xcstrings、InfoPlist.xcstrings
-Scripts/           — AppIcon-source.svg（アイコン元データ）、gen_lunar_month_table.py（旧暦の表）
+Scripts/           — AppIcon-source.svg（アイコン元データ）、gen_lunar_month_table.py（旧暦の表）、
+                     verify_moon_phase.py（月の満ち欠けの全期間検証）
 ```
 
 **主な依存関係**
