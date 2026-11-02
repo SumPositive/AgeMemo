@@ -292,6 +292,8 @@ private struct PersonEditorSheet: View {
     @State private var name: String
     @State private var gender: Gender
     @State private var kind: PersonKind
+    /// 開いているプルダウン。同時に開くのは1つだけにする
+    @State private var expandedDropdown: PersonEditorDropdownKind?
     /// 追加のときは名前が未入力なので、開いた直後に入力を始められるようにする
     @FocusState private var isNameFocused: Bool
 
@@ -329,6 +331,21 @@ private struct PersonEditorSheet: View {
 
         年齢や数え方は神社や地域によって異なる場合があります。目安としてご覧ください。
         """
+    }
+
+    private func dropdownBinding(_ kind: PersonEditorDropdownKind) -> Binding<Bool> {
+        Binding(
+            get: { expandedDropdown == kind },
+            set: { isExpanded in
+                if isExpanded {
+                    // 候補を選ぶあいだはキーボードを閉じておく
+                    isNameFocused = false
+                    expandedDropdown = kind
+                } else if expandedDropdown == kind {
+                    expandedDropdown = nil
+                }
+            }
+        )
     }
 
     private var trimmedName: String {
@@ -373,26 +390,22 @@ private struct PersonEditorSheet: View {
                 }
 
                 // 種別で名前欄・性別欄・日付の単位が変わるため、名前より上に置く
-                AZAdaptiveRadioRow(
-                    options: PersonKind.allCases,
-                    selection: $kind,
-                    minOptionWidth: 0,
-                    maxOptionWidth: 200,
-                    horizontalPadding: 6,
-                    optionSpacing: 4,
-                    groupPadding: 5,
-                    keepsLabelOnOneLine: true
-                ) {
+                AZAdaptiveControlRow {
                     HStack(alignment: .center, spacing: 4) {
                         Text("種類")
                         BeginnerHelpBanner(personKindHelp)
                     }
-                } label: { option in
-                    Text(option.title)
+                } control: {
+                    // 幅は設定画面のプルダウンとそろえる
+                    AZDropdownPicker(
+                        options: PersonKind.allCases,
+                        selection: $kind,
+                        isExpanded: dropdownBinding(.kind),
+                        minWidth: 130
+                    ) { option in
+                        Text(option.title)
+                    }
                 }
-                .simultaneousGesture(TapGesture().onEnded { _ in
-                    isNameFocused = false
-                })
                 // 記念日には厄年の概念が無いため、種類を切り替えたら未指定へ戻す
                 .onChange(of: kind) { _, newValue in
                     if !newValue.showsGenderPicker { gender = .unspecified }
@@ -419,29 +432,28 @@ private struct PersonEditorSheet: View {
 
                 if kind.showsGenderPicker {
                     // 厄年の判定に使う。生年月日の前に置く
-                    AZAdaptiveRadioRow(
-                        options: Gender.allCases,
-                        selection: $gender,
-                        minOptionWidth: 0,
-                        maxOptionWidth: 200,
-                        horizontalPadding: 6,
-                        optionSpacing: 4,
-                        groupPadding: 5,
-                        keepsLabelOnOneLine: true
-                    ) {
+                    AZAdaptiveControlRow {
                         HStack(alignment: .center, spacing: 4) {
                             Text("性別")
                             BeginnerHelpBanner(personGenderHelp)
                         }
-                    } label: { option in
-                        Text(option.title)
+                    } control: {
+                        AZDropdownPicker(
+                            options: Gender.allCases,
+                            selection: $gender,
+                            isExpanded: dropdownBinding(.gender),
+                            minWidth: 130
+                        ) { option in
+                            Text(option.title)
+                        }
                     }
-                    .simultaneousGesture(TapGesture().onEnded { _ in
-                        // 同じ性別を選び直した場合もキーボードを閉じる
-                        isNameFocused = false
-                    })
                 }
             }
         }
     }
+}
+
+private enum PersonEditorDropdownKind {
+    case kind
+    case gender
 }

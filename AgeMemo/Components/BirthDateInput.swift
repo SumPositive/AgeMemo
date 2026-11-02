@@ -390,6 +390,8 @@ struct BirthDatePad: View {
         style.dropdownIndicator = .none
         style.dropdownTextFitMode = .scale(minimumScaleFactor: 0.6)
         style.dropdownOptionHorizontalPadding = 12
+        // 選択中は縦書きで縦に長いので、カプセルにせず角丸四角のままにする
+        style.dropdownUsesCapsule = false
         return style
     }
 

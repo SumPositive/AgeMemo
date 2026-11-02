@@ -10,6 +10,8 @@ struct SettingsView: View {
 
     @State private var isEditingBirthDate: Bool
     @State private var showsBirthDateRegistrationPrompt: Bool
+    /// 開いているプルダウン。同時に開くのは1つだけにする
+    @State private var expandedDropdown: SettingsDropdownKind?
 
     init(requestsBirthDateRegistration: Bool = false) {
         // 「自分」から開いた場合は生年月日入力と案内をすぐに表示する
@@ -42,33 +44,44 @@ struct SettingsView: View {
         return text
     }
 
-    /// 見出し＋ラジオボタンの1行。幅が足りなければ2段組みへ自動で切り替わる
-    @ViewBuilder
-    private func radioRow<Option: CaseIterable & Hashable & Identifiable, Label: View>(
+    /// 見出し＋プルダウンの1行。幅が足りなければ2段組みへ自動で切り替わる
+    private func dropdownRow<Option: CaseIterable & Hashable & Identifiable, Label: View>(
         _ title: LocalizedStringKey,
         help: LocalizedStringKey,
+        kind: SettingsDropdownKind,
         selection: Binding<Option>,
         @ViewBuilder label: @escaping (Option) -> Label
     ) -> some View where Option.AllCases == [Option] {
-        AZAdaptiveRadioRow(
-            options: Option.allCases,
-            selection: selection,
-            minOptionWidth: 0,
-            maxOptionWidth: 200,
-            horizontalPadding: 6,
-            optionSpacing: 4,
-            groupPadding: 5,
-            keepsLabelOnOneLine: true
-        ) {
+        AZAdaptiveControlRow {
             // 設定項目の説明は見出しの右に集約する
             HStack(alignment: .center, spacing: 4) {
                 Text(title)
                 BeginnerHelpBanner(help)
             }
-        } label: { option in
-            label(option)
+        } control: {
+            // 幅は最長の候補（en の「Extra Large」「Unspecified」）に合わせて全項目でそろえる
+            AZDropdownPicker(
+                options: Option.allCases,
+                selection: selection,
+                isExpanded: dropdownBinding(kind),
+                minWidth: 130
+            ) { option in
+                label(option)
+            }
         }
-        .padding(.vertical, 2)
+    }
+
+    private func dropdownBinding(_ kind: SettingsDropdownKind) -> Binding<Bool> {
+        Binding(
+            get: { expandedDropdown == kind },
+            set: { isExpanded in
+                if isExpanded {
+                    expandedDropdown = kind
+                } else if expandedDropdown == kind {
+                    expandedDropdown = nil
+                }
+            }
+        )
     }
 
     var body: some View {
@@ -76,9 +89,10 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    radioRow(
+                    dropdownRow(
                         "表示モード",
                         help: "初心者を選ぶと、ボタンの名前や一覧の見方といった説明が画面に表示されます。操作に慣れたら達人に切り替えると、説明が消えて一覧を広く使えます。",
+                        kind: .displayMode,
                         selection: $settings.displayMode
                     ) { mode in
                         Text(mode.title)
@@ -87,9 +101,10 @@ struct SettingsView: View {
                     // 「自動」の人には選択肢の代わりに、iPhoneの設定で変えられることを示す
                     if settings.keepsFontScaleChoices {
                         VStack(alignment: .trailing, spacing: 4) {
-                            radioRow(
+                            dropdownRow(
                                 "文字サイズ",
                                 help: "アプリ内の文字の大きさを決めます。自動を選ぶと、iPhoneの「設定」→「画面表示と明るさ」→「テキストサイズ」に合わせて変わります。標準・大・特大を選ぶと、端末の設定に関わらずその大きさになります。",
+                                kind: .fontScale,
                                 selection: $settings.fontScale
                             ) { scale in
                                 Text(scale.title)
@@ -120,9 +135,10 @@ struct SettingsView: View {
                         }
                     }
 
-                    radioRow(
+                    dropdownRow(
                         "外観モード",
                         help: "画面の明るさの見た目を決めます。自動を選ぶと、iPhone本体のライトモード・ダークモードの設定に合わせて変わります。ライトまたはダークを選ぶと、端末の設定に関わらずその見た目に固定されます。",
+                        kind: .appearance,
                         selection: $settings.appearanceMode
                     ) { mode in
                         Text(mode.title)
@@ -155,7 +171,7 @@ struct SettingsView: View {
                         }
                     }
 
-                    radioRow(
+                    dropdownRow(
                         "自分の性別",
                         help: """
                         「自分」の一覧で厄年を表示するために使います。「未指定」を選ぶと厄年は表示されません。
@@ -168,6 +184,7 @@ struct SettingsView: View {
 
                         年齢や数え方は神社や地域によって異なる場合があります。目安としてご覧ください。
                         """,
+                        kind: .gender,
                         selection: $settings.gender
                     ) { gender in
                         Text(gender.title)
@@ -285,4 +302,11 @@ struct SettingsView: View {
         }
         .presentationDragIndicator(.visible)
     }
+}
+
+private enum SettingsDropdownKind {
+    case displayMode
+    case fontScale
+    case appearance
+    case gender
 }
