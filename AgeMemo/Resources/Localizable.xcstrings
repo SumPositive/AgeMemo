@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
+    "[設定アプリ](app-settings:)で変更できます" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change it in the [Settings app](app-settings:)"
+          }
+        }
+      }
+    },
     "「%@」を、書き留めたメモごと削除します。この操作は取り消せません。" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -740,6 +751,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "2019–"
+          }
+        }
+      }
+    },
+    "アプリ内の文字の大きさは、iPhoneの「設定」→「画面表示と明るさ」→「テキストサイズ」に合わせて変わります。" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text size in the app follows iPhone Settings → Display & Brightness → Text Size."
           }
         }
       }
@@ -2804,6 +2826,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Next"
+          }
+        }
+      }
+    },
+    "次回から[設定アプリ](app-settings:)で変更できます" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From next time, change it in the [Settings app](app-settings:)"
           }
         }
       }

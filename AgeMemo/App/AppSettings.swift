@@ -101,6 +101,10 @@ final class AppSettings {
         didSet { defaults.set(fontScale.rawValue, forKey: Key.fontScale) }
     }
 
+    /// 以前「標準／大／特大」を選んだ人だけ、戻せるよう設定画面に選択肢を残す。
+    /// 起動時の値で決め、自動に変えても次回起動までは選択肢を残して戻せるようにする
+    let keepsFontScaleChoices: Bool
+
     var appearanceMode: AppearanceMode {
         didSet { defaults.set(appearanceMode.rawValue, forKey: Key.appearanceMode) }
     }
@@ -240,7 +244,9 @@ final class AppSettings {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         displayMode = DisplayMode(rawValue: defaults.integer(forKey: Key.displayMode)) ?? .beginner
-        fontScale = AppFontScale(rawValue: defaults.integer(forKey: Key.fontScale)) ?? .system
+        let initialFontScale = AppFontScale(rawValue: defaults.integer(forKey: Key.fontScale)) ?? .system
+        fontScale = initialFontScale
+        keepsFontScaleChoices = initialFontScale != .system
         appearanceMode = AppearanceMode(rawValue: defaults.integer(forKey: Key.appearanceMode)) ?? .system
         gender = Gender(rawValue: defaults.integer(forKey: Key.gender)) ?? .unspecified
         // 補助表示はすべて既定OFF。未設定なら false を返す読み出しを使う

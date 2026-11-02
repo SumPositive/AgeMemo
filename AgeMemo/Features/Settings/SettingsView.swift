@@ -33,6 +33,15 @@ struct SettingsView: View {
         return String(format: "%04d/%02d/%02d", components.year ?? 0, components.month ?? 0, components.day ?? 0)
     }
 
+    /// 訳文の [..](...) で作ったリンクに下線を付け、押せることを分かるようにする
+    private static func underlinedLinks(_ source: AttributedString) -> AttributedString {
+        var text = source
+        for run in text.runs where run.link != nil {
+            text[run.range].underlineStyle = .single
+        }
+        return text
+    }
+
     /// 見出し＋ラジオボタンの1行。幅が足りなければ2段組みへ自動で切り替わる
     @ViewBuilder
     private func radioRow<Option: CaseIterable & Hashable & Identifiable, Label: View>(
@@ -75,12 +84,40 @@ struct SettingsView: View {
                         Text(mode.title)
                     }
 
-                    radioRow(
-                        "文字サイズ",
-                        help: "アプリ内の文字の大きさを決めます。自動を選ぶと、iPhoneの「設定」→「画面表示と明るさ」→「テキストサイズ」に合わせて変わります。標準・大・特大を選ぶと、端末の設定に関わらずその大きさになります。",
-                        selection: $settings.fontScale
-                    ) { scale in
-                        Text(scale.title)
+                    // 「自動」の人には選択肢の代わりに、iPhoneの設定で変えられることを示す
+                    if settings.keepsFontScaleChoices {
+                        VStack(alignment: .trailing, spacing: 4) {
+                            radioRow(
+                                "文字サイズ",
+                                help: "アプリ内の文字の大きさを決めます。自動を選ぶと、iPhoneの「設定」→「画面表示と明るさ」→「テキストサイズ」に合わせて変わります。標準・大・特大を選ぶと、端末の設定に関わらずその大きさになります。",
+                                selection: $settings.fontScale
+                            ) { scale in
+                                Text(scale.title)
+                            }
+
+                            // 自動にしても次回起動までは選択肢が残るので、次回からの変更先を伝える
+                            if settings.fontScale.followsSystem {
+                                Text(Self.underlinedLinks(AttributedString(localized: "次回から[設定アプリ](app-settings:)で変更できます")))
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                    } else {
+                        AZAdaptiveControlRow {
+                            HStack(alignment: .center, spacing: 4) {
+                                Text("文字サイズ")
+                                BeginnerHelpBanner("アプリ内の文字の大きさは、iPhoneの「設定」→「画面表示と明るさ」→「テキストサイズ」に合わせて変わります。")
+                            }
+                        } control: {
+                            // 「設定アプリ」の部分だけ下線付きのリンクにし、押すと設定アプリを開く。
+                            // app-settings: は設定アプリのこのアプリのページを開く公開URL
+                            // （文字サイズの画面を直接開く公開URLは無いため、設定アプリを開くところまでにする）
+                            Text(Self.underlinedLinks(AttributedString(localized: "[設定アプリ](app-settings:)で変更できます")))
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.trailing)
+                        }
                     }
 
                     radioRow(
