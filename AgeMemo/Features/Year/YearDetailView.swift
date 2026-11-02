@@ -55,7 +55,7 @@ struct YearDetailView: View {
                     if showsMemo {
                         memoEditor
                     }
-                    YearCalendarView(row: row)
+                    YearCalendarView(row: row, markedDay: markedDay)
                 }
                 // 縦スクロールでは、幅を超えた子が左右へはみ出して切れる。
                 // 余白を除いた幅に内容を閉じ込めて、特大でも欠けないようにする
@@ -364,6 +364,21 @@ struct YearDetailView: View {
         case .personal: settings.birthDate
         case .person: selectedPerson?.birthDate
         }
+    }
+
+    /// カレンダーで目印を付ける誕生日・記念日。年齢一覧は特定の人ではないので付けない。
+    /// 生まれる前（記念日の始まる前）の年には巡ってこないので付けない
+    private var markedDay: CalendarMarkedDay? {
+        guard let birthDate = effectiveBirthDate else { return nil }
+        let components = Calendar(identifier: .gregorian).dateComponents([.year, .month, .day], from: birthDate)
+        guard let year = components.year, let month = components.month, let day = components.day,
+              year <= row.gregorian else { return nil }
+        return CalendarMarkedDay(
+            year: row.gregorian,
+            month: month,
+            day: day,
+            kind: isShowingAnniversary ? .anniversary : .birthday
+        )
     }
 
     /// その年に在籍する学年。記念日には学齢の概念が無い

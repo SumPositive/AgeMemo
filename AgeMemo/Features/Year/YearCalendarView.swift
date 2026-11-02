@@ -13,8 +13,25 @@ enum MonthCalendarWeekLayout {
     }
 }
 
+/// カレンダーで目印を付ける誕生日・記念日
+struct CalendarMarkedDay: Equatable {
+    let month: Int
+    let day: Int
+    let kind: PersonKind
+
+    /// 2月29日は閏年でない年に巡ってこないため、その年は2月28日に付ける
+    init(year: Int, month: Int, day: Int, kind: PersonKind) {
+        let isLeapYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+        self.month = month
+        self.day = (month == 2 && day == 29 && !isLeapYear) ? 28 : day
+        self.kind = kind
+    }
+}
+
 struct YearCalendarView: View {
     let row: YearRow
+    /// 自分／名簿から開いたときの誕生日・記念日
+    let markedDay: CalendarMarkedDay?
 
     @State private var month: Int
     @State private var isMonthPickerExpanded = false
@@ -46,8 +63,13 @@ struct YearCalendarView: View {
         )
     }
 
-    init(row: YearRow, initialMonth: Int = AppConfig.gregorianCalendar.component(.month, from: .now)) {
+    init(
+        row: YearRow,
+        markedDay: CalendarMarkedDay? = nil,
+        initialMonth: Int = AppConfig.gregorianCalendar.component(.month, from: .now)
+    ) {
         self.row = row
+        self.markedDay = markedDay
         _month = State(initialValue: min(max(initialMonth, 1), 12))
     }
 
@@ -55,7 +77,12 @@ struct YearCalendarView: View {
         VStack(spacing: 10) {
             monthSwitcher
 
-            MonthCalendarView(year: row.gregorian, month: month)
+            MonthCalendarView(
+                year: row.gregorian,
+                month: month,
+                markedDay: markedDay?.month == month ? markedDay?.day : nil,
+                markedKind: markedDay?.kind ?? .birthday
+            )
                 // 月をまたぐたびに切り替わりが分かるようにする
                 .id(month)
                 .transition(.opacity)
@@ -88,6 +115,9 @@ struct YearCalendarView: View {
 
         【改元】
         改元があった年は、元号が変わる日に区切り線と新しい元号を表示します。
+
+        【今日・誕生日・記念日】
+        今日の日付は色付きの丸で示します。「自分」と名簿から開いたときは、誕生日や記念日の枠を桃色で示します。
         """
     }
 
@@ -147,6 +177,9 @@ struct YearCalendarView: View {
 private struct MonthCalendarView: View {
     let year: Int
     let month: Int
+    /// 誕生日・記念日にあたる日。この月に無ければ nil
+    let markedDay: Int?
+    let markedKind: PersonKind
 
     @ScaledMetric(relativeTo: .caption2) private var scaledEraFontSize: CGFloat = 9
     @ScaledMetric(relativeTo: .caption2) private var scaledRokuyoFontSize: CGFloat = 9
@@ -179,6 +212,13 @@ private struct MonthCalendarView: View {
     /// この月に改元した元号。改元日が翌年1月にあたる元号もあるため年の行ではなく改元日で引く
     private var eraTransitions: [Int: EraSpan] {
         JapaneseEra.transitions(year: year, month: month)
+    }
+
+    /// 今日がこの月にあればその日。端末の時刻帯で今日を決める
+    private var today: Int? {
+        let components = AppConfig.gregorianCalendar.dateComponents([.year, .month, .day], from: .now)
+        guard components.year == year, components.month == month else { return nil }
+        return components.day
     }
 
     private var cells: [Int?] {
@@ -239,6 +279,8 @@ private struct MonthCalendarView: View {
         let era = eraTransitions[day]
         let rokuyo = rokuyo(for: day)
         let moon = moonPhase(for: day)
+        let isToday = day == today
+        let isMarked = day == markedDay
         return VStack(spacing: 0) {
             if let era {
                 Text(era.eraName)
@@ -246,8 +288,18 @@ private struct MonthCalendarView: View {
                     .foregroundStyle(.tint)
                     .lineLimit(1)
             }
+            // 今日は数字を丸で塗り、誕生日・記念日の枠（セル全体）と重なっても見分けられるようにする
             Text(String(day))
-                .font(.caption.monospacedDigit())
+                .font(.caption.monospacedDigit().weight(isToday ? .bold : .regular))
+                .foregroundStyle(isToday ? AnyShapeStyle(Color.white) : AnyShapeStyle(.primary))
+                .padding(.horizontal, 4)
+                .background {
+                    if isToday {
+                        Capsule()
+                            .fill(Color.accentColor)
+                            .frame(minWidth: 22)
+                    }
+                }
             if let rokuyo {
                 // 大安は日取りを選ぶときに真っ先に探されるので赤系で目立たせる
                 let isTaian = rokuyo == .taian
@@ -277,6 +329,16 @@ private struct MonthCalendarView: View {
             }
         }
         .frame(maxWidth: .infinity, minHeight: scaledDayHeight)
+        .background {
+            if isMarked {
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color.pink.opacity(0.15))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color.pink, lineWidth: 1.5)
+                    }
+            }
+        }
         .overlay(alignment: .top) {
             if era != nil {
                 Rectangle()
@@ -284,7 +346,9 @@ private struct MonthCalendarView: View {
                     .frame(height: 2)
             }
         }
-        .accessibilityLabel(accessibilityLabel(day: day, era: era, rokuyo: rokuyo, moon: moon))
+        .accessibilityLabel(
+            accessibilityLabel(day: day, era: era, rokuyo: rokuyo, moon: moon, isToday: isToday, isMarked: isMarked)
+        )
     }
 
     /// 満月の色を外観ごとに読みやすくする
@@ -302,8 +366,21 @@ private struct MonthCalendarView: View {
         Rokuyo(year: year, month: month, day: day)
     }
 
-    private func accessibilityLabel(day: Int, era: EraSpan?, rokuyo: Rokuyo?, moon: MoonPhase?) -> String {
+    private func accessibilityLabel(
+        day: Int,
+        era: EraSpan?,
+        rokuyo: Rokuyo?,
+        moon: MoonPhase?,
+        isToday: Bool,
+        isMarked: Bool
+    ) -> String {
         var label = "\(month)月\(day)日"
+        if isToday {
+            label += " " + String(localized: "今日")
+        }
+        if isMarked {
+            label += " " + (markedKind == .anniversary ? String(localized: "記念日") : String(localized: "誕生日"))
+        }
         if let rokuyo {
             label += " \(rokuyo.name)"
         }

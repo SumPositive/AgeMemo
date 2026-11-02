@@ -185,7 +185,34 @@ fastlane screenshots
 fastlane upload_screenshots
 -----
 10/ Nenrin 1.2.2 公開、README.mdの開発ガイド、公開アプリパネル、取扱説明を更新して
+履歴に　Xcode27.1　iOS27 を加えて
 ------------------------------------------------
+
+カレンダーの当日をハイライトする
+自分と名簿では、カレンダーの誕生日や記念日をハイライト（当日と異なる）する
+
+
+
+----------------------------------------------------------
+Nenrin 1.2.3 更新内容
+- カレンダーの当日、誕生日や記念日をハイライト表示します
+- 
+
+-----
+fastlane メタデータを更新して
+Nenrin 1.2.3 準備中、公開アプリパネル、README.mdの開発ガイド、取扱説明を更新して
+-----
+cd /Users/sumpositive/GitLocal/AgeMemo
+fastlane upload_metadata
+---
+fastlane screenshots
+fastlane upload_screenshots
+-----
+10/ Nenrin 1.2.3 公開、README.mdの開発ガイド、公開アプリパネル、取扱説明を更新して
+------------------------------------------------
+
+
+
 
 
 
